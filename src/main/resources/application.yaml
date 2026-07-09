@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: access-management-application
+  r2dbc:
+    url: r2dbc:postgresql://localhost:4000/accessor
+    username: postgres
+    password: Gunitha@2906
+    properties:
+      schema: creds
+
+authentication:
+  github:
+    api:
+      url: https://api.github.com/user
+  jwt:
+    secret-key : You$hop99Gunitha@2906You$hop99Gunitha@2906You$hop99Gunitha@2906You$hop99Gunitha@2906You$hop99Gunitha@2906
+    expiration-ms: 10000
