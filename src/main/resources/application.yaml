@@ -1,6 +1,8 @@
 spring:
   application:
     name: access-management-application
+  profiles :
+    active: local
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/accessor
     username: postgres
