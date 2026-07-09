@@ -2,6 +2,7 @@ package com.karur.access_management_application.security.authentication.handler;
 
 import com.karur.access_management_application.security.authentication.jwt.JwtTokenProvider;
 import com.karur.access_management_application.security.repository.AccessorEntityRepository;
+import com.karur.access_management_application.security.repository.AccessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +22,7 @@ import java.util.Map;
 public class CredentialAuthenticationSuccessHandler implements ServerAuthenticationSuccessHandler {
 
     @Autowired
-    private AccessorEntityRepository accessorEntityRepository;
+    private AccessorRepository accessorRepository;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -32,7 +33,7 @@ public class CredentialAuthenticationSuccessHandler implements ServerAuthenticat
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
         ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
 
-        return accessorEntityRepository.findById(authentication.getName())
+        return accessorRepository.findAccessorEntityByUsername(authentication.getName())
                 .map(accessorEntity -> {
                     Map<String, Object> claims = new HashMap<>();
                     claims.put("username", accessorEntity.getUsername());

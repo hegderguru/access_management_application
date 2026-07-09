@@ -2,9 +2,9 @@ spring:
   application:
     name: access-management-application
   r2dbc:
-    url: r2dbc:postgresql://localhost:4000/accessor
+    url: r2dbc:postgresql://localhost:5432/accessor
     username: postgres
-    password: Gunitha@2906
+    password: postgres
     properties:
       schema: creds
 
