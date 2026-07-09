@@ -32,18 +32,18 @@ public class GitHubTokenAuthenticationToken extends AbstractAuthenticationToken 
 
     @Override
     public @Nullable Object getCredentials() {
-        return null;
+        return token;
     }
 
     @Override
     public @Nullable Object getPrincipal() {
-        return null;
+        return username;
     }
 
 
     @Override
     public String getName() {
-        return super.getName();
+        return username;
     }
 
 }

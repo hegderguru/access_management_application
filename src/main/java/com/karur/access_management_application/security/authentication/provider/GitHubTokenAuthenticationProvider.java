@@ -57,7 +57,7 @@ public class GitHubTokenAuthenticationProvider implements SupportedAuthenticatio
                         return Mono.error(new AuthenticationException("Invalid credentials"));
                     }
                     GitHubTokenAuthenticationToken gitHubTokenAuthenticationTokenAuthenticated = new GitHubTokenAuthenticationToken(login, (String) authentication.getCredentials(), null);
-                    gitHubTokenAuthenticationTokenAuthenticated.setDetails(Map.of("name", name, "email", email, "provider", "github"));
+                    //gitHubTokenAuthenticationTokenAuthenticated.setDetails(Map.of("name", login, "email", email, "provider", "github"));
                     return Mono.just(gitHubTokenAuthenticationTokenAuthenticated);
                 });
     }
