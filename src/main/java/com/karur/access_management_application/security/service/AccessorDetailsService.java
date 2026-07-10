@@ -27,7 +27,7 @@ public class AccessorDetailsService implements ReactiveUserDetailsService {
     }
 
     public Mono<AccessorEntity> createAccessorEntity(AccessorRequest accessorRequest) {
-        return requestToEntityMapper.buildAccessorEntity(accessorRequest)
-                .flatMap(accessorEntity -> accessorRepository.save(accessorEntity));
+        AccessorEntity accessorEntity = requestToEntityMapper.buildAccessorEntity(accessorRequest);
+        return accessorRepository.save(accessorEntity);
     }
 }

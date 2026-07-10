@@ -15,12 +15,10 @@ public class RequestToEntityMapper {
     @Autowired
     AccessAuthorityRequestToEntityMapper accessAuthorityRequestToEntityMapper;
 
-    public Mono<AccessorEntity> buildAccessorEntity(AccessorRequest accessorRequest) {
-        return accessRequestToEntityMapper.buildAccessorEntity(accessorRequest)
-                .flatMap(accessorEntity -> {
-                    accessorEntity.setAccessGrantedAuthorities(accessAuthorityRequestToEntityMapper.buildAccessGrantedAuthorityEntities(accessorRequest));
-                    return Mono.just(accessorEntity);
-                });
+    public AccessorEntity buildAccessorEntity(AccessorRequest accessorRequest) {
+        AccessorEntity accessorEntity = accessRequestToEntityMapper.buildAccessorEntity(accessorRequest);
+        accessorEntity.setAccessGrantedAuthorities(accessAuthorityRequestToEntityMapper.buildAccessGrantedAuthorityEntities(accessorRequest));
+        return accessorEntity;
     }
 
 }

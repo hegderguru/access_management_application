@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class AccessRequestToEntityMapper {
 
-    public Mono<AccessorEntity> buildAccessorEntity(AccessorRequest accessorRequest){
+    public AccessorEntity buildAccessorEntity(AccessorRequest accessorRequest){
         return Mono.just(AccessorEntity.builder()
                 .username(accessorRequest.getUsername())
                 .password(accessorRequest.getPassword())
