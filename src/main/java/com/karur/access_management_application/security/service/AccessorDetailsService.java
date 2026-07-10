@@ -1,9 +1,11 @@
 package com.karur.access_management_application.security.service;
 
+import com.karur.access_management_application.security.authentication.model.AccessGrantedAuthorityEntity;
 import com.karur.access_management_application.security.authentication.model.AccessorEntity;
 import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.RequestToEntityMapper;
 import com.karur.access_management_application.security.model.request.AccessorRequest;
+import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.repository.AccessorEntityRepository;
 import com.karur.access_management_application.security.repository.AccessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,4 +32,10 @@ public class AccessorDetailsService implements ReactiveUserDetailsService {
         AccessorEntity accessorEntity = requestToEntityMapper.buildAccessorEntity(accessorRequest);
         return accessorRepository.save(accessorEntity);
     }
+
+    public Mono<AccessGrantedAuthorityEntity> createAuthority(AuthorityRequest authorityRequest) {
+        AccessGrantedAuthorityEntity accessGrantedAuthorityEntity = requestToEntityMapper.buildAccessGrantedAuthorityEntity(authorityRequest);
+        return accessorRepository.save(accessGrantedAuthorityEntity);
+    }
+
 }

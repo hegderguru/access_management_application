@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.repository;
 
+import com.karur.access_management_application.security.authentication.model.AccessGrantedAuthorityEntity;
 import com.karur.access_management_application.security.authentication.model.AccessorEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -56,6 +57,14 @@ public class AccessorRepository {
                 .flatMap(accessorEntity1 -> {
                     accessorEntity1.accessGrantedAuthorities().forEach(accessGrantedAuthorityEntity -> accessGrantedAuthorityEntity.setAccessorId(accessorEntity1.getId()));
                     return accessorAuthorityEntityRepository.saveAll(accessorEntity.accessGrantedAuthorities()).then(Mono.just(accessorEntity1));
+                });
+    }
+
+    public Mono<AccessGrantedAuthorityEntity> save(AccessGrantedAuthorityEntity accessGrantedAuthorityEntity) {
+        return accessorAuthorityEntityRepository.save(accessGrantedAuthorityEntity)
+                .flatMap(accessGrantedAuthorityEntity1 -> {
+                    accessGrantedAuthorityEntity1.getAccessRoleEntities().forEach(accessRoleEntity -> accessRoleEntity.setAuthorityId(accessGrantedAuthorityEntity1.getId()));
+                    return accessRoleEntityRepository.saveAll(accessGrantedAuthorityEntity1.getAccessRoleEntities()).then(Mono.just(accessGrantedAuthorityEntity1));
                 });
     }
 }

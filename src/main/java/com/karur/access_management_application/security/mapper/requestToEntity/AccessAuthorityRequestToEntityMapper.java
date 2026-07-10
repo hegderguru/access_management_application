@@ -15,7 +15,7 @@ public class AccessAuthorityRequestToEntityMapper {
         return accessorRequest.getAuthorityRequests().stream().map(this::buildAccessGrantedAuthorityEntity).toList();
     }
 
-    private AccessGrantedAuthorityEntity buildAccessGrantedAuthorityEntity(AuthorityRequest authorityRequest) {
+    public AccessGrantedAuthorityEntity buildAccessGrantedAuthorityEntity(AuthorityRequest authorityRequest) {
         return AccessGrantedAuthorityEntity.builder()
                 .accessRoleEntities(new ArrayList<>())
                 .name(authorityRequest.getName())

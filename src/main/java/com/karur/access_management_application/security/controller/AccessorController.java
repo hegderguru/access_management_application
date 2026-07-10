@@ -1,6 +1,7 @@
 package com.karur.access_management_application.security.controller;
 
 import com.karur.access_management_application.security.model.request.AccessorRequest;
+import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.response.AccessResponse;
 import com.karur.access_management_application.security.service.AccessorDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,15 @@ public class AccessorController {
     @Autowired
     AccessorDetailsService accessorDetailsService;
 
-    @PostMapping("create")
-    public Mono<ResponseEntity<AccessResponse>> create(@RequestBody Mono<AccessorRequest> accessorRequestMono) {
+    @PostMapping("createAccessor")
+    public Mono<ResponseEntity<AccessResponse>> createAccessor(@RequestBody Mono<AccessorRequest> accessorRequestMono) {
         return accessorRequestMono.flatMap(accessorRequest -> accessorDetailsService.createAccessorEntity(accessorRequest))
+                .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
+    }
+
+    @PostMapping("createAuthority")
+    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
+        return authorityRequestMono.flatMap(accessorRequest -> accessorDetailsService.createAccessorEntity(accessorRequest))
                 .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 
