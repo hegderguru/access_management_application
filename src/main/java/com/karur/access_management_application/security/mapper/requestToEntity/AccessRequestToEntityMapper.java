@@ -8,8 +8,8 @@ import reactor.core.publisher.Mono;
 @Service
 public class AccessRequestToEntityMapper {
 
-    public AccessorEntity buildAccessorEntity(AccessorRequest accessorRequest){
-        return Mono.just(AccessorEntity.builder()
+    public AccessorEntity buildAccessorEntity(AccessorRequest accessorRequest) {
+        return AccessorEntity.builder()
                 .username(accessorRequest.getUsername())
                 .password(accessorRequest.getPassword())
                 .firstName(accessorRequest.getFirstName())
@@ -19,7 +19,7 @@ public class AccessRequestToEntityMapper {
                 .accessExpired(false)
                 .credentialsExpired(false)
                 .accessLocked(false)
-                .build());
+                .build();
     }
 
 }
