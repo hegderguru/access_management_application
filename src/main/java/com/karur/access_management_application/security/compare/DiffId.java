@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.change;
+package com.karur.access_management_application.security.compare;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ChangeId {
+public @interface DiffId {
 }
