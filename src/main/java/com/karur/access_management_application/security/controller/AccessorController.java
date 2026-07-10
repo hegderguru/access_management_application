@@ -20,9 +20,9 @@ public class AccessorController {
     AccessorDetailsService accessorDetailsService;
 
     @PostMapping("create")
-    public Mono<ResponseEntity<AccessResponse>> create(@RequestBody AccessorRequest accessorRequest) {
-        return accessorDetailsService.createAccessorEntity(accessorRequest)
-                .flatMap(accessorEntity->Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
+    public Mono<ResponseEntity<AccessResponse>> create(@RequestBody Mono<AccessorRequest> accessorRequestMono) {
+        return accessorRequestMono.flatMap(accessorRequest -> accessorDetailsService.createAccessorEntity(accessorRequest))
+                .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 
 
