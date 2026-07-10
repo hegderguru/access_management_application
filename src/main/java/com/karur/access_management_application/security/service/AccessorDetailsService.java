@@ -1,5 +1,9 @@
 package com.karur.access_management_application.security.service;
 
+import com.karur.access_management_application.security.authentication.model.AccessorEntity;
+import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
+import com.karur.access_management_application.security.mapper.requestToEntity.RequestToEntityMapper;
+import com.karur.access_management_application.security.model.request.AccessorRequest;
 import com.karur.access_management_application.security.repository.AccessorEntityRepository;
 import com.karur.access_management_application.security.repository.AccessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +18,18 @@ public class AccessorDetailsService implements ReactiveUserDetailsService {
     @Autowired
     AccessorRepository accessorRepository;
 
+    @Autowired
+    RequestToEntityMapper requestToEntityMapper;
+
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         return accessorRepository.findAccessorEntityByUsername(username).flatMap(accessorEntity -> Mono.just((UserDetails) accessorEntity));
+    }
+
+    public Mono<AccessorEntity> createAccessorEntity(AccessorRequest accessorRequest) {
+        return requestToEntityMapper.buildAccessorEntity(accessorRequest)
+                .flatMap(accessorEntity -> {
+                    return accessorRepository.save(accessorEntity);
+                });
     }
 }

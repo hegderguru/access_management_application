@@ -100,4 +100,13 @@ public class AccessorRepository {
                 );
     }
 
+    public Mono<AccessorEntity> save(AccessorEntity accessorEntity) {
+        return accessorEntityRepository.save(accessorEntity)
+                .flatMap(accessorEntity1 -> {
+                    accessorEntity.accessGrantedAuthorities().forEach(accessGrantedAuthorityEntity -> accessGrantedAuthorityEntity.setAccessorId(accessorEntity1.getId()));
+                    accessorAuthorityEntityRepository.saveAll(accessorEntity.accessGrantedAuthorities());
+                    return Mono.just(accessorEntity1);
+                })
+                .thenReturn(accessorEntity);
+    }
 }

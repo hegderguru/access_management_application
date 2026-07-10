@@ -1,7 +1,7 @@
 package com.karur.access_management_application.security.authentication.model;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Builder
 @Data
 @Table(value = "accessor",schema = "creds")
 public class AccessorEntity implements UserDetails {
@@ -31,7 +32,7 @@ public class AccessorEntity implements UserDetails {
     private String lastName;
 
     @Transient
-    private List<AccessGrantedAuthority> accessGrantedAuthorities;
+    private List<AccessGrantedAuthorityEntity> accessGrantedAuthorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -68,7 +69,7 @@ public class AccessorEntity implements UserDetails {
         return accessEnabled;
     }
 
-    public List<AccessGrantedAuthority> accessGrantedAuthorities(){
+    public List<AccessGrantedAuthorityEntity> accessGrantedAuthorities(){
         return accessGrantedAuthorities;
     }
 }

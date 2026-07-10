@@ -1,8 +1,10 @@
 package com.karur.access_management_application.security.model.response;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+@Builder
 @Data
 public class AccessResponse {
 

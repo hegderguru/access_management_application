@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.authentication.model;
 
+import lombok.Builder;
 import lombok.Data;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
@@ -10,9 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Data
 @Table(value = "accessor_authority",schema = "creds")
-public class AccessGrantedAuthority implements GrantedAuthority {
+public class AccessGrantedAuthorityEntity implements GrantedAuthority {
 
     @Id
     private Long id;
