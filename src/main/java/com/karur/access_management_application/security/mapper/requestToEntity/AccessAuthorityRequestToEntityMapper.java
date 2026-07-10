@@ -19,6 +19,7 @@ public class AccessAuthorityRequestToEntityMapper {
         return AccessGrantedAuthorityEntity.builder()
                 .accessRoleEntities(new ArrayList<>())
                 .name(authorityRequest.getName())
+                .description(authorityRequest.getDescription())
                 .build();
     }
 }

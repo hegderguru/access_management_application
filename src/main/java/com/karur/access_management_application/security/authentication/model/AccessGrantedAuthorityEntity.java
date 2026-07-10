@@ -20,6 +20,7 @@ public class AccessGrantedAuthorityEntity implements GrantedAuthority {
     private Long id;
 
     private String name;
+    private String description;
 
     private Long accessorId;
 
