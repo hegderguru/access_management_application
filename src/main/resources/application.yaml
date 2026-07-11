@@ -16,4 +16,8 @@ authentication:
       url: https://api.github.com/user
   jwt:
     secret-key : You$hop99Gunitha@2906You$hop99Gunitha@2906You$hop99Gunitha@2906You$hop99Gunitha@2906You$hop99Gunitha@2906
-    expiration-ms: 10000
+    expiration-ms: 500000
+
+logging:
+  level:
+    root : INFO

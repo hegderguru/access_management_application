@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.authentication.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,11 +9,10 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 @Service
-public class JwtTokenProvider {
+public class   JwtTokenProvider {
 
     public JwtTokenProvider(@Value("${authentication.jwt.secret-key}") String secretKey, @Value("${authentication.jwt.expiration-ms}") Long expiresIn) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -57,6 +57,23 @@ public class JwtTokenProvider {
     public static String extractToken(String token) {
         String BEARER = "Bearer ";
         return token.substring(BEARER.length());
+    }
+
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public List<String> getAuthorities(String token){
+        Claims claims = getClaimsFromToken(token);
+        String authorities = (String) claims.get("authorities");
+        if(Objects.nonNull(authorities)){
+            return Arrays.stream(authorities.split(":")).toList();
+        }
+        return Collections.emptyList();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.karur.access_management_application.security.authentication.converter;
 
 import com.karur.access_management_application.security.authentication.jwt.JwtTokenProvider;
+import com.karur.access_management_application.security.authentication.model.AccessGrantedAuthorityEntity;
 import com.karur.access_management_application.security.authentication.token.JwtAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -24,7 +26,8 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
 
         if (Objects.nonNull(bearerToken)) {
             String token = jwtTokenProvider.extractToken(bearerToken);
-            return Mono.just(new JwtAuthenticationToken(jwtTokenProvider.getUsernameFromToken(token), token));
+            List<AccessGrantedAuthorityEntity> grantedAuthorityEntities = jwtTokenProvider.getAuthorities(token).stream().map(authority -> AccessGrantedAuthorityEntity.builder().name(authority).build()).toList();
+            return Mono.just(new JwtAuthenticationToken(jwtTokenProvider.getUsernameFromToken(token), token,grantedAuthorityEntities));
         }
         return Mono.empty();
     }

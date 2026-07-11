@@ -1,11 +1,14 @@
 package com.karur.access_management_application.security.authentication.provider;
 
 import com.karur.access_management_application.security.authentication.jwt.JwtTokenProvider;
+import com.karur.access_management_application.security.authentication.model.AccessGrantedAuthorityEntity;
 import com.karur.access_management_application.security.authentication.token.JwtAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class JwtAuthenticationProvider implements SupportedAuthenticationProvider {
@@ -20,11 +23,13 @@ public class JwtAuthenticationProvider implements SupportedAuthenticationProvide
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
-        if(authentication instanceof JwtAuthenticationToken){
+        if (authentication instanceof JwtAuthenticationToken) {
             String token = (String) authentication.getCredentials();
-            if(jwtTokenProvider.validateToken(token)){
+            if (jwtTokenProvider.validateToken(token)) {
                 String username = jwtTokenProvider.getUsernameFromToken(token);
-                return Mono.just(new JwtAuthenticationToken(token,username));
+                List<String> authorities = jwtTokenProvider.getAuthorities(token);
+                List<AccessGrantedAuthorityEntity> grantedAuthorityEntities = authorities.stream().map(authority -> AccessGrantedAuthorityEntity.builder().name(authority).build()).toList();
+                return Mono.just(new JwtAuthenticationToken(token, username, grantedAuthorityEntities));
             }
         }
         return Mono.empty();
