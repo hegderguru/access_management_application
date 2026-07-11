@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface AccessorAuthorityEntityRepository extends ReactiveCrudRepository<AuthorityEntity, Long> {
+public interface AuthorityEntityRepository extends ReactiveCrudRepository<AuthorityEntity, Long> {
     Flux<AuthorityEntity> findByAccessorId(Long accessorId);
 }

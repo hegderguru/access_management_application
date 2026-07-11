@@ -9,7 +9,7 @@ import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.read.AuthorityDetail;
 import com.karur.access_management_application.security.model.read.PermissionDetail;
 import com.karur.access_management_application.security.model.read.RoleDetail;
-import com.karur.access_management_application.security.repository.AccessorRepository;
+import com.karur.access_management_application.security.repository.AccessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -21,13 +21,13 @@ import java.util.Map;
 public class EntityToReadMapper {
 
     @Autowired
-    AccessorRepository accessorRepository;
+    AccessRepository accessRepository;
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
     public Mono<AccessDetail> buildAccessDetail(String username) {
-        return accessorRepository.findAccessorEntityByUsername(username)
+        return accessRepository.findAccessorEntityByUsername(username)
                 .map(this::buildAccessDetail);
     }
 
