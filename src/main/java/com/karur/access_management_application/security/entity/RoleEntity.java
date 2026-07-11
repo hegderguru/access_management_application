@@ -19,7 +19,6 @@ public class RoleEntity {
 
     private String name;
     private String description;
-    private Long authorityId;
 
     @Transient
     private List<PermissionEntity> accessPermissionEntities = new ArrayList<>();

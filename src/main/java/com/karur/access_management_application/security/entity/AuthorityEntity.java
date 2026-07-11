@@ -21,7 +21,6 @@ public class AuthorityEntity implements GrantedAuthority {
 
     private String name;
     private String description;
-    private Long accessorId;
 
     @Transient
     private List<RoleEntity> accessRoleEntities = new ArrayList<>();

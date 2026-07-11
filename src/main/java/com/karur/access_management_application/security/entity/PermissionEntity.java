@@ -22,5 +22,4 @@ public class PermissionEntity {
     private boolean update;
     private boolean delete;
 
-    private Long roleId;
 }
