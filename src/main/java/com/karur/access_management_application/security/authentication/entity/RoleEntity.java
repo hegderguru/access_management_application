@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.authentication.model;
+package com.karur.access_management_application.security.authentication.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

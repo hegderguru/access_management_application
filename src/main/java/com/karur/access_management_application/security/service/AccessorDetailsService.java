@@ -1,7 +1,7 @@
 package com.karur.access_management_application.security.service;
 
-import com.karur.access_management_application.security.authentication.model.AuthorityEntity;
-import com.karur.access_management_application.security.authentication.model.AccessEntity;
+import com.karur.access_management_application.security.authentication.entity.AuthorityEntity;
+import com.karur.access_management_application.security.authentication.entity.AccessEntity;
 import com.karur.access_management_application.security.mapper.requestToEntity.RequestToEntityMapper;
 import com.karur.access_management_application.security.model.request.AccessorRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;

@@ -1,10 +1,10 @@
 package com.karur.access_management_application.security.mapper.requestToEntity;
 
 import com.karur.access_management_application.security.authentication.provider.JwtTokenProvider;
-import com.karur.access_management_application.security.authentication.model.AuthorityEntity;
-import com.karur.access_management_application.security.authentication.model.PermissionEntity;
-import com.karur.access_management_application.security.authentication.model.RoleEntity;
-import com.karur.access_management_application.security.authentication.model.AccessEntity;
+import com.karur.access_management_application.security.authentication.entity.AuthorityEntity;
+import com.karur.access_management_application.security.authentication.entity.PermissionEntity;
+import com.karur.access_management_application.security.authentication.entity.RoleEntity;
+import com.karur.access_management_application.security.authentication.entity.AccessEntity;
 import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.read.AuthorityDetail;
 import com.karur.access_management_application.security.model.read.PermissionDetail;

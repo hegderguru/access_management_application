@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.authentication.model;
+package com.karur.access_management_application.security.authentication.entity;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.authentication.provider;
 
-import com.karur.access_management_application.security.authentication.model.AuthorityEntity;
+import com.karur.access_management_application.security.authentication.entity.AuthorityEntity;
 import com.karur.access_management_application.security.authentication.token.JwtAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

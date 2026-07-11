@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.authentication.token;
 
-import com.karur.access_management_application.security.authentication.model.AuthorityEntity;
+import com.karur.access_management_application.security.authentication.entity.AuthorityEntity;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

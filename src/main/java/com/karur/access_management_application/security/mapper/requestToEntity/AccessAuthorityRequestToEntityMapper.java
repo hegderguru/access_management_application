@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.mapper.requestToEntity;
 
-import com.karur.access_management_application.security.authentication.model.AuthorityEntity;
+import com.karur.access_management_application.security.authentication.entity.AuthorityEntity;
 import com.karur.access_management_application.security.model.request.AccessorRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import org.springframework.stereotype.Service;
