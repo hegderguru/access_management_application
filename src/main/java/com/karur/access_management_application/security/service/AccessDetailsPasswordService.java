@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.service;
 
-import com.karur.access_management_application.security.authentication.entity.AccessEntity;
+import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.repository.AccessorEntityRepository;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;

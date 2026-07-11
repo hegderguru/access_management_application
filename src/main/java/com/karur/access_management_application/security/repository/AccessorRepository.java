@@ -1,7 +1,7 @@
 package com.karur.access_management_application.security.repository;
 
-import com.karur.access_management_application.security.authentication.entity.AuthorityEntity;
-import com.karur.access_management_application.security.authentication.entity.AccessEntity;
+import com.karur.access_management_application.security.entity.AuthorityEntity;
+import com.karur.access_management_application.security.entity.AccessEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
