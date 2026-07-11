@@ -14,7 +14,7 @@ import java.util.List;
 
 @Builder
 @Data
-@Table(value = "access",schema = "creds")
+@Table(value = "access",schema = "auth")
 public class AccessEntity implements UserDetails {
 
     @Id

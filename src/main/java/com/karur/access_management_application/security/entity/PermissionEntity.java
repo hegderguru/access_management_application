@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @Builder
-@Table(name = "access_authority_role_permission",schema = "creds")
+@Table(name = "access_authority_role_permission",schema = "auth")
 public class PermissionEntity {
 
     @Id

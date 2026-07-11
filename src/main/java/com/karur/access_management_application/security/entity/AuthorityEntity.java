@@ -13,7 +13,7 @@ import java.util.List;
 
 @Builder
 @Data
-@Table(value = "access_authority",schema = "creds")
+@Table(value = "access_authority",schema = "auth")
 public class AuthorityEntity implements GrantedAuthority {
 
     @Id

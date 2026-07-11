@@ -34,7 +34,7 @@ public class WebFluxSecurityConfig {
                             .cache(ServerHttpSecurity.HeaderSpec.CacheSpec::disable);
                 })
                 .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.pathMatchers("/token").permitAll()
-                        .anyExchange().hasAnyAuthority("creds"))
+                        .anyExchange().hasAnyAuthority("auth"))
                 .addFilterAt(credentialAuthenticationWebFilter, SecurityWebFiltersOrder.HTTP_BASIC)
                 .addFilterAt(jwtAuthenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();

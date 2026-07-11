@@ -1,13 +1,17 @@
 -- Create the schema if it does not exist
-CREATE SCHEMA IF NOT EXISTS creds;
+CREATE SCHEMA IF NOT EXISTS auth;
 
 ------------------------------------------------------------
 -- 1. SEQUENCES
 ------------------------------------------------------------
-CREATE SEQUENCE creds.seq_accessor START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE creds.seq_accessor_authority START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE creds.seq_accessor_authority_role START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE creds.seq_accessor_authority_role_permission START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_access START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_authority START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seqrole START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_permission START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_access_authority_id START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_authority_role_id START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_role_permission_id START WITH 1 INCREMENT BY 1;
+
 
 ------------------------------------------------------------
 -- 2. TABLES
