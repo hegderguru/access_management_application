@@ -1,10 +1,10 @@
 package com.karur.access_management_application.security.mapper.requestToEntity;
 
-import com.karur.access_management_application.security.authentication.jwt.JwtTokenProvider;
-import com.karur.access_management_application.security.authentication.model.AccessGrantedAuthorityEntity;
-import com.karur.access_management_application.security.authentication.model.AccessPermissionEntity;
-import com.karur.access_management_application.security.authentication.model.AccessRoleEntity;
-import com.karur.access_management_application.security.authentication.model.AccessorEntity;
+import com.karur.access_management_application.security.authentication.provider.JwtTokenProvider;
+import com.karur.access_management_application.security.authentication.model.AuthorityEntity;
+import com.karur.access_management_application.security.authentication.model.PermissionEntity;
+import com.karur.access_management_application.security.authentication.model.RoleEntity;
+import com.karur.access_management_application.security.authentication.model.AccessEntity;
 import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.read.AuthorityDetail;
 import com.karur.access_management_application.security.model.read.PermissionDetail;
@@ -31,58 +31,58 @@ public class EntityToReadMapper {
                 .map(this::buildAccessDetail);
     }
 
-    public AccessDetail buildAccessDetail(AccessorEntity accessorEntity) {
+    public AccessDetail buildAccessDetail(AccessEntity accessEntity) {
         return AccessDetail.builder()
-                .username(accessorEntity.getUsername())
-                .password(accessorEntity.getPassword())
-                .firstName(accessorEntity.getFirstName())
-                .middleName(accessorEntity.getMiddleName())
-                .lastName(accessorEntity.getLastName())
-                .accessEnabled(accessorEntity.isAccessEnabled())
-                .accessLocked(accessorEntity.isAccessLocked())
-                .accessExpired(accessorEntity.isAccessExpired())
-                .credentialsExpired(accessorEntity.isCredentialsExpired())
-                .authorityDetails(buildAuthorityDetails(accessorEntity.accessGrantedAuthorities()))
+                .username(accessEntity.getUsername())
+                .password(accessEntity.getPassword())
+                .firstName(accessEntity.getFirstName())
+                .middleName(accessEntity.getMiddleName())
+                .lastName(accessEntity.getLastName())
+                .accessEnabled(accessEntity.isAccessEnabled())
+                .accessLocked(accessEntity.isAccessLocked())
+                .accessExpired(accessEntity.isAccessExpired())
+                .credentialsExpired(accessEntity.isCredentialsExpired())
+                .authorityDetails(buildAuthorityDetails(accessEntity.accessGrantedAuthorities()))
                 .build();
     }
 
-    public List<AuthorityDetail> buildAuthorityDetails(List<AccessGrantedAuthorityEntity> accessGrantedAuthorityEntities) {
+    public List<AuthorityDetail> buildAuthorityDetails(List<AuthorityEntity> accessGrantedAuthorityEntities) {
         return accessGrantedAuthorityEntities.stream().map(this::buildAuthorityDetail).toList();
     }
 
-    public AuthorityDetail buildAuthorityDetail(AccessGrantedAuthorityEntity accessGrantedAuthorityEntity) {
+    public AuthorityDetail buildAuthorityDetail(AuthorityEntity authorityEntity) {
         return AuthorityDetail.builder()
-                .name(accessGrantedAuthorityEntity.getName())
-                .description(accessGrantedAuthorityEntity.getDescription())
-                .roleDetails(buildRoleDetails(accessGrantedAuthorityEntity.getAccessRoleEntities()))
+                .name(authorityEntity.getName())
+                .description(authorityEntity.getDescription())
+                .roleDetails(buildRoleDetails(authorityEntity.getAccessRoleEntities()))
                 .build();
     }
 
-    private List<RoleDetail> buildRoleDetails(List<AccessRoleEntity> accessRoleEntities) {
+    private List<RoleDetail> buildRoleDetails(List<RoleEntity> accessRoleEntities) {
         return accessRoleEntities.stream().map(this::buildRoleDetail).toList();
     }
 
-    private RoleDetail buildRoleDetail(AccessRoleEntity accessRoleEntity) {
+    private RoleDetail buildRoleDetail(RoleEntity roleEntity) {
         return RoleDetail.builder()
-                .name(accessRoleEntity.getName())
-                .description(accessRoleEntity.getDescription())
-                .permissionDetails(buildPermissionsDetails(accessRoleEntity.getAccessPermissionEntities()))
+                .name(roleEntity.getName())
+                .description(roleEntity.getDescription())
+                .permissionDetails(buildPermissionsDetails(roleEntity.getAccessPermissionEntities()))
                 .build();
     }
 
-    private List<PermissionDetail> buildPermissionsDetails(List<AccessPermissionEntity> accessPermissionEntities) {
+    private List<PermissionDetail> buildPermissionsDetails(List<PermissionEntity> accessPermissionEntities) {
         return accessPermissionEntities.stream().map(this::buildPermissionDetail).toList();
     }
 
-    private PermissionDetail buildPermissionDetail(AccessPermissionEntity accessPermissionEntity) {
+    private PermissionDetail buildPermissionDetail(PermissionEntity permissionEntity) {
         return PermissionDetail.builder()
-                .classPath(accessPermissionEntity.getClassPath())
-                .className(accessPermissionEntity.getClassName())
-                .fieldName(accessPermissionEntity.getFieldName())
-                .read(accessPermissionEntity.isRead())
-                .create(accessPermissionEntity.isCreate())
-                .update(accessPermissionEntity.isUpdate())
-                .delete(accessPermissionEntity.isDelete())
+                .classPath(permissionEntity.getClassPath())
+                .className(permissionEntity.getClassName())
+                .fieldName(permissionEntity.getFieldName())
+                .read(permissionEntity.isRead())
+                .create(permissionEntity.isCreate())
+                .update(permissionEntity.isUpdate())
+                .delete(permissionEntity.isDelete())
                 .build();
     }
 

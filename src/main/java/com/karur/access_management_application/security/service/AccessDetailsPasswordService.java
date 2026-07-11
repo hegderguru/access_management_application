@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.service;
 
-import com.karur.access_management_application.security.authentication.model.AccessorEntity;
+import com.karur.access_management_application.security.authentication.model.AccessEntity;
 import com.karur.access_management_application.security.repository.AccessorEntityRepository;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +17,9 @@ public class AccessDetailsPasswordService implements ReactiveUserDetailsPassword
 
     @Override
     public Mono<UserDetails> updatePassword(UserDetails userDetails, @Nullable String newPassword) {
-        AccessorEntity accessorEntity = (AccessorEntity) userDetails;
-        accessorEntity.setPassword(newPassword);
-        return accessorEntityRepository.save(accessorEntity).flatMap(accessorEntity1 -> Mono.just((UserDetails) accessorEntity1));
+        AccessEntity accessEntity = (AccessEntity) userDetails;
+        accessEntity.setPassword(newPassword);
+        return accessorEntityRepository.save(accessEntity).flatMap(accessorEntity1 -> Mono.just((UserDetails) accessorEntity1));
 
     }
 }

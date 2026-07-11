@@ -13,19 +13,18 @@ import java.util.List;
 
 @Builder
 @Data
-@Table(value = "accessor_authority",schema = "creds")
-public class AccessGrantedAuthorityEntity implements GrantedAuthority {
+@Table(value = "access_authority",schema = "creds")
+public class AuthorityEntity implements GrantedAuthority {
 
     @Id
     private Long id;
 
     private String name;
     private String description;
-
     private Long accessorId;
 
     @Transient
-    private List<AccessRoleEntity> accessRoleEntities = new ArrayList<>();
+    private List<RoleEntity> accessRoleEntities = new ArrayList<>();
 
     @Override
     public @Nullable String getAuthority() {

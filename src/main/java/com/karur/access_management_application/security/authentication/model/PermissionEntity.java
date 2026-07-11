@@ -5,8 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@Table(name = "accessor_authority_role_permission",schema = "creds")
-public class AccessPermissionEntity {
+@Table(name = "access_authority_role_permission",schema = "creds")
+public class PermissionEntity {
 
     @Id
     private Long id;

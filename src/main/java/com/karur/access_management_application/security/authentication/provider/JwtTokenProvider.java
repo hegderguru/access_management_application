@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.authentication.jwt;
+package com.karur.access_management_application.security.authentication.provider;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

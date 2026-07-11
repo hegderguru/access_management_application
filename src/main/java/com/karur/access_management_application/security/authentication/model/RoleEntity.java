@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Table(name = "accessor_authority_role", schema = "creds")
-public class AccessRoleEntity {
+@Table(name = "access_authority_role", schema = "creds")
+public class RoleEntity {
 
     @Id
     private Long id;
@@ -20,5 +20,5 @@ public class AccessRoleEntity {
     private Long authorityId;
 
     @Transient
-    private List<AccessPermissionEntity> accessPermissionEntities = new ArrayList<>();
+    private List<PermissionEntity> accessPermissionEntities = new ArrayList<>();
 }

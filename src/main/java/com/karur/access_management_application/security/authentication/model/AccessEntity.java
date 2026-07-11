@@ -14,25 +14,24 @@ import java.util.List;
 
 @Builder
 @Data
-@Table(value = "accessor",schema = "creds")
-public class AccessorEntity implements UserDetails {
+@Table(value = "access",schema = "creds")
+public class AccessEntity implements UserDetails {
 
     @Id
     private Long id;
 
     private String username;
     private String password;
+    private String firstName;
+    private String middleName;
+    private String lastName;
     private boolean accessExpired;
     private boolean accessLocked;
     private boolean accessEnabled;
     private boolean credentialsExpired;
 
-    private String firstName;
-    private String middleName;
-    private String lastName;
-
     @Transient
-    private List<AccessGrantedAuthorityEntity> accessGrantedAuthorities;
+    private List<AuthorityEntity> accessGrantedAuthorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -69,7 +68,7 @@ public class AccessorEntity implements UserDetails {
         return accessEnabled;
     }
 
-    public List<AccessGrantedAuthorityEntity> accessGrantedAuthorities(){
+    public List<AuthorityEntity> accessGrantedAuthorities(){
         return accessGrantedAuthorities;
     }
 }

@@ -1,7 +1,7 @@
 package com.karur.access_management_application.security.repository;
 
-import com.karur.access_management_application.security.authentication.model.AccessGrantedAuthorityEntity;
-import com.karur.access_management_application.security.authentication.model.AccessorEntity;
+import com.karur.access_management_application.security.authentication.model.AuthorityEntity;
+import com.karur.access_management_application.security.authentication.model.AccessEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -22,7 +22,7 @@ public class AccessorRepository {
     @Autowired
     AccessPermissionEntityRepository accessPermissionEntityRepository;
 
-    public Mono<AccessorEntity> findAccessorEntityByUsername(String username) {
+    public Mono<AccessEntity> findAccessorEntityByUsername(String username) {
         return accessorEntityRepository.findByUsername(username)
                 .flatMap(accessorEntity ->
                         accessorAuthorityEntityRepository.findByAccessorId(accessorEntity.getId())
@@ -52,16 +52,16 @@ public class AccessorRepository {
                 );
     }
 
-    public Mono<AccessorEntity> save(AccessorEntity accessorEntity) {
-        return accessorEntityRepository.save(accessorEntity)
+    public Mono<AccessEntity> save(AccessEntity accessEntity) {
+        return accessorEntityRepository.save(accessEntity)
                 .flatMap(accessorEntity1 -> {
                     accessorEntity1.accessGrantedAuthorities().forEach(accessGrantedAuthorityEntity -> accessGrantedAuthorityEntity.setAccessorId(accessorEntity1.getId()));
-                    return accessorAuthorityEntityRepository.saveAll(accessorEntity.accessGrantedAuthorities()).then(Mono.just(accessorEntity1));
+                    return accessorAuthorityEntityRepository.saveAll(accessEntity.accessGrantedAuthorities()).then(Mono.just(accessorEntity1));
                 });
     }
 
-    public Mono<AccessGrantedAuthorityEntity> save(AccessGrantedAuthorityEntity accessGrantedAuthorityEntity) {
-        return accessorAuthorityEntityRepository.save(accessGrantedAuthorityEntity)
+    public Mono<AuthorityEntity> save(AuthorityEntity authorityEntity) {
+        return accessorAuthorityEntityRepository.save(authorityEntity)
                 .flatMap(accessGrantedAuthorityEntity1 -> {
                     accessGrantedAuthorityEntity1.getAccessRoleEntities().forEach(accessRoleEntity -> accessRoleEntity.setAuthorityId(accessGrantedAuthorityEntity1.getId()));
                     return accessRoleEntityRepository.saveAll(accessGrantedAuthorityEntity1.getAccessRoleEntities()).then(Mono.just(accessGrantedAuthorityEntity1));
