@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Table(name = "accessor_authority_role",schema = "creds")
+@Table(name = "accessor_authority_role", schema = "creds")
 public class AccessRoleEntity {
 
     @Id
     private Long id;
 
     private String name;
-
+    private String description;
     private Long authorityId;
 
     @Transient

@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class AccessDetail {
     private String username;
+    private String password;
     private String firstName;
     private String middleName;
     private String lastName;

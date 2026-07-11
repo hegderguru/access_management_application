@@ -13,6 +13,7 @@ public class AccessPermissionEntity {
 
     private String roleName;
     private String classPath;
+    private String className;
     private String fieldName;
     private boolean read;
     private boolean create;
