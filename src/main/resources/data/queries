@@ -4,10 +4,10 @@ CREATE SCHEMA IF NOT EXISTS auth;
 ------------------------------------------------------------
 -- 1. SEQUENCES
 ------------------------------------------------------------
-CREATE SEQUENCE auth.seq_access START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE auth.seq_authority START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE auth.seqrole START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE auth.seq_permission START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_access_id START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_authority_id START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_role_id START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE auth.seq_permission_id START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE auth.seq_access_authority_id START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE auth.seq_authority_role_id START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE auth.seq_role_permission_id START WITH 1 INCREMENT BY 1;
@@ -18,48 +18,61 @@ CREATE SEQUENCE auth.seq_role_permission_id START WITH 1 INCREMENT BY 1;
 ------------------------------------------------------------
 
 -- Main User Entity Table
-CREATE TABLE creds.accessor (
-    id BIGINT PRIMARY KEY DEFAULT nextval('creds.seq_accessor'),
+CREATE TABLE auth.access (
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_access_id'),
     username VARCHAR(255) UNIQUE NOT NULL, -- Kept unique for authentication purposes
     password VARCHAR(255),
+    first_name VARCHAR(255),
+    middle_name VARCHAR(255),
+    last_name VARCHAR(255),
     access_expired BOOLEAN NOT NULL DEFAULT FALSE,
     access_locked BOOLEAN NOT NULL DEFAULT FALSE,
     access_enabled BOOLEAN NOT NULL DEFAULT TRUE,
-    credentials_expired BOOLEAN NOT NULL DEFAULT FALSE,
-    first_name VARCHAR(255),
-    middle_name VARCHAR(255),
-    last_name VARCHAR(255)
+    credentials_expired BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- Authorities Table (Linked via accessor_id)
-CREATE TABLE creds.accessor_authority (
-    id BIGINT PRIMARY KEY DEFAULT nextval('creds.seq_accessor_authority'),
-    accessor_id BIGINT NOT NULL REFERENCES creds.accessor(id) ON DELETE CASCADE,
+CREATE TABLE auth.authority (
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_authority_id'),
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE auth.access_authority_id (
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_access_authority_id'),
+    access_id BIGINT NOT NULL,
+    authority_id BIGINT NOT NULL
 );
 
 -- Roles Table (Linked via authority_id)
-CREATE TABLE creds.accessor_authority_role (
-    id BIGINT PRIMARY KEY DEFAULT nextval('creds.seq_accessor_authority_role'),
-    authority_id BIGINT NOT NULL REFERENCES creds.accessor_authority(id) ON DELETE CASCADE,
+CREATE TABLE auth.role (
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_role_id'),
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE auth.authority_role_id (
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.authority_role_id'),
+    authority_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL
+);
+
 -- Permissions Table (Linked via role_id)
-CREATE TABLE creds.accessor_authority_role_permission (
-    id BIGINT PRIMARY KEY DEFAULT nextval('creds.seq_accessor_authority_role_permission'),
-    role_id BIGINT NOT NULL REFERENCES creds.accessor_authority_role(id) ON DELETE CASCADE,
-    role_name VARCHAR(255),
+CREATE TABLE auth.permission (
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_permission_id'),
     class_path VARCHAR(255) NOT NULL,
-    field_name VARCHAR(255),
+	class_name VARCHAR(255) NOT NULL,
+    field_name VARCHAR(255) NOT NULL,
     read BOOLEAN NOT NULL DEFAULT FALSE,
     "create" BOOLEAN NOT NULL DEFAULT FALSE, -- Escaped reserved keyword
     "update" BOOLEAN NOT NULL DEFAULT FALSE, -- Escaped reserved keyword
     "delete" BOOLEAN NOT NULL DEFAULT FALSE  -- Escaped reserved keyword
 );
-
+CREATE TABLE auth.role_permission_id (
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.role_permission_id'),
+    role_id BIGINT NOT NULL,
+    permission_id BIGINT NOT NULL
+);
 
 
 insert into creds.accessor values(1,'creds','creds',false,false,true,false,'Guru','Raghavendra','Hegde');

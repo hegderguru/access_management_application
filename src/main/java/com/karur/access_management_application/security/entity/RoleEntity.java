@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @Builder
-@Table(name = "access_authority_role", schema = "auth")
+@Table(name = "role", schema = "auth")
 public class RoleEntity {
 
     @Id
