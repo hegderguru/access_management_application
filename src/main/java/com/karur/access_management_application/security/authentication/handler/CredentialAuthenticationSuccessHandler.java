@@ -1,8 +1,7 @@
 package com.karur.access_management_application.security.authentication.handler;
 
-import com.karur.access_management_application.security.authentication.jwt.JwtTokenProvider;
-import com.karur.access_management_application.security.repository.AccessorEntityRepository;
-import com.karur.access_management_application.security.repository.AccessorRepository;
+import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
+import com.karur.access_management_application.security.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,7 +12,6 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,30 +20,25 @@ import java.util.Map;
 public class CredentialAuthenticationSuccessHandler implements ServerAuthenticationSuccessHandler {
 
     @Autowired
-    private AccessorRepository accessorRepository;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private EntityToReadMapper entityToReadMapper;
 
     @Override
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
         ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
 
-        return accessorRepository.findAccessorEntityByUsername(authentication.getName())
-                .map(accessorEntity -> {
+        return entityToReadMapper.buildAccessDetail(authentication.getName())
+                .map(accessDetail -> {
                     Map<String, Object> claims = new HashMap<>();
-                    claims.put("username", accessorEntity.getUsername());
-                    claims.put("firstName", accessorEntity.getFirstName());
-                    claims.put("middleName", accessorEntity.getMiddleName());
-                    claims.put("lastName", accessorEntity.getLastName());
+                    claims.put("username", accessDetail.getUsername());
+                    claims.put("firstName", accessDetail.getFirstName());
+                    claims.put("middleName", accessDetail.getMiddleName());
+                    claims.put("lastName", accessDetail.getLastName());
 
-                    String authorities = String.join(":", accessorEntity.getAuthorities().stream()
+                    String authorities = String.join(":", authentication.getAuthorities().stream()
                             .map(GrantedAuthority::getAuthority).toList());
                     claims.put("authorities", authorities);
 
-                    return jwtTokenProvider.generateToken(accessorEntity.getUsername(), claims);
+                    return entityToReadMapper.generateJwtToken(accessDetail.getUsername(), claims);
                 })
                 .flatMap(token -> {
                     response.setStatusCode(HttpStatus.OK);
@@ -55,7 +48,7 @@ public class CredentialAuthenticationSuccessHandler implements ServerAuthenticat
                     Map<String, String> responseBody = Map.of("token", token);
 
                     // Safely wrap the checked exception thrown by ObjectMapper inside a Mono
-                    return Mono.fromCallable(() -> objectMapper.writeValueAsBytes(responseBody))
+                    return Mono.fromCallable(() -> CommonUtil.writeValueAsBytes(responseBody))
                             .flatMap(bytes -> response.writeWith(Mono.just(response.bufferFactory().wrap(bytes))));
                 })
                 .switchIfEmpty(Mono.defer(() -> {

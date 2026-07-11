@@ -23,7 +23,6 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
         String bearerToken = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-
         if (Objects.nonNull(bearerToken)) {
             String token = jwtTokenProvider.extractToken(bearerToken);
             List<AccessGrantedAuthorityEntity> grantedAuthorityEntities = jwtTokenProvider.getAuthorities(token).stream().map(authority -> AccessGrantedAuthorityEntity.builder().name(authority).build()).toList();

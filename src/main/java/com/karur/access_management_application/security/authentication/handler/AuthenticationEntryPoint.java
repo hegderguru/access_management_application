@@ -9,6 +9,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.ObjectMapper;
 
+//Generica auth failure
 @Service
 public class AuthenticationEntryPoint implements ServerAuthenticationEntryPoint {
     @Override

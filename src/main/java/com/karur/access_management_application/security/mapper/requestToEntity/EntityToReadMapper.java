@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.mapper.requestToEntity;
 
+import com.karur.access_management_application.security.authentication.jwt.JwtTokenProvider;
 import com.karur.access_management_application.security.authentication.model.AccessGrantedAuthorityEntity;
 import com.karur.access_management_application.security.authentication.model.AccessPermissionEntity;
 import com.karur.access_management_application.security.authentication.model.AccessRoleEntity;
@@ -8,12 +9,27 @@ import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.read.AuthorityDetail;
 import com.karur.access_management_application.security.model.read.PermissionDetail;
 import com.karur.access_management_application.security.model.read.RoleDetail;
+import com.karur.access_management_application.security.repository.AccessorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EntityToReadMapper {
+
+    @Autowired
+    AccessorRepository accessorRepository;
+
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
+
+    public Mono<AccessDetail> buildAccessDetail(String username) {
+        return accessorRepository.findAccessorEntityByUsername(username)
+                .map(this::buildAccessDetail);
+    }
 
     public AccessDetail buildAccessDetail(AccessorEntity accessorEntity) {
         return AccessDetail.builder()
@@ -68,5 +84,9 @@ public class EntityToReadMapper {
                 .update(accessPermissionEntity.isUpdate())
                 .delete(accessPermissionEntity.isDelete())
                 .build();
+    }
+
+    public String generateJwtToken(String subject, Map<String, Object> claims){
+        return jwtTokenProvider.generateToken(subject,claims);
     }
 }
