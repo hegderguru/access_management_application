@@ -1,10 +1,12 @@
 package com.karur.access_management_application.security.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
+@Builder
 @Table(name = "access_authority_role_permission",schema = "creds")
 public class PermissionEntity {
 

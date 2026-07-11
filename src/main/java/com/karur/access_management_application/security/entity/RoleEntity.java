@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Builder
 @Table(name = "access_authority_role", schema = "creds")
 public class RoleEntity {
 

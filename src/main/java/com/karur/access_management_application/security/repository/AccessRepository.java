@@ -2,6 +2,8 @@ package com.karur.access_management_application.security.repository;
 
 import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.AccessEntity;
+import com.karur.access_management_application.security.entity.PermissionEntity;
+import com.karur.access_management_application.security.entity.RoleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -66,5 +68,17 @@ public class AccessRepository {
                     accessGrantedAuthorityEntity1.getAccessRoleEntities().forEach(accessRoleEntity -> accessRoleEntity.setAuthorityId(accessGrantedAuthorityEntity1.getId()));
                     return roleEntityRepository.saveAll(accessGrantedAuthorityEntity1.getAccessRoleEntities()).then(Mono.just(accessGrantedAuthorityEntity1));
                 });
+    }
+
+    public Mono<RoleEntity> save(RoleEntity roleEntity) {
+        return roleEntityRepository.save(roleEntity)
+                .flatMap(roleEntity1 -> {
+                    roleEntity1.getAccessPermissionEntities().forEach(permissionEntity -> permissionEntity.setRoleId(roleEntity1.getId()));
+                    return permissionEntityRepository.saveAll(roleEntity1.getAccessPermissionEntities()).then(Mono.just(roleEntity1));
+                });
+    }
+
+    public Mono<PermissionEntity> save(PermissionEntity permissionEntity) {
+        return permissionEntityRepository.save(permissionEntity);
     }
 }
