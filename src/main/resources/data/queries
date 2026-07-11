@@ -31,14 +31,16 @@ CREATE TABLE creds.accessor (
 CREATE TABLE creds.accessor_authority (
     id BIGINT PRIMARY KEY DEFAULT nextval('creds.seq_accessor_authority'),
     accessor_id BIGINT NOT NULL REFERENCES creds.accessor(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL
 );
 
 -- Roles Table (Linked via authority_id)
 CREATE TABLE creds.accessor_authority_role (
     id BIGINT PRIMARY KEY DEFAULT nextval('creds.seq_accessor_authority_role'),
     authority_id BIGINT NOT NULL REFERENCES creds.accessor_authority(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL
 );
 
 -- Permissions Table (Linked via role_id)
