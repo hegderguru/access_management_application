@@ -7,13 +7,11 @@ import com.karur.access_management_application.security.model.request.Permission
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.model.response.AccessResponse;
 import com.karur.access_management_application.security.service.AccessDetailsService;
+import com.karur.access_management_application.security.service.AccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -25,6 +23,9 @@ public class AccessController {
 
     @Autowired
     EntityToReadMapper entityToReadMapper;
+
+    @Autowired
+    AccessService accessService;
 
     @PostMapping("/welcome")
     public Mono<ResponseEntity<String>> welcome() {
@@ -64,6 +65,18 @@ public class AccessController {
     @PostMapping("authorityDetails")
     public Mono<ResponseEntity<AccessResponse>> fetchAuthorityDetails(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono.flatMap(accessorRequest -> accessDetailsService.fetchAuthorityDetails(accessorRequest.getUsername()))
+                .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
+    }
+
+    @PutMapping("updateAccessDetail")
+    public Mono<ResponseEntity<AccessResponse>> updateAccessDetail(@RequestBody Mono<AccessRequest> accessRequestMono) {
+        return accessRequestMono.flatMap(accessorRequest -> accessService.saveOrUpdate(accessorRequest))
+                .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
+    }
+
+    @PutMapping("updateAuthorityDetails")
+    public Mono<ResponseEntity<AccessResponse>> updateAccessDetail(@RequestBody Mono<AccessRequest> accessRequestMono) {
+        return accessRequestMono.flatMap(accessorRequest -> accessService.saveOrUpdateAuthoritiesOnChanges(accessorRequest))
                 .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
     }
 

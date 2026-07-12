@@ -16,6 +16,7 @@ import com.karur.access_management_application.security.model.request.Permission
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.AccessDetailsUpdateUtil;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -41,21 +42,25 @@ public class AccessService {
     public Mono<AccessDetail> saveOrUpdate(AccessRequest accessRequest) {
         return accessRepository.fetchAccessEntity(accessRequest.getUsername())
                 .flatMap(accessEntity -> {
-                    List<CompareUtil.Change> changeList = AccessDetailsUpdateUtil.accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
-                    return saveOrUpdateAuthorities(accessEntity, changeList)
-                            .thenMany(Flux.defer(() -> Flux.fromIterable(accessEntity.getAuthorityEntities())))
-                            .flatMap(authorityEntity -> updateRoleEntities(authorityEntity, changeList)
-                                    .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
-                                    .flatMap(roleEntity -> saveOrUpdatePermissions(roleEntity, changeList))
-                            ).then(Mono.just(accessEntity));
+                    List<CompareUtil.Change> changes = AccessDetailsUpdateUtil.accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
+                    return saveOrUpdateAuthorities(accessEntity, changes);
                 }).map(entityToReadMapper::buildAccessDetail);
     }
 
-    public Mono<Void> saveOrUpdatePermissions(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        return newPermissionEntities(roleEntity, changes).flatMap(unused -> updatePermissionEntities(roleEntity, changes));
+    private @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changeList) {
+        return saveOrUpdateAuthoritiesOnChanges(accessEntity, changeList)
+                .thenMany(Flux.defer(() -> Flux.fromIterable(accessEntity.getAuthorityEntities())))
+                .flatMap(authorityEntity -> saveOrUpdateRolesOnChanges(authorityEntity, changeList)
+                        .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
+                        .flatMap(roleEntity -> saveOrUpdatePermissionsOnChanges(roleEntity, changeList))
+                ).then(Mono.just(accessEntity));
     }
 
-    private Mono<Void> updatePermissionEntities(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+    public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+        return newPermissionEntitiesOnChanges(roleEntity, changes).flatMap(unused -> updatePermissionEntitiesOnChanges(roleEntity, changes));
+    }
+
+    private Mono<Void> updatePermissionEntitiesOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes))
                 .flatMap(change -> {
                     PermissionRequest permissionRequest = (PermissionRequest) change.getRight();
@@ -70,7 +75,7 @@ public class AccessService {
                 }).then();
     }
 
-    private Mono<Void> newPermissionEntities(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+    private Mono<Void> newPermissionEntitiesOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getNewPermissionRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildPermissionEntity((PermissionRequest) change.getRightValue())))
                 .flatMap(permissionEntity -> {
@@ -79,11 +84,11 @@ public class AccessService {
                 }).then();
     }
 
-    public Mono<Void> saveOrUpdateRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return newRoleEntities(authorityEntity, changes).flatMap(unused -> updateRoleEntities(authorityEntity, changes));
+    public Mono<Void> saveOrUpdateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return newRoleEntitiesOnChanges(authorityEntity, changes).flatMap(unused -> updateRoleEntitiesOnChanges(authorityEntity, changes));
     }
 
-    private Mono<Void> updateRoleEntities(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+    private Mono<Void> updateRoleEntitiesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateRoleRequest(changes))
                 .flatMap(change -> {
                     RoleRequest roleRequest = (RoleRequest) change.getRight();
@@ -95,7 +100,7 @@ public class AccessService {
                 }).then();
     }
 
-    private Mono<Void> newRoleEntities(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+    private Mono<Void> newRoleEntitiesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getNewRoleRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildRoleEntity((RoleRequest) change.getRightValue())))
                 .flatMap(roleEntity -> {
@@ -104,11 +109,11 @@ public class AccessService {
                 }).then();
     }
 
-    public Mono<Void> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return newAuthorities(accessEntity, changes).flatMap(unused -> updateAuthorities(accessEntity, changes));
+    public Mono<Void> saveOrUpdateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+        return newAuthoritiesOnChanges(accessEntity, changes).flatMap(unused -> updateAuthoritiesOnChanges(accessEntity, changes));
     }
 
-    private Mono<Void> newAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+    private Mono<Void> newAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getNewAuthorityRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildAuthorityEntity((AuthorityRequest) change.getRightValue())))
                 .flatMap(authorityEntity -> {
@@ -117,7 +122,7 @@ public class AccessService {
                 }).then();
     }
 
-    private Mono<Void> updateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+    private Mono<Void> updateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAuthorityRequest(changes))
                 .flatMap(change -> {
                     AuthorityRequest authorityRequest = (AuthorityRequest) change.getRight();
