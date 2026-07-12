@@ -14,6 +14,8 @@ import com.karur.access_management_application.security.model.request.RoleReques
 import com.karur.access_management_application.security.repository.AccessRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,14 @@ public class AccessDetailsService implements ReactiveUserDetailsService {
 
     public Mono<AccessDetail> fetchOnlyAccessDetails(String username) {
         return accessRepository.fetchOnlyAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
+    }
+
+    public Mono<AccessDetail> fetchAuthorityDetails(String username) {
+        return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
+                .map(authentication -> authentication.getPrincipal().toString())
+                .filter(username::equalsIgnoreCase)
+                .flatMap(un -> entityToReadMapper.buildAccessDetail(un)
+                        .map(accessDetail -> AccessDetail.builder().username(un).authorityDetails(accessDetail.getAuthorityDetails()).build()));
     }
 
     public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {

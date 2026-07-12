@@ -1,7 +1,6 @@
 package com.karur.access_management_application.security.controller;
 
 import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
-import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
@@ -59,6 +58,12 @@ public class AccessController {
     @PostMapping("accessDetail")
     public Mono<ResponseEntity<AccessResponse>> fetchAccessDetail(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono.flatMap(accessorRequest -> accessDetailsService.fetchOnlyAccessDetails(accessorRequest.getUsername()))
+                .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
+    }
+
+    @PostMapping("authorityDetails")
+    public Mono<ResponseEntity<AccessResponse>> fetchAuthorityDetails(@RequestBody Mono<AccessRequest> accessRequestMono) {
+        return accessRequestMono.flatMap(accessorRequest -> accessDetailsService.fetchAuthorityDetails(accessorRequest.getUsername()))
                 .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
     }
 
