@@ -37,11 +37,7 @@ public class AccessDetailsUpdateUtil {
         return getNewChanges(changes).stream().filter(change -> change.getRightValue().getClass().equals(PermissionRequest.class)).toList();
     }
 
-    public static List<CompareUtil.Change> getUpdateAuthorityRequest(List<CompareUtil.Change> changes) {
-        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AuthorityRequest.class)).toList();
-    }
-
-    public static Map<String, List<CompareUtil.Change>> getUpdateAuthorityRequest1(List<CompareUtil.Change> changes) {
+    public static Map<String, List<CompareUtil.Change>> getUpdateAuthorityRequest(List<CompareUtil.Change> changes) {
         return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AuthorityRequest.class))
                 .collect(Collectors.groupingBy(change -> ((AuthorityRequest) change.getRight()).getName()));
     }

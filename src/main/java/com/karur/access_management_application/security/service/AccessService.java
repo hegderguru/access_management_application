@@ -150,7 +150,7 @@ public class AccessService {
     }
 
     private Mono<Void> updateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        Map<String, List<CompareUtil.Change>> updateAuthorityRequest1 = AccessDetailsUpdateUtil.getUpdateAuthorityRequest1(changes);
+        Map<String, List<CompareUtil.Change>> updateAuthorityRequest1 = AccessDetailsUpdateUtil.getUpdateAuthorityRequest(changes);
         return Flux.fromIterable(updateAuthorityRequest1.entrySet())
                 .flatMap(stringListEntry -> {
                     AuthorityEntity authorityEntity = accessEntity.getAuthorityEntities().stream().filter(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();
