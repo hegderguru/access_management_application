@@ -46,7 +46,7 @@ public class AccessorController {
     }
 
     @PostMapping("createPermission")
-    public Mono<ResponseEntity<AccessResponse>> createRole(@RequestBody Mono<PermissionRequest> permissionRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createPermission(@RequestBody Mono<PermissionRequest> permissionRequestMono) {
         return permissionRequestMono.flatMap(permissionRequest -> accessorDetailsService.createPermission(permissionRequest))
                 .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
