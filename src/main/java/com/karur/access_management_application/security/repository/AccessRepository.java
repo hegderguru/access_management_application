@@ -38,10 +38,6 @@ public class AccessRepository {
     @Autowired
     AccessRequestToEntityMapper accessRequestToEntityMapper;
 
-    public Mono<AccessEntity> findAccessorEntityByUsername(String username) {
-        return accessEntityRepository.findByUsername(username);
-    }
-
     public Mono<AccessEntity> fetchOnlyAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
                 .flatMap(accessEntity -> fetchAllAccessAuthorityEntities(accessEntity)
@@ -54,6 +50,10 @@ public class AccessRepository {
 
     public Flux<AuthorityEntity> fetchOnlyAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities) {
         return authorityEntityRepository.findByIdIn(accessAuthorityEntities.stream().map(AccessAuthorityEntity::authorityId).toList());
+    }
+
+    public Mono<AccessEntity> findAccessorEntityByUsername(String username) {
+        return accessEntityRepository.findByUsername(username);
     }
 
     public Mono<AccessEntity> fetchAccessEntity(String username) {
