@@ -21,5 +21,5 @@ public class RoleEntity {
     private String description;
 
     @Transient
-    private List<PermissionEntity> accessPermissionEntities = new ArrayList<>();
+    private List<PermissionEntity> permissionEntities = new ArrayList<>();
 }

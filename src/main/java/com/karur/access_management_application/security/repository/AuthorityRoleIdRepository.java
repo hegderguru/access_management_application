@@ -8,4 +8,5 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface AuthorityRoleIdRepository extends ReactiveCrudRepository<AuthorityRoleEntity, Long> {
     Flux<AuthorityRoleEntity> findByAuthorityId(Long authorityId);
+    Flux<AuthorityRoleEntity> findByAuthorityIdAndRoleId(Long authorityId,Long roleId);
 }

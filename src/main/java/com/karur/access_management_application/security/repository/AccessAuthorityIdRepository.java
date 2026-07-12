@@ -9,4 +9,5 @@ import reactor.core.publisher.Flux;
 public interface AccessAuthorityIdRepository extends ReactiveCrudRepository<AccessAuthorityEntity,Long> {
 
     Flux<AccessAuthorityEntity> findByAccessId(Long accessId);
+    Flux<AccessAuthorityEntity> findByAccessIdAndAuthorityId(Long accessId,Long authorityId);
 }

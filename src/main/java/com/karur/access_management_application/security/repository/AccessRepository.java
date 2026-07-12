@@ -1,6 +1,8 @@
 package com.karur.access_management_application.security.repository;
 
 import com.karur.access_management_application.security.entity.*;
+import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -8,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Data
 @Repository
 public class AccessRepository {
 
@@ -32,112 +35,115 @@ public class AccessRepository {
     @Autowired
     AccessAuthorityIdRepository accessAuthorityIdRepository;
 
+    @Autowired
+    AccessRequestToEntityMapper accessRequestToEntityMapper;
+
     public Mono<AccessEntity> findAccessorEntityByUsername(String username) {
+        return accessEntityRepository.findByUsername(username);
+    }
+
+    public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
-                .flatMap(accessorEntity ->
-                        authorityEntityRepository.findByAccessorId(accessorEntity.getId())
+                .flatMap(accessEntity -> fetchAllAccessAuthorityEntities(accessEntity)
+                        .collectList()
+                        .flatMap(accessAuthorityEntities -> fetchAllAuthorityEntities(accessAuthorityEntities)
                                 .collectList()
-                                .flatMap(accessGrantedAuthorities -> {
-                                    accessorEntity.setAccessGrantedAuthorities(accessGrantedAuthorities);
-                                    // Map over each authority to fetch its roles reactively
-                                    return Flux.fromIterable(accessGrantedAuthorities)
-                                            .flatMap(accessGrantedAuthority ->
-                                                    roleEntityRepository.findByAuthorityId(accessGrantedAuthority.getId())
-                                                            .collectList()
-                                                            .flatMap(accessRoleEntities -> {
-                                                                accessGrantedAuthority.setAccessRoleEntities(accessRoleEntities); // Note: renamed setter to match standard naming convention
-                                                                // Map over each role to fetch its permissions reactively
-                                                                return Flux.fromIterable(accessRoleEntities)
-                                                                        .flatMap(accessRoleEntity ->
-                                                                                permissionEntityRepository.findByRoleId(accessRoleEntity.getId())
-                                                                                        .collectList()
-                                                                                        .doOnNext(accessRoleEntity::setAccessPermissionEntities
-                                                                                        )
-                                                                        )
-                                                                        .then(Mono.just(accessGrantedAuthority)); // Return authority after inner processing finishes
-                                                            })
-                                            )
-                                            .then(Mono.just(accessorEntity)); // Return the complete root entity after everything is assembled
-                                })
-                );
+                                .doOnNext(accessEntity::setAuthorityEntities)
+                                .then(Mono.just(accessEntity))));
     }
 
-    public Flux<AccessAuthorityEntity> findAllAccessAuthorityEntities(AccessEntity accessEntity){
-        return accessAuthorityIdRepository.findByAccessId(accessEntity.getId());
+    public Flux<AuthorityEntity> fetchAuthorityEntities(List<Long> ids) {
+        return Flux.fromIterable(ids).flatMap(this::fetchAuthorityEntity);
     }
 
-    public Flux<AuthorityRoleEntity> findAllAuthorityRoleEntities(AuthorityEntity authorityEntity){
-        return authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId());
-    }
-
-    public Flux<RolePermissionEntity> findAllRolePermissionEntities(RoleEntity roleEntity){
-        return rolePermissionIdRepository.findByRoleId(roleEntity.getId());
-    }
-
-    public Flux<AuthorityEntity> fetchAllAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities){
+    public Flux<AuthorityEntity> fetchAllAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities) {
         List<Long> ids = accessAuthorityEntities.stream().map(AccessAuthorityEntity::authorityId).toList();
         return fetchAuthorityEntities(ids);
     }
 
-    public Flux<AuthorityEntity> fetchAuthorityEntities(List<Long> ids){
-        return authorityEntityRepository.findByIdIn(ids);
+    public Flux<AccessAuthorityEntity> fetchAllAccessAuthorityEntities(AccessEntity accessEntity) {
+        return accessAuthorityIdRepository.findByAccessId(accessEntity.getId());
     }
 
-    public Mono<AuthorityEntity> fetchAuthorityEntity(Long id){
-        return authorityEntityRepository.findById(id);
+    public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
+        return authorityEntityRepository.findById(id)
+                .flatMap(authorityEntity -> fetchAllAuthorityRoleEntities(authorityEntity)
+                        .collectList()
+                        .flatMap(authorityRoleEntities -> fetchAllRoleEntities(authorityRoleEntities)
+                                .collectList()
+                                .doOnNext(authorityEntity::setRoleEntities)
+                                .then(Mono.just(authorityEntity))));
     }
 
-    public Flux<RoleEntity> fetchAllRoleEntities(List<AuthorityRoleEntity> authorityRoleEntities){
+    public Flux<AuthorityRoleEntity> fetchAllAuthorityRoleEntities(AuthorityEntity authorityEntity) {
+        return authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId());
+    }
+
+    public Flux<RoleEntity> fetchAllRoleEntities(List<AuthorityRoleEntity> authorityRoleEntities) {
         List<Long> ids = authorityRoleEntities.stream().map(AuthorityRoleEntity::roleId).toList();
         return fetchRoleEntities(ids);
     }
 
-    public Flux<RoleEntity> fetchRoleEntities(List<Long> ids){
-        return roleEntityRepository.findByIdIn(ids);
+    public Flux<RoleEntity> fetchRoleEntities(List<Long> ids) {
+        return Flux.fromIterable(ids).flatMap(this::fetchRoleEntity);
     }
 
-    public Mono<RoleEntity> fetchRoleEntity(Long id){
-        return roleEntityRepository.findById(id);
+    public Mono<RoleEntity> fetchRoleEntity(Long id) {
+        return roleEntityRepository.findById(id)
+                .flatMap(roleEntity -> fetchAllRolePermissionEntities(roleEntity)
+                        .collectList()
+                        .flatMap(rolePermissionEntities -> fetchAllPermissionEntities(rolePermissionEntities)
+                                .collectList()
+                                .doOnNext(roleEntity::setPermissionEntities)
+                                .then(Mono.just(roleEntity)))
+                );
     }
 
-    public Flux<PermissionEntity> fetchAllPermissionEntities(List<RolePermissionEntity> rolePermissionEntities){
+    public Flux<RolePermissionEntity> fetchAllRolePermissionEntities(RoleEntity roleEntity) {
+        return rolePermissionIdRepository.findByRoleId(roleEntity.getId());
+    }
+
+    public Flux<PermissionEntity> fetchAllPermissionEntities(List<RolePermissionEntity> rolePermissionEntities) {
         List<Long> ids = rolePermissionEntities.stream().map(RolePermissionEntity::permissionId).toList();
         return fetchPermissionEntities(ids);
     }
 
-    public Flux<PermissionEntity> fetchPermissionEntities(List<Long> ids){
+    public Flux<PermissionEntity> fetchPermissionEntities(List<Long> ids) {
         return permissionEntityRepository.findByIdIn(ids);
     }
 
-    public Mono<PermissionEntity> fetchPermissionEntity(Long id){
+    public Mono<PermissionEntity> fetchPermissionEntity(Long id) {
         return permissionEntityRepository.findById(id);
     }
 
     public Mono<AccessEntity> save(AccessEntity accessEntity) {
         return accessEntityRepository.save(accessEntity)
-                .flatMap(accessorEntity1 -> {
-                    accessorEntity1.accessGrantedAuthorities().forEach(accessGrantedAuthorityEntity -> accessGrantedAuthorityEntity.setAccessorId(accessorEntity1.getId()));
-                    return authorityEntityRepository.saveAll(accessEntity.accessGrantedAuthorities()).then(Mono.just(accessorEntity1));
-                });
+                .flatMap(accessEntity1 -> Flux.fromIterable(accessEntity1.getAuthorityEntities()).flatMap(this::saveAuthorityEntity)
+                        .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessEntity1.getId(), authorityEntity.getId())
+                                .switchIfEmpty(Flux.just(accessRequestToEntityMapper.buildAccessAuthorityEntity(accessEntity1.getId(), authorityEntity)))
+                                .flatMap(accessAuthorityEntity -> accessAuthorityIdRepository.save(accessAuthorityEntity)))
+                        .then(Mono.just(accessEntity1)));
     }
 
-    public Mono<AuthorityEntity> save(AuthorityEntity authorityEntity) {
+    public Mono<AuthorityEntity> saveAuthorityEntity(AuthorityEntity authorityEntity) {
         return authorityEntityRepository.save(authorityEntity)
-                .flatMap(accessGrantedAuthorityEntity1 -> {
-                    accessGrantedAuthorityEntity1.getAccessRoleEntities().forEach(accessRoleEntity -> accessRoleEntity.setAuthorityId(accessGrantedAuthorityEntity1.getId()));
-                    return roleEntityRepository.saveAll(accessGrantedAuthorityEntity1.getAccessRoleEntities()).then(Mono.just(accessGrantedAuthorityEntity1));
-                });
+                .flatMap(authorityEntity1 -> Flux.fromIterable(authorityEntity1.getRoleEntities()).flatMap(this::saveRoleEntity)
+                        .flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityEntity1.getId(), roleEntity.getId())
+                                .switchIfEmpty(Flux.just(accessRequestToEntityMapper.buildAuthorityRoleEntity(authorityEntity1.getId(), roleEntity)))
+                                .flatMap(rolePermissionEntity -> authorityRoleIdRepository.save(rolePermissionEntity)))
+                        .then(Mono.just(authorityEntity1)));
     }
 
-    public Mono<RoleEntity> save(RoleEntity roleEntity) {
+    public Mono<RoleEntity> saveRoleEntity(RoleEntity roleEntity) {
         return roleEntityRepository.save(roleEntity)
-                .flatMap(roleEntity1 -> {
-                    roleEntity1.getAccessPermissionEntities().forEach(permissionEntity -> permissionEntity.setRoleId(roleEntity1.getId()));
-                    return permissionEntityRepository.saveAll(roleEntity1.getAccessPermissionEntities()).then(Mono.just(roleEntity1));
-                });
+                .flatMap(roleEntity1 -> Flux.fromIterable(roleEntity1.getPermissionEntities()).flatMap(this::savePermissionEntity)
+                        .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleEntity1.getId(), permissionEntity.getId())
+                                .switchIfEmpty(Flux.just(accessRequestToEntityMapper.buildRolePermissionEntity(roleEntity1.getId(), permissionEntity)))
+                                .flatMap(rolePermissionEntity -> rolePermissionIdRepository.save(rolePermissionEntity)))
+                        .then(Mono.just(roleEntity1)));
     }
 
-    public Mono<PermissionEntity> save(PermissionEntity permissionEntity) {
+    public Mono<PermissionEntity> savePermissionEntity(PermissionEntity permissionEntity) {
         return permissionEntityRepository.save(permissionEntity);
     }
 }

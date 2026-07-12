@@ -11,23 +11,20 @@ import com.karur.access_management_application.security.model.request.RoleReques
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RequestToEntityMapper {
 
     @Autowired
     AccessRequestToEntityMapper accessRequestToEntityMapper;
 
-    @Autowired
-    AccessAuthorityRequestToEntityMapper accessAuthorityRequestToEntityMapper;
-
     public AccessEntity buildAccessEntity(AccessRequest accessRequest) {
-        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
-        accessEntity.setAccessGrantedAuthorities(accessAuthorityRequestToEntityMapper.buildAccessGrantedAuthorityEntities(accessRequest));
-        return accessEntity;
+        return accessRequestToEntityMapper.buildAccessEntity(accessRequest);
     }
 
-    public AuthorityEntity buildAccessGrantedAuthorityEntity(AuthorityRequest authorityRequest) {
-        return accessAuthorityRequestToEntityMapper.buildAccessGrantedAuthorityEntity(authorityRequest);
+    public AuthorityEntity buildAuthorityEntity(AuthorityRequest authorityRequest) {
+        return accessRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
     }
 
     public RoleEntity buildRoleEntity(RoleRequest roleRequest) {
@@ -36,5 +33,17 @@ public class RequestToEntityMapper {
 
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
         return accessRequestToEntityMapper.buildPermissionEntity(permissionRequest);
+    }
+
+    public List<AuthorityEntity> buildAuthorityEntities(List<AuthorityRequest> authorityRequests) {
+        return authorityRequests.stream().map(this::buildAuthorityEntity).toList();
+    }
+
+    public List<RoleEntity> buildRoleEntities(List<RoleRequest> roleRequests) {
+        return roleRequests.stream().map(this::buildRoleEntity).toList();
+    }
+
+    public List<PermissionEntity> buildPermissionEntities(List<PermissionRequest> permissionRequests) {
+        return permissionRequests.stream().map(this::buildPermissionEntity).toList();
     }
 }

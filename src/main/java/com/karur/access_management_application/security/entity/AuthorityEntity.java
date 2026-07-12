@@ -23,7 +23,7 @@ public class AuthorityEntity implements GrantedAuthority {
     private String description;
 
     @Transient
-    private List<RoleEntity> accessRoleEntities = new ArrayList<>();
+    private List<RoleEntity> roleEntities = new ArrayList<>();
 
     @Override
     public @Nullable String getAuthority() {

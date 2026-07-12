@@ -31,11 +31,11 @@ public class AccessEntity implements UserDetails {
     private boolean credentialsExpired;
 
     @Transient
-    private List<AuthorityEntity> accessGrantedAuthorities;
+    private List<AuthorityEntity> authorityEntities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return accessGrantedAuthorities;
+        return authorityEntities;
     }
 
     @Override
@@ -69,6 +69,6 @@ public class AccessEntity implements UserDetails {
     }
 
     public List<AuthorityEntity> accessGrantedAuthorities(){
-        return accessGrantedAuthorities;
+        return authorityEntities;
     }
 }

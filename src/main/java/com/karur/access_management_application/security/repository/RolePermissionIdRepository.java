@@ -10,6 +10,6 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface RolePermissionIdRepository extends ReactiveCrudRepository<RolePermissionEntity, Long> {
     Flux<RolePermissionEntity> findByRoleId(Long roleId);
-
     Flux<RolePermissionEntity> findByPermissionId(Long permissionId);
+    Flux<RolePermissionEntity> findByRoleIdAndPermissionId(Long roleId,Long permissionId);
 }

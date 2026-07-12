@@ -10,12 +10,14 @@ import com.karur.access_management_application.security.model.request.AuthorityR
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+@Data
 @Service
 public class AccessorDetailsService implements ReactiveUserDetailsService {
 
@@ -31,22 +33,19 @@ public class AccessorDetailsService implements ReactiveUserDetailsService {
     }
 
     public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {
-        AccessEntity accessEntity = requestToEntityMapper.buildAccessEntity(accessRequest);
-        return accessRepository.save(accessEntity);
+        return accessRepository.save(requestToEntityMapper.buildAccessEntity(accessRequest))
+                .flatMap(accessEntity -> accessRepository.are);
     }
 
     public Mono<AuthorityEntity> createAuthority(AuthorityRequest authorityRequest) {
-        AuthorityEntity authorityEntity = requestToEntityMapper.buildAccessGrantedAuthorityEntity(authorityRequest);
-        return accessRepository.save(authorityEntity);
+        return accessRepository.save(requestToEntityMapper.buildAuthorityEntity(authorityRequest));
     }
 
     public Mono<RoleEntity> createRole(RoleRequest roleRequest) {
-        RoleEntity roleEntity = requestToEntityMapper.buildRoleEntity(roleRequest);
-        return accessRepository.save(roleEntity);
+        return accessRepository.save(requestToEntityMapper.buildRoleEntity(roleRequest));
     }
 
     public Mono<PermissionEntity> createPermission(PermissionRequest permissionRequest) {
-        PermissionEntity permissionEntity = requestToEntityMapper.buildPermissionEntity(permissionRequest);
-        return accessRepository.save(permissionEntity);
+        return accessRepository.save(requestToEntityMapper.buildPermissionEntity(permissionRequest));
     }
 }

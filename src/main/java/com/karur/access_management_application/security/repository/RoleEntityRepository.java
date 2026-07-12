@@ -12,5 +12,5 @@ import java.util.List;
 public interface RoleEntityRepository extends ReactiveCrudRepository<RoleEntity,Long> {
     Flux<RoleEntity> findByAuthorityId(Long authorityId);
 
-    Flux<PermissionEntity> findByIdIn(List<Long> ids);
+    Flux<RoleEntity> findByIdIn(List<Long> ids);
 }

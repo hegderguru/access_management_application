@@ -54,7 +54,7 @@ public class EntityToReadMapper {
         return AuthorityDetail.builder()
                 .name(authorityEntity.getName())
                 .description(authorityEntity.getDescription())
-                .roleDetails(buildRoleDetails(authorityEntity.getAccessRoleEntities()))
+                .roleDetails(buildRoleDetails(authorityEntity.getRoleEntities()))
                 .build();
     }
 
@@ -66,7 +66,7 @@ public class EntityToReadMapper {
         return RoleDetail.builder()
                 .name(roleEntity.getName())
                 .description(roleEntity.getDescription())
-                .permissionDetails(buildPermissionsDetails(roleEntity.getAccessPermissionEntities()))
+                .permissionDetails(buildPermissionsDetails(roleEntity.getPermissionEntities()))
                 .build();
     }
 
