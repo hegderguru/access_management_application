@@ -42,6 +42,20 @@ public class AccessRepository {
         return accessEntityRepository.findByUsername(username);
     }
 
+    public Mono<AccessEntity> fetchOnlyAccessEntity(String username) {
+        return accessEntityRepository.findByUsername(username)
+                .flatMap(accessEntity -> fetchAllAccessAuthorityEntities(accessEntity)
+                        .collectList()
+                        .flatMap(accessAuthorityEntities -> fetchOnlyAuthorityEntities(accessAuthorityEntities)
+                                .collectList()
+                                .doOnNext(accessEntity::setAuthorityEntities)
+                                .then(Mono.just(accessEntity))));
+    }
+
+    public Flux<AuthorityEntity> fetchOnlyAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities) {
+        return authorityEntityRepository.findByIdIn(accessAuthorityEntities.stream().map(AccessAuthorityEntity::authorityId).toList());
+    }
+
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
                 .flatMap(accessEntity -> fetchAllAccessAuthorityEntities(accessEntity)
