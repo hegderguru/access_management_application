@@ -126,7 +126,7 @@ public class AccessRepository {
         return permissionEntityRepository.findByIdIn(ids);
     }
 
-    public Mono<AccessEntity> save(AccessEntity accessEntity) {
+    public Mono<AccessEntity> saveAccessEntity(AccessEntity accessEntity) {
         return accessEntityRepository.save(accessEntity)
                 .flatMap(accessEntity1 -> Flux.fromIterable(accessEntity1.getAuthorityEntities()).flatMap(this::saveAuthorityEntity)
                         .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessEntity1.getId(), authorityEntity.getId())

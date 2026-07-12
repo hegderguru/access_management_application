@@ -33,19 +33,18 @@ public class AccessorDetailsService implements ReactiveUserDetailsService {
     }
 
     public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {
-        return accessRepository.save(requestToEntityMapper.buildAccessEntity(accessRequest))
-                .flatMap(accessEntity -> accessRepository.are);
+        return accessRepository.saveAccessEntity(requestToEntityMapper.buildAccessEntity(accessRequest));
     }
 
     public Mono<AuthorityEntity> createAuthority(AuthorityRequest authorityRequest) {
-        return accessRepository.save(requestToEntityMapper.buildAuthorityEntity(authorityRequest));
+        return accessRepository.saveAuthorityEntity(requestToEntityMapper.buildAuthorityEntity(authorityRequest));
     }
 
     public Mono<RoleEntity> createRole(RoleRequest roleRequest) {
-        return accessRepository.save(requestToEntityMapper.buildRoleEntity(roleRequest));
+        return accessRepository.saveRoleEntity(requestToEntityMapper.buildRoleEntity(roleRequest));
     }
 
     public Mono<PermissionEntity> createPermission(PermissionRequest permissionRequest) {
-        return accessRepository.save(requestToEntityMapper.buildPermissionEntity(permissionRequest));
+        return accessRepository.savePermissionEntity(requestToEntityMapper.buildPermissionEntity(permissionRequest));
     }
 }
