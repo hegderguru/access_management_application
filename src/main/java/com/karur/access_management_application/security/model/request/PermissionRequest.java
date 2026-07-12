@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,18 +11,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PermissionRequest {
 
     private String classPath;
     private String className;
     private String fieldName;
-    private boolean read;
-    private boolean create;
-    private boolean update;
-    private boolean delete;
+    private Boolean read;
+    private Boolean create;
+    private Boolean update;
+    private Boolean delete;
     private String fullyQualifiedClassPath;
     private String fullyQualifiedFieldPath;
-    private boolean[] permissions;
+    private Boolean[] permissions;
 
     @PostConstruct
     public void init() {
@@ -38,7 +40,7 @@ public class PermissionRequest {
         return fullyQualifiedClassPath() + "." + fieldName;
     }
 
-    public boolean[] permissions() {
-        return new boolean[]{read, create, update, delete};
+    public Boolean[] permissions() {
+        return new Boolean[]{read, create, update, delete};
     }
 }

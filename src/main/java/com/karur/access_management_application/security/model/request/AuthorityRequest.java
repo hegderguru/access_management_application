@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.karur.access_management_application.security.compare.DiffId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthorityRequest {
     @DiffId
     private String name;

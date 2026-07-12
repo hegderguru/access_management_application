@@ -69,10 +69,10 @@ public class AccessRequestToEntityMapper {
                 .classPath(permissionRequest.getClassPath())
                 .className(permissionRequest.getClassName())
                 .fieldName(permissionRequest.getFieldName())
-                .read(permissionRequest.isRead())
-                .create(permissionRequest.isCreate())
-                .update(permissionRequest.isUpdate())
-                .delete(permissionRequest.isDelete())
+                .read(permissionRequest.getRead())
+                .create(permissionRequest.getCreate())
+                .update(permissionRequest.getUpdate())
+                .delete(permissionRequest.getDelete())
                 .build();
     }
 

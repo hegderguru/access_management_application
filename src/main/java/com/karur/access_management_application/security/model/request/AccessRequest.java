@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.karur.access_management_application.security.compare.DiffId;
 import com.karur.access_management_application.security.compare.IgnoreChange;
 import com.karur.access_management_application.security.compare.SecretChange;
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AccessRequest {
 
     @DiffId
@@ -27,7 +29,7 @@ public class AccessRequest {
 
     @IgnoreChange
     private String lastName;
-    private boolean enabled;
+    private Boolean enabled;
 
     private List<AuthorityRequest> authorityRequests;
 

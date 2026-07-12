@@ -2,6 +2,9 @@ package com.karur.access_management_application.security.repository;
 
 import com.karur.access_management_application.security.entity.*;
 import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
+import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
+import com.karur.access_management_application.security.model.read.AccessDetail;
+import com.karur.access_management_application.security.model.request.AccessRequest;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
