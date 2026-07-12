@@ -3,6 +3,10 @@ package com.karur.access_management_application.security.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 public class CommonUtil {
 
     public static String writeValueAsString(Object object) {
@@ -22,4 +26,10 @@ public class CommonUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static <T> List<T> returnListElseEmpty(List<T> t) {
+        if (Objects.isNull(t)) return new ArrayList<>();
+        return t;
+    }
+
 }

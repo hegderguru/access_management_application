@@ -10,6 +10,7 @@ import com.karur.access_management_application.security.model.read.AuthorityDeta
 import com.karur.access_management_application.security.model.read.PermissionDetail;
 import com.karur.access_management_application.security.model.read.RoleDetail;
 import com.karur.access_management_application.security.repository.AccessRepository;
+import com.karur.access_management_application.security.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -47,7 +48,7 @@ public class EntityToReadMapper {
     }
 
     public List<AuthorityDetail> buildAuthorityDetails(List<AuthorityEntity> accessGrantedAuthorityEntities) {
-        return accessGrantedAuthorityEntities.stream().map(this::buildAuthorityDetail).toList();
+        return CommonUtil.returnListElseEmpty(accessGrantedAuthorityEntities).stream().map(this::buildAuthorityDetail).toList();
     }
 
     public AuthorityDetail buildAuthorityDetail(AuthorityEntity authorityEntity) {
@@ -59,7 +60,7 @@ public class EntityToReadMapper {
     }
 
     private List<RoleDetail> buildRoleDetails(List<RoleEntity> accessRoleEntities) {
-        return accessRoleEntities.stream().map(this::buildRoleDetail).toList();
+        return CommonUtil.returnListElseEmpty(accessRoleEntities).stream().map(this::buildRoleDetail).toList();
     }
 
     private RoleDetail buildRoleDetail(RoleEntity roleEntity) {
@@ -71,7 +72,7 @@ public class EntityToReadMapper {
     }
 
     private List<PermissionDetail> buildPermissionsDetails(List<PermissionEntity> accessPermissionEntities) {
-        return accessPermissionEntities.stream().map(this::buildPermissionDetail).toList();
+        return CommonUtil.returnListElseEmpty(accessPermissionEntities).stream().map(this::buildPermissionDetail).toList();
     }
 
     private PermissionDetail buildPermissionDetail(PermissionEntity permissionEntity) {
