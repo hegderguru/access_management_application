@@ -157,7 +157,7 @@ public class AccessService {
     }
 
     private Mono<Void> updateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessDetailsUpdateUtil.getUpdateRoleRequest1(changes);
+        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessDetailsUpdateUtil.getUpdateRoleRequest(changes);
         return Flux.fromIterable(updateRoleRequest1.entrySet())
                 .flatMap(stringListEntry -> {
                     RoleEntity roleEntity = authorityEntity.getRoleEntities().stream().filter(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();
@@ -170,6 +170,21 @@ public class AccessService {
                 .flatMap(change -> {
                     switch (RoleRequest.Fields.valueOf(change.getField().getName())) {
                         case description -> roleEntity.setDescription(ChangeUtil.getStringElseConvert(change));
+                    }
+                    return Mono.empty();
+                }).then();
+    }
+
+    private Mono<Void> updatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes))
+                .flatMap(change -> {
+                    PermissionRequest permissionRequest = (PermissionRequest) change.getRight();
+                    PermissionEntity permissionEntity = roleEntity.getPermissionEntities().stream().filter(permissionEntity1 -> permissionEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(permissionRequest.fullyQualifiedClassPath())).findFirst().get();
+                    switch (PermissionRequest.Fields.valueOf(change.getField().getName())) {
+                        case read -> permissionEntity.setRead(ChangeUtil.getBooleanElseConvert(change));
+                        case create -> permissionEntity.setCreate(ChangeUtil.getBooleanElseConvert(change));
+                        case update -> permissionEntity.setUpdate(ChangeUtil.getBooleanElseConvert(change));
+                        case delete -> permissionEntity.setDelete(ChangeUtil.getBooleanElseConvert(change));
                     }
                     return Mono.empty();
                 }).then();
