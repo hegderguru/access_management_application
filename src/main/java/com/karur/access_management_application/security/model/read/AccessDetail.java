@@ -53,6 +53,6 @@ public class AccessDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !isAccessEnabled();
+        return isAccessEnabled();
     }
 }

@@ -46,7 +46,7 @@ public class UsernamePasswordAuthenticationProvider implements SupportedAuthenti
         return entityToReadMapper.buildAccessDetail(authentication.getName())
                 .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                 .flatMap(userDetails -> {
-                    if (!userDetails.isAccessExpired() || !userDetails.isAccessLocked() || !userDetails.isCredentialsExpired() || !userDetails.isAccessEnabled()) {
+                    if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked() || !userDetails.isAccountNonExpired() || !userDetails.isCredentialsNonExpired()) {
                         return Mono.error(new AuthenticationException("This account is forbiddon the access"));
                     }
                     if (!passwordEncoder.matches(password, userDetails.getPassword())) {
