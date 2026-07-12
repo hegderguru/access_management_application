@@ -23,8 +23,8 @@ class ChangesUtilTest {
     @Test
     void compare() {
         // Arrange
-        AccessRequest accessRequestOld = buildAccessorRequest("hegderguru", "abc", "Guru");
-        AccessRequest accessRequestNew = buildAccessorRequest("hegderguru", "abcd", "Guru2");
+        AccessRequest accessRequestOld = buildAccessRequest("hegderguru", "abc", "Guru");
+        AccessRequest accessRequestNew = buildAccessRequest("hegderguru", "abcd", "Guru2");
 
         accessRequestOld.setAuthorityRequests(new ArrayList<>());
         accessRequestNew.setAuthorityRequests(new ArrayList<>());
@@ -44,7 +44,7 @@ class ChangesUtilTest {
 
     }
 
-    public AccessRequest buildAccessorRequest(String username, String password, String firstName) {
+    public AccessRequest buildAccessRequest(String username, String password, String firstName) {
         return AccessRequest.builder()
                 .username(username)
                 .password(password)

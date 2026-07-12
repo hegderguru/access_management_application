@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("accessor")
-public class AccessorController {
+@RequestMapping("access")
+public class AccessController {
 
     @Autowired
     AccessDetailsService accessDetailsService;
@@ -28,27 +28,27 @@ public class AccessorController {
     }
 
     @PostMapping("createAccess")
-    public Mono<ResponseEntity<AccessResponse>> createAccessor(@RequestBody Mono<AccessRequest> accessorRequestMono) {
-        return accessorRequestMono.flatMap(accessorRequest -> accessDetailsService.createAccessEntity(accessorRequest))
-                .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
+    public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
+        return accessRequestMono.flatMap(accessorRequest -> accessDetailsService.createAccessEntity(accessorRequest))
+                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 
     @PostMapping("createAuthority")
     public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
         return authorityRequestMono.flatMap(authorityRequest -> accessDetailsService.createAuthority(authorityRequest))
-                .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
+                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 
     @PostMapping("createRole")
     public Mono<ResponseEntity<AccessResponse>> createRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
         return roleRequestMono.flatMap(roleRequest -> accessDetailsService.createRole(roleRequest))
-                .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
+                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 
     @PostMapping("createPermission")
     public Mono<ResponseEntity<AccessResponse>> createPermission(@RequestBody Mono<PermissionRequest> permissionRequestMono) {
         return permissionRequestMono.flatMap(permissionRequest -> accessDetailsService.createPermission(permissionRequest))
-                .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
+                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 
 }

@@ -31,7 +31,7 @@ CREATE TABLE auth.access (
     credentials_expired BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- Authorities Table (Linked via accessor_id)
+-- Authorities Table (Linked via access_id)
 CREATE TABLE auth.authority (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_authority_id'),
     name VARCHAR(255) NOT NULL,
@@ -73,7 +73,3 @@ CREATE TABLE auth.role_permission_id (
     role_id BIGINT NOT NULL,
     permission_id BIGINT NOT NULL
 );
-
-
-insert into creds.accessor values(1,'creds','creds',false,false,true,false,'Guru','Raghavendra','Hegde');
-insert into creds.accessor_authority values(1,1,'creds');

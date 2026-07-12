@@ -4,7 +4,7 @@ spring:
   profiles :
     active: local
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/accessor
+    url: r2dbc:postgresql://localhost:5432/access
     username: postgres
     password: postgres
     properties:

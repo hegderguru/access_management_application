@@ -20,7 +20,6 @@ public class AccessDetailsPasswordService implements ReactiveUserDetailsPassword
     public Mono<UserDetails> updatePassword(UserDetails userDetails, @Nullable String newPassword) {
         AccessEntity accessEntity = (AccessEntity) userDetails;
         accessEntity.setPassword(newPassword);
-        return accessEntityRepository.save(accessEntity).flatMap(accessorEntity1 -> Mono.just((UserDetails) accessorEntity1));
-
+        return accessEntityRepository.save(accessEntity).flatMap(accessEntity1 -> Mono.just((UserDetails) accessEntity1));
     }
 }
