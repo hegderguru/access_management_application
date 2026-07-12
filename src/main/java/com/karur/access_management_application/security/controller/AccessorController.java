@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.controller;
 
-import com.karur.access_management_application.security.model.request.AccessorRequest;
+import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
@@ -28,8 +28,8 @@ public class AccessorController {
     }
 
     @PostMapping("createAccess")
-    public Mono<ResponseEntity<AccessResponse>> createAccessor(@RequestBody Mono<AccessorRequest> accessorRequestMono) {
-        return accessorRequestMono.flatMap(accessorRequest -> accessorDetailsService.createAccessorEntity(accessorRequest))
+    public Mono<ResponseEntity<AccessResponse>> createAccessor(@RequestBody Mono<AccessRequest> accessorRequestMono) {
+        return accessorRequestMono.flatMap(accessorRequest -> accessorDetailsService.createAccessEntity(accessorRequest))
                 .flatMap(accessorEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 

@@ -5,7 +5,7 @@ import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
 import com.karur.access_management_application.security.mapper.requestToEntity.RequestToEntityMapper;
-import com.karur.access_management_application.security.model.request.AccessorRequest;
+import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
@@ -30,8 +30,8 @@ public class AccessorDetailsService implements ReactiveUserDetailsService {
         return accessRepository.findAccessorEntityByUsername(username).flatMap(accessorEntity -> Mono.just((UserDetails) accessorEntity));
     }
 
-    public Mono<AccessEntity> createAccessorEntity(AccessorRequest accessorRequest) {
-        AccessEntity accessEntity = requestToEntityMapper.buildAccessorEntity(accessorRequest);
+    public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {
+        AccessEntity accessEntity = requestToEntityMapper.buildAccessorEntity(accessRequest);
         return accessRepository.save(accessEntity);
     }
 

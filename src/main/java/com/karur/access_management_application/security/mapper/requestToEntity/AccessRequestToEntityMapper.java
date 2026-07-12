@@ -3,7 +3,7 @@ package com.karur.access_management_application.security.mapper.requestToEntity;
 import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
-import com.karur.access_management_application.security.model.request.AccessorRequest;
+import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import org.springframework.stereotype.Service;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccessRequestToEntityMapper {
 
-    public AccessEntity buildAccessorEntity(AccessorRequest accessorRequest) {
+    public AccessEntity buildAccessorEntity(AccessRequest accessRequest) {
         return AccessEntity.builder()
-                .username(accessorRequest.getUsername())
-                .password(accessorRequest.getPassword())
-                .firstName(accessorRequest.getFirstName())
-                .middleName(accessorRequest.getMiddleName())
-                .lastName(accessorRequest.getLastName())
+                .username(accessRequest.getUsername())
+                .password(accessRequest.getPassword())
+                .firstName(accessRequest.getFirstName())
+                .middleName(accessRequest.getMiddleName())
+                .lastName(accessRequest.getLastName())
                 .accessEnabled(true)
                 .accessExpired(false)
                 .credentialsExpired(false)

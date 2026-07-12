@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccessorRequest {
+public class AccessRequest {
 
     @DiffId
     private String username;

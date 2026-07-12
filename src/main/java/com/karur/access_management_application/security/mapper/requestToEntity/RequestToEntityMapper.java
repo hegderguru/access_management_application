@@ -4,7 +4,7 @@ import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
-import com.karur.access_management_application.security.model.request.AccessorRequest;
+import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
@@ -20,9 +20,9 @@ public class RequestToEntityMapper {
     @Autowired
     AccessAuthorityRequestToEntityMapper accessAuthorityRequestToEntityMapper;
 
-    public AccessEntity buildAccessorEntity(AccessorRequest accessorRequest) {
-        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessorEntity(accessorRequest);
-        accessEntity.setAccessGrantedAuthorities(accessAuthorityRequestToEntityMapper.buildAccessGrantedAuthorityEntities(accessorRequest));
+    public AccessEntity buildAccessorEntity(AccessRequest accessRequest) {
+        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessorEntity(accessRequest);
+        accessEntity.setAccessGrantedAuthorities(accessAuthorityRequestToEntityMapper.buildAccessGrantedAuthorityEntities(accessRequest));
         return accessEntity;
     }
 

@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.compare;
 
-import com.karur.access_management_application.security.model.request.AccessorRequest;
+import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,29 +23,29 @@ class ChangesUtilTest {
     @Test
     void compare() {
         // Arrange
-        AccessorRequest accessorRequestOld = buildAccessorRequest("hegderguru", "abc", "Guru");
-        AccessorRequest accessorRequestNew = buildAccessorRequest("hegderguru", "abcd", "Guru2");
+        AccessRequest accessRequestOld = buildAccessorRequest("hegderguru", "abc", "Guru");
+        AccessRequest accessRequestNew = buildAccessorRequest("hegderguru", "abcd", "Guru2");
 
-        accessorRequestOld.setAuthorityRequests(new ArrayList<>());
-        accessorRequestNew.setAuthorityRequests(new ArrayList<>());
+        accessRequestOld.setAuthorityRequests(new ArrayList<>());
+        accessRequestNew.setAuthorityRequests(new ArrayList<>());
 
-        accessorRequestOld.getAuthorityRequests().add(buildAuthorityRequest("admin", "admin"));
-        accessorRequestOld.getAuthorityRequests().add(buildAuthorityRequest("admin2", "admin2"));
+        accessRequestOld.getAuthorityRequests().add(buildAuthorityRequest("admin", "admin"));
+        accessRequestOld.getAuthorityRequests().add(buildAuthorityRequest("admin2", "admin2"));
 
-        accessorRequestNew.getAuthorityRequests().add(buildAuthorityRequest("admin", "admin"));
-        accessorRequestNew.getAuthorityRequests().add(buildAuthorityRequest("admin2", "admin3"));
-        accessorRequestNew.getAuthorityRequests().add(buildAuthorityRequest("admin3", "admin3"));
+        accessRequestNew.getAuthorityRequests().add(buildAuthorityRequest("admin", "admin"));
+        accessRequestNew.getAuthorityRequests().add(buildAuthorityRequest("admin2", "admin3"));
+        accessRequestNew.getAuthorityRequests().add(buildAuthorityRequest("admin3", "admin3"));
 
         // Act - Call using the instance variable 'changesUtil' instead of static call
-        List<CompareUtil.Change> compare = compareUtil.compare(accessorRequestOld, accessorRequestNew);
-        log.info("Compare: Objects Object1: {} and Object2: {} with differences: {} ", CommonUtil.writeValueAsString(accessorRequestOld), CommonUtil.writeValueAsString(accessorRequestNew), CommonUtil.writeValueAsString(compare));
+        List<CompareUtil.Change> compare = compareUtil.compare(accessRequestOld, accessRequestNew);
+        log.info("Compare: Objects Object1: {} and Object2: {} with differences: {} ", CommonUtil.writeValueAsString(accessRequestOld), CommonUtil.writeValueAsString(accessRequestNew), CommonUtil.writeValueAsString(compare));
         // Assert - Validate that changes were correctly identified
         assertNotNull(compare);
 
     }
 
-    public AccessorRequest buildAccessorRequest(String username, String password, String firstName) {
-        return AccessorRequest.builder()
+    public AccessRequest buildAccessorRequest(String username, String password, String firstName) {
+        return AccessRequest.builder()
                 .username(username)
                 .password(password)
                 .firstName(firstName)
