@@ -49,17 +49,17 @@ public class AccessService {
                 }).map(entityToReadMapper::buildAccessDetail);
     }
 
-    private @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changeList) {
-        return saveOrUpdateAuthoritiesOnChanges(accessEntity, changeList)
+    public @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+        return saveOrUpdateAuthoritiesOnChanges(accessEntity, changes)
                 .thenMany(Flux.defer(() -> Flux.fromIterable(accessEntity.getAuthorityEntities())))
-                .flatMap(authorityEntity -> saveOrUpdateRolesOnChanges(changeList, authorityEntity)
+                .flatMap(authorityEntity -> saveOrUpdateRoles(authorityEntity, changes)
                 ).then(Mono.just(accessEntity));
     }
 
-    private @NonNull Flux<Void> saveOrUpdateRolesOnChanges(List<CompareUtil.Change> changeList, AuthorityEntity authorityEntity) {
-        return saveOrUpdateRolesOnChanges(authorityEntity, changeList)
+    private @NonNull Flux<Void> saveOrUpdateRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return saveOrUpdateRolesOnChanges(authorityEntity, changes)
                 .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
-                .flatMap(roleEntity -> saveOrUpdatePermissionsOnChanges(roleEntity, changeList));
+                .flatMap(roleEntity -> saveOrUpdatePermissionsOnChanges(roleEntity, changes));
     }
 
     public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {

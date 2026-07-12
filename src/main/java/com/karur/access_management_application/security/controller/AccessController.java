@@ -74,10 +74,4 @@ public class AccessController {
                 .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
     }
 
-    @PutMapping("updateAuthorityDetails")
-    public Mono<ResponseEntity<AccessResponse>> updateAccessDetail(@RequestBody Mono<AccessRequest> accessRequestMono) {
-        return accessRequestMono.flatMap(accessorRequest -> accessService.saveOrUpdateAuthoritiesOnChanges(accessorRequest))
-                .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
-    }
-
 }
