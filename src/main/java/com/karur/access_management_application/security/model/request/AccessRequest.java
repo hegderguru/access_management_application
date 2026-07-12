@@ -31,10 +31,10 @@ public class AccessRequest {
 
     @IgnoreChange
     private String lastName;
-    private boolean accessEnabled;
-    private boolean accessLocked;
-    private boolean accessExpired;
-    private boolean credentialsExpired;
+    private Boolean accessEnabled;
+    private Boolean accessLocked;
+    private Boolean accessExpired;
+    private Boolean credentialsExpired;
 
     private List<AuthorityRequest> authorityRequests;
 
