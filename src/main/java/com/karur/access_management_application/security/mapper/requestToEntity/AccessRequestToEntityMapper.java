@@ -24,6 +24,7 @@ public class AccessRequestToEntityMapper {
                 .accessExpired(false)
                 .credentialsExpired(false)
                 .accessLocked(false)
+                .authorityEntities(new ArrayList<>())
                 .build();
     }
 
