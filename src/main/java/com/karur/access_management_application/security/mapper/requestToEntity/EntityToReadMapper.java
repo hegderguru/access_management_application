@@ -27,7 +27,7 @@ public class EntityToReadMapper {
     JwtTokenProvider jwtTokenProvider;
 
     public Mono<AccessDetail> buildAccessDetail(String username) {
-        return accessRepository.findAccessorEntityByUsername(username)
+        return accessRepository.findAccessEntityByUsername(username)
                 .map(this::buildAccessDetail);
     }
 
