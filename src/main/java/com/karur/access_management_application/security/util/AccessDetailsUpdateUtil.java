@@ -42,6 +42,11 @@ public class AccessDetailsUpdateUtil {
                 .collect(Collectors.groupingBy(change -> ((AuthorityRequest) change.getRight()).getName()));
     }
 
+    public static Map<String, List<CompareUtil.Change>> getUpdateRoleRequest1(List<CompareUtil.Change> changes) {
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(RoleRequest.class))
+                .collect(Collectors.groupingBy(change -> ((RoleRequest) change.getRight()).getName()));
+    }
+
     public static List<CompareUtil.Change> getUpdateRoleRequest(List<CompareUtil.Change> changes) {
         return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(RoleRequest.class)).toList();
     }
