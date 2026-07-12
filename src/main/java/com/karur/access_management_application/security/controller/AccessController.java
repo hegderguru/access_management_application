@@ -57,8 +57,8 @@ public class AccessController {
     }
 
     @PostMapping("accessDetail")
-    public Mono<ResponseEntity<AccessResponse>> fetchAccessDetail(@RequestBody AccessRequest accessRequest) {
-        return Mono.just(accessRequest).flatMap(accessorRequest -> accessDetailsService.fetchOnlyAccessDetails(accessorRequest.getUsername()))
+    public Mono<ResponseEntity<AccessResponse>> fetchAccessDetail(@RequestBody Mono<AccessRequest> accessRequestMono) {
+        return accessRequestMono.flatMap(accessorRequest -> accessDetailsService.fetchOnlyAccessDetails(accessorRequest.getUsername()))
                 .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
     }
 
