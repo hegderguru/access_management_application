@@ -73,3 +73,20 @@ CREATE TABLE auth.role_permission_id (
     role_id BIGINT NOT NULL,
     permission_id BIGINT NOT NULL
 );
+
+INSERT INTO auth.access(
+	id, username, password, first_name, middle_name, last_name, access_expired, access_locked, access_enabled, credentials_expired)
+	VALUES (nextval('auth.seq_access_id'),'hegderguru', 'hegderguru', 'Guru', 'Raghavendra', 'Hegde', false, false, true, false);
+
+INSERT INTO auth.authority(
+	id, name, description)
+	VALUES (nextval('auth.seq_authority_id'), 'auth', 'auth');
+
+INSERT INTO auth.access_authority_id(
+	id, access_id, authority_id)
+	VALUES (nextval('auth.seq_access_authority_id'), ?, ?);
+
+INSERT INTO auth.access_authority_id(
+	id, access_id, authority_id)
+	VALUES (nextval('auth.seq_access_authority_id'), 1, 1);
+
