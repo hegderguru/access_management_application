@@ -39,7 +39,7 @@ public class AccessService {
     @Autowired
     EntityToReadMapper entityToReadMapper;
 
-    public Mono<AccessDetail> saveOrUpdate(AccessRequest accessRequest) {
+    public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
         return accessRepository.fetchAccessEntity(accessRequest.getUsername())
                 .flatMap(accessEntity -> {
                     List<CompareUtil.Change> changes = AccessDetailsUpdateUtil.accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
