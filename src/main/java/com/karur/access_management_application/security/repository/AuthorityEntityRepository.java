@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface AuthorityEntityRepository extends ReactiveCrudRepository<AuthorityEntity, Long> {
-    Flux<AuthorityEntity> findByAccessorId(Long accessorId);
+    Flux<AuthorityEntity> findByAccessId(Long accessId);
 
     Flux<AuthorityEntity> findByIdIn(List<Long> ids);
 }
