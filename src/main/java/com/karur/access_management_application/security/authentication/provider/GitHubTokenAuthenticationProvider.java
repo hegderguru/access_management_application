@@ -1,10 +1,12 @@
 package com.karur.access_management_application.security.authentication.provider;
 
 import com.karur.access_management_application.security.authentication.token.GitHubTokenAuthenticationToken;
+import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,10 +23,13 @@ public class GitHubTokenAuthenticationProvider implements SupportedAuthenticatio
 
     private WebClient webClient;
 
-    public GitHubTokenAuthenticationProvider(@Value("${authentication.github.api.url}") String gitHubTokenUrl) {
+    private EntityToReadMapper entityToReadMapper;
+
+    public GitHubTokenAuthenticationProvider(@Value("${authentication.github.api.url}") String gitHubTokenUrl, EntityToReadMapper entityToReadMapper) {
         webClient = WebClient.builder()
                 .baseUrl(gitHubTokenUrl)
                 .build();
+        this.entityToReadMapper = entityToReadMapper;
     }
 
     @Override
@@ -56,10 +61,10 @@ public class GitHubTokenAuthenticationProvider implements SupportedAuthenticatio
                     if (!login.equalsIgnoreCase(authentication.getPrincipal().toString())) {
                         return Mono.error(new AuthenticationException("Invalid credentials"));
                     }
-                    GitHubTokenAuthenticationToken gitHubTokenAuthenticationTokenAuthenticated = new GitHubTokenAuthenticationToken(login, (String) authentication.getCredentials(), null);
-                    //gitHubTokenAuthenticationTokenAuthenticated.setDetails(Map.of("name", login, "email", email, "provider", "github"));
-                    return Mono.just(gitHubTokenAuthenticationTokenAuthenticated);
+                    return entityToReadMapper.buildAccessDetail(authentication.getName())
+                            .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
+                            .flatMap(Mono::just)
+                            .map(userDetails -> new GitHubTokenAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorityDetails()));
                 });
     }
-
 }
