@@ -2,9 +2,6 @@ package com.karur.access_management_application.security.repository;
 
 import com.karur.access_management_application.security.entity.*;
 import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
-import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
-import com.karur.access_management_application.security.model.read.AccessDetail;
-import com.karur.access_management_application.security.model.request.AccessRequest;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -40,20 +37,6 @@ public class AccessRepository {
 
     @Autowired
     AccessRequestToEntityMapper accessRequestToEntityMapper;
-
-    public Mono<AccessEntity> fetchOnlyAccessEntity(String username) {
-        return accessEntityRepository.findByUsername(username)
-                .flatMap(accessEntity -> fetchAllAccessAuthorityEntities(accessEntity)
-                        .collectList()
-                        .flatMap(accessAuthorityEntities -> fetchOnlyAuthorityEntities(accessAuthorityEntities)
-                                .collectList()
-                                .doOnNext(accessEntity::setAuthorityEntities)
-                                .then(Mono.just(accessEntity))));
-    }
-
-    public Flux<AuthorityEntity> fetchOnlyAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities) {
-        return authorityEntityRepository.findByIdIn(accessAuthorityEntities.stream().map(AccessAuthorityEntity::authorityId).toList());
-    }
 
     public Mono<AccessEntity> findAccessEntityByUsername(String username) {
         return fetchAccessEntity(username);

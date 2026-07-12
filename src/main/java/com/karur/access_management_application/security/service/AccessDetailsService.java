@@ -39,8 +39,8 @@ public class AccessDetailsService implements ReactiveUserDetailsService {
         return accessRepository.findAccessEntityByUsername(username).flatMap(accessEntity -> Mono.just((UserDetails) accessEntity));
     }
 
-    public Mono<AccessDetail> fetchOnlyAccessDetails(String username) {
-        return accessRepository.fetchOnlyAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
+    public Mono<AccessDetail> fetchAccessDetails(String username) {
+        return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
     }
 
     public Mono<AccessDetail> fetchAuthorityDetails(String username) {

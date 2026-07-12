@@ -5,10 +5,6 @@ import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
-import com.karur.access_management_application.security.model.read.AccessDetail;
-import com.karur.access_management_application.security.model.read.AuthorityDetail;
-import com.karur.access_management_application.security.model.read.PermissionDetail;
-import com.karur.access_management_application.security.model.read.RoleDetail;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
@@ -30,11 +26,6 @@ public class EntityToAccessReuestMapper {
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
-
-    public Mono<Object> buildAccessOnlyRequest(String username) {
-        return accessRepository.fetchOnlyAccessEntity(username)
-                .map(this::buildAccessRequest);
-    }
 
     public Mono<AccessRequest> buildAccessRequest(String username) {
         return accessRepository.fetchAccessEntity(username)
