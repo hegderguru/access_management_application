@@ -19,19 +19,31 @@ public class AccessDetailsUpdateUtil {
         return changes.stream().filter(change -> Objects.isNull(change.getLeft()) && Objects.isNull(change.getRight()) && Objects.isNull(change.getLeftValue()) && Objects.nonNull(change.getRightValue())).toList();
     }
 
-    public static List<CompareUtil.Change> accessChanges(AccessRequest existing,AccessRequest updates){
-        return CompareUtil.compare(existing,updates);
+    public static List<CompareUtil.Change> accessChanges(AccessRequest existing, AccessRequest updates) {
+        return CompareUtil.compare(existing, updates);
     }
 
-    public static List<CompareUtil.Change> getNewAuthorityRequest(List<CompareUtil.Change> changes){
+    public static List<CompareUtil.Change> getNewAuthorityRequest(List<CompareUtil.Change> changes) {
         return getNewChanges(changes).stream().filter(change -> change.getRightValue().getClass().equals(AuthorityRequest.class)).toList();
     }
 
-    public static List<CompareUtil.Change> getNewRoleRequest(List<CompareUtil.Change> changes){
+    public static List<CompareUtil.Change> getNewRoleRequest(List<CompareUtil.Change> changes) {
         return getNewChanges(changes).stream().filter(change -> change.getRightValue().getClass().equals(RoleRequest.class)).toList();
     }
 
-    public static List<CompareUtil.Change> getNewPermissionRequest(List<CompareUtil.Change> changes){
+    public static List<CompareUtil.Change> getNewPermissionRequest(List<CompareUtil.Change> changes) {
         return getNewChanges(changes).stream().filter(change -> change.getRightValue().getClass().equals(PermissionRequest.class)).toList();
+    }
+
+    public static List<CompareUtil.Change> getUpdateAuthorityRequest(List<CompareUtil.Change> changes) {
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AuthorityRequest.class)).toList();
+    }
+
+    public static List<CompareUtil.Change> getUpdateRoleRequest(List<CompareUtil.Change> changes) {
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(RoleRequest.class)).toList();
+    }
+
+    public static List<CompareUtil.Change> getUpdatePermissionRequest(List<CompareUtil.Change> changes) {
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(PermissionRequest.class)).toList();
     }
 }
