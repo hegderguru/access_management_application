@@ -1,7 +1,7 @@
 package com.karur.access_management_application.security.authentication.provider;
 
 import com.karur.access_management_application.security.service.AccessDetailsPasswordService;
-import com.karur.access_management_application.security.service.AccessorDetailsService;
+import com.karur.access_management_application.security.service.AccessDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +17,7 @@ import java.util.Objects;
 public class UsernamePasswordAuthenticationProvider implements SupportedAuthenticationProvider {
 
     @Autowired
-    AccessorDetailsService accessorDetailsService;
+    AccessDetailsService accessDetailsService;
 
     @Autowired
     AccessDetailsPasswordService accessDetailsPasswordService;
@@ -39,7 +39,7 @@ public class UsernamePasswordAuthenticationProvider implements SupportedAuthenti
             return Mono.error(new BadCredentialsException("Invalid username or password"));
         }
         String password = (String) authentication.getCredentials();
-        return accessorDetailsService.findByUsername(authentication.getName())
+        return accessDetailsService.findByUsername(authentication.getName())
                 .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                 .flatMap(userDetails -> {
                     if (!userDetails.isAccountNonExpired() || !userDetails.isAccountNonLocked() || !userDetails.isCredentialsNonExpired() || !userDetails.isEnabled()) {

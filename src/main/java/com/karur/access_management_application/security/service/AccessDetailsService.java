@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 
 @Data
 @Service
-public class AccessorDetailsService implements ReactiveUserDetailsService {
+public class AccessDetailsService implements ReactiveUserDetailsService {
 
     @Autowired
     AccessRepository accessRepository;
