@@ -41,6 +41,7 @@ public class AccessService {
 
     public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
         return accessRepository.fetchAccessEntity(accessRequest.getUsername())
+                .switchIfEmpty(Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest)))
                 .flatMap(accessEntity -> {
                     List<CompareUtil.Change> changes = AccessDetailsUpdateUtil.accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
                     return saveOrUpdateAuthorities(accessEntity, changes);
@@ -129,6 +130,23 @@ public class AccessService {
                     AuthorityEntity authorityEntity = accessEntity.getAuthorityEntities().stream().filter(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(authorityRequest.getName())).findFirst().get();
                     switch (AuthorityRequest.Fields.valueOf(change.getField().getName())) {
                         case description -> authorityEntity.setName(ChangeUtil.getStringElseConvert(change));
+                    }
+                    return Mono.empty();
+                }).then();
+    }
+
+    private Mono<Void> updateAccessOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAccessRequest(changes))
+                .flatMap(change -> {
+                    switch (AccessRequest.Fields.valueOf(change.getField().getName())) {
+                        case firstName -> accessEntity.setFirstName(ChangeUtil.getStringElseConvert(change));
+                        case middleName -> accessEntity.setMiddleName(ChangeUtil.getStringElseConvert(change));
+                        case lastName -> accessEntity.setLastName(ChangeUtil.getStringElseConvert(change));
+                        case accessEnabled -> accessEntity.setAccessEnabled(ChangeUtil.getBooleanElseConvert(change));
+                        case accessLocked -> accessEntity.setAccessLocked(ChangeUtil.getBooleanElseConvert(change));
+                        case accessExpired -> accessEntity.setAccessExpired(ChangeUtil.getBooleanElseConvert(change));
+                        case credentialsExpired ->
+                                accessEntity.setCredentialsExpired(ChangeUtil.getBooleanElseConvert(change));
                     }
                     return Mono.empty();
                 }).then();

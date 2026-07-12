@@ -46,4 +46,8 @@ public class AccessDetailsUpdateUtil {
     public static List<CompareUtil.Change> getUpdatePermissionRequest(List<CompareUtil.Change> changes) {
         return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(PermissionRequest.class)).toList();
     }
+
+    public static List<CompareUtil.Change> getUpdateAccessRequest(List<CompareUtil.Change> changes) {
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AccessRequest.class)).toList();
+    }
 }
