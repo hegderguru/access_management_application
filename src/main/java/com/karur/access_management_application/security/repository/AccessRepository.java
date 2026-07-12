@@ -126,10 +126,6 @@ public class AccessRepository {
         return permissionEntityRepository.findByIdIn(ids);
     }
 
-    public Mono<PermissionEntity> fetchPermissionEntity(Long id) {
-        return permissionEntityRepository.findById(id);
-    }
-
     public Mono<AccessEntity> save(AccessEntity accessEntity) {
         return accessEntityRepository.save(accessEntity)
                 .flatMap(accessEntity1 -> Flux.fromIterable(accessEntity1.getAuthorityEntities()).flatMap(this::saveAuthorityEntity)
