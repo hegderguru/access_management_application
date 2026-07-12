@@ -131,6 +131,24 @@ public class AccessService {
                 }).then();
     }
 
+    ////
+    private Mono<Void> updateAccessOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAccessRequest(changes))
+                .flatMap(change -> {
+                    switch (AccessRequest.Fields.valueOf(change.getField().getName())) {
+                        case firstName -> accessEntity.setFirstName(ChangeUtil.getStringElseConvert(change));
+                        case middleName -> accessEntity.setMiddleName(ChangeUtil.getStringElseConvert(change));
+                        case lastName -> accessEntity.setLastName(ChangeUtil.getStringElseConvert(change));
+                        case accessEnabled -> accessEntity.setAccessEnabled(ChangeUtil.getBooleanElseConvert(change));
+                        case accessLocked -> accessEntity.setAccessLocked(ChangeUtil.getBooleanElseConvert(change));
+                        case accessExpired -> accessEntity.setAccessExpired(ChangeUtil.getBooleanElseConvert(change));
+                        case credentialsExpired ->
+                                accessEntity.setCredentialsExpired(ChangeUtil.getBooleanElseConvert(change));
+                    }
+                    return Mono.empty();
+                }).then();
+    }
+
     private Mono<Void> updateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
         Map<String, List<CompareUtil.Change>> updateAuthorityRequest1 = AccessDetailsUpdateUtil.getUpdateAuthorityRequest1(changes);
         return Flux.fromIterable(updateAuthorityRequest1.entrySet())
@@ -145,23 +163,6 @@ public class AccessService {
                 .flatMap(change -> {
                     switch (AuthorityRequest.Fields.valueOf(change.getField().getName())) {
                         case description -> authorityEntity.setName(ChangeUtil.getStringElseConvert(change));
-                    }
-                    return Mono.empty();
-                }).then();
-    }
-
-    private Mono<Void> updateAccessOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAccessRequest(changes))
-                .flatMap(change -> {
-                    switch (AccessRequest.Fields.valueOf(change.getField().getName())) {
-                        case firstName -> accessEntity.setFirstName(ChangeUtil.getStringElseConvert(change));
-                        case middleName -> accessEntity.setMiddleName(ChangeUtil.getStringElseConvert(change));
-                        case lastName -> accessEntity.setLastName(ChangeUtil.getStringElseConvert(change));
-                        case accessEnabled -> accessEntity.setAccessEnabled(ChangeUtil.getBooleanElseConvert(change));
-                        case accessLocked -> accessEntity.setAccessLocked(ChangeUtil.getBooleanElseConvert(change));
-                        case accessExpired -> accessEntity.setAccessExpired(ChangeUtil.getBooleanElseConvert(change));
-                        case credentialsExpired ->
-                                accessEntity.setCredentialsExpired(ChangeUtil.getBooleanElseConvert(change));
                     }
                     return Mono.empty();
                 }).then();
