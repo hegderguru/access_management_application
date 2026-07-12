@@ -53,7 +53,7 @@ public class AccessRepository {
     }
 
     public Mono<AccessEntity> findAccessEntityByUsername(String username) {
-        return accessEntityRepository.findByUsername(username);
+        return fetchAccessEntity(username);
     }
 
     public Mono<AccessEntity> fetchAccessEntity(String username) {
