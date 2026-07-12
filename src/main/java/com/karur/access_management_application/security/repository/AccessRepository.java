@@ -52,7 +52,7 @@ public class AccessRepository {
         return authorityEntityRepository.findByIdIn(accessAuthorityEntities.stream().map(AccessAuthorityEntity::authorityId).toList());
     }
 
-    public Mono<AccessEntity> findAccessorEntityByUsername(String username) {
+    public Mono<AccessEntity> findAccessEntityByUsername(String username) {
         return accessEntityRepository.findByUsername(username);
     }
 

@@ -29,7 +29,7 @@ public class AccessorDetailsService implements ReactiveUserDetailsService {
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        return accessRepository.findAccessorEntityByUsername(username).flatMap(accessorEntity -> Mono.just((UserDetails) accessorEntity));
+        return accessRepository.findAccessEntityByUsername(username).flatMap(accessEntity -> Mono.just((UserDetails) accessEntity));
     }
 
     public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {
