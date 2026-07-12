@@ -7,7 +7,9 @@ import com.karur.access_management_application.security.model.request.Permission
 import com.karur.access_management_application.security.model.request.RoleRequest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AccessDetailsUpdateUtil {
 
@@ -37,6 +39,11 @@ public class AccessDetailsUpdateUtil {
 
     public static List<CompareUtil.Change> getUpdateAuthorityRequest(List<CompareUtil.Change> changes) {
         return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AuthorityRequest.class)).toList();
+    }
+
+    public static Map<String, List<CompareUtil.Change>> getUpdateAuthorityRequest1(List<CompareUtil.Change> changes) {
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AuthorityRequest.class))
+                .collect(Collectors.groupingBy(change -> ((AuthorityRequest) change.getRight()).getName()));
     }
 
     public static List<CompareUtil.Change> getUpdateRoleRequest(List<CompareUtil.Change> changes) {

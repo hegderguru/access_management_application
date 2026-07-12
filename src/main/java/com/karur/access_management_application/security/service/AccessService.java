@@ -23,6 +23,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AccessService {
@@ -75,7 +76,7 @@ public class AccessService {
     }
 
 
-    //////////////////
+    /// ///////////////
     private Mono<Void> updatePermissionEntitiesOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes))
                 .flatMap(change -> {
@@ -131,10 +132,17 @@ public class AccessService {
     }
 
     private Mono<Void> updateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAuthorityRequest(changes))
+        Map<String, List<CompareUtil.Change>> updateAuthorityRequest1 = AccessDetailsUpdateUtil.getUpdateAuthorityRequest1(changes);
+        return Flux.fromIterable(updateAuthorityRequest1.entrySet())
+                .flatMap(stringListEntry -> {
+                    AuthorityEntity authorityEntity = accessEntity.getAuthorityEntities().stream().filter(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();
+                    return updateAuthorityOnChanges(authorityEntity, stringListEntry.getValue());
+                }).then();
+    }
+
+    private Mono<Void> updateAuthorityOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(changes)
                 .flatMap(change -> {
-                    AuthorityRequest authorityRequest = (AuthorityRequest) change.getRight();
-                    AuthorityEntity authorityEntity = accessEntity.getAuthorityEntities().stream().filter(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(authorityRequest.getName())).findFirst().get();
                     switch (AuthorityRequest.Fields.valueOf(change.getField().getName())) {
                         case description -> authorityEntity.setName(ChangeUtil.getStringElseConvert(change));
                     }
