@@ -52,7 +52,7 @@ public class CompareUtil {
             if (!left.equals(right)) {
                 changes.add(Change.builder()
                         .leftParent(leftParent).rightParent(rightParent)
-                        .left(null).right(null)
+                        .left(leftParent).right(rightParent)
                         .leftValue(left).rightValue(right)
                         .leftIndex(leftIndex).rightIndex(rightIndex)
                         .build());
