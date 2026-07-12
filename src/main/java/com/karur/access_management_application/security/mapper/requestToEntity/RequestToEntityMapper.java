@@ -20,8 +20,8 @@ public class RequestToEntityMapper {
     @Autowired
     AccessAuthorityRequestToEntityMapper accessAuthorityRequestToEntityMapper;
 
-    public AccessEntity buildAccessorEntity(AccessRequest accessRequest) {
-        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessorEntity(accessRequest);
+    public AccessEntity buildAccessEntity(AccessRequest accessRequest) {
+        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
         accessEntity.setAccessGrantedAuthorities(accessAuthorityRequestToEntityMapper.buildAccessGrantedAuthorityEntities(accessRequest));
         return accessEntity;
     }

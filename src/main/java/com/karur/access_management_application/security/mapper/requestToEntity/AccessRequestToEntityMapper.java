@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccessRequestToEntityMapper {
 
-    public AccessEntity buildAccessorEntity(AccessRequest accessRequest) {
+    public AccessEntity buildAccessEntity(AccessRequest accessRequest) {
         return AccessEntity.builder()
                 .username(accessRequest.getUsername())
                 .password(accessRequest.getPassword())
