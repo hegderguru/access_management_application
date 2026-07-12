@@ -62,10 +62,20 @@ public class AccessService {
                 .flatMap(roleEntity -> saveOrUpdatePermissionsOnChanges(roleEntity, changes));
     }
 
+    public Mono<Void> saveOrUpdateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+        return newAuthoritiesOnChanges(accessEntity, changes).flatMap(unused -> updateAuthoritiesOnChanges(accessEntity, changes));
+    }
+
+    public Mono<Void> saveOrUpdateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return newRoleEntitiesOnChanges(authorityEntity, changes).flatMap(unused -> updateRoleEntitiesOnChanges(authorityEntity, changes));
+    }
+
     public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return newPermissionEntitiesOnChanges(roleEntity, changes).flatMap(unused -> updatePermissionEntitiesOnChanges(roleEntity, changes));
     }
 
+
+    //////////////////
     private Mono<Void> updatePermissionEntitiesOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes))
                 .flatMap(change -> {
@@ -90,10 +100,6 @@ public class AccessService {
                 }).then();
     }
 
-    public Mono<Void> saveOrUpdateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return newRoleEntitiesOnChanges(authorityEntity, changes).flatMap(unused -> updateRoleEntitiesOnChanges(authorityEntity, changes));
-    }
-
     private Mono<Void> updateRoleEntitiesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateRoleRequest(changes))
                 .flatMap(change -> {
@@ -113,10 +119,6 @@ public class AccessService {
                     authorityEntity.getRoleEntities().add(roleEntity);
                     return Mono.empty();
                 }).then();
-    }
-
-    public Mono<Void> saveOrUpdateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return newAuthoritiesOnChanges(accessEntity, changes).flatMap(unused -> updateAuthoritiesOnChanges(accessEntity, changes));
     }
 
     private Mono<Void> newAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
