@@ -5,6 +5,8 @@ import com.karur.access_management_application.security.model.request.AccessRequ
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,10 +15,13 @@ import java.util.List;
 @Service
 public class AccessRequestToEntityMapper {
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public AccessEntity buildAccessEntity(AccessRequest accessRequest) {
         return AccessEntity.builder()
                 .username(accessRequest.getUsername())
-                .password(accessRequest.getPassword())
+                .password(passwordEncoder.encode(accessRequest.getPassword()))
                 .firstName(accessRequest.getFirstName())
                 .middleName(accessRequest.getMiddleName())
                 .lastName(accessRequest.getLastName())
