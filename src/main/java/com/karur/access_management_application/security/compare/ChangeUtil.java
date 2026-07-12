@@ -15,4 +15,11 @@ public class ChangeUtil {
         }
         return Integer.parseInt(getStringElseConvert(change));
     }
+
+    public static Boolean getBooleanElseConvert(CompareUtil.Change change) {
+        if (change.getRightValue() instanceof Boolean) {
+            return (Boolean) change.getRightValue();
+        }
+        return Boolean.valueOf(getStringElseConvert(change)).equals(true);
+    }
 }

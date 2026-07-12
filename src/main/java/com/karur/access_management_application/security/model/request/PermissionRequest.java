@@ -1,17 +1,20 @@
 package com.karur.access_management_application.security.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.karur.access_management_application.security.compare.DiffId;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@FieldNameConstants(asEnum = true)
 public class PermissionRequest {
 
     private String classPath;
@@ -22,6 +25,7 @@ public class PermissionRequest {
     private Boolean update;
     private Boolean delete;
     private String fullyQualifiedClassPath;
+    @DiffId
     private String fullyQualifiedFieldPath;
     private Boolean[] permissions;
 
