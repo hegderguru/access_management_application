@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @Data
 @Table(value = "access",schema = "auth")
-public class AccessEntity implements UserDetails {
+public class AccessEntity {
 
     @Id
     private Long id;
@@ -32,41 +32,6 @@ public class AccessEntity implements UserDetails {
 
     @Transient
     private List<AuthorityEntity> authorityEntities;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorityEntities;
-    }
-
-    @Override
-    public @Nullable String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return !accessExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !accessLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return !credentialsExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return accessEnabled;
-    }
 
     public List<AuthorityEntity> accessGrantedAuthorities(){
         return authorityEntities;

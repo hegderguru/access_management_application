@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.authentication.provider;
 
+import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
 import com.karur.access_management_application.security.service.AccessDetailsPasswordService;
 import com.karur.access_management_application.security.service.AccessDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import java.util.Objects;
 
 @Service
 public class UsernamePasswordAuthenticationProvider implements SupportedAuthenticationProvider {
+
+    @Autowired
+    EntityToReadMapper entityToReadMapper;
 
     @Autowired
     AccessDetailsService accessDetailsService;
@@ -39,17 +43,17 @@ public class UsernamePasswordAuthenticationProvider implements SupportedAuthenti
             return Mono.error(new BadCredentialsException("Invalid username or password"));
         }
         String password = (String) authentication.getCredentials();
-        return accessDetailsService.findByUsername(authentication.getName())
+        return entityToReadMapper.buildAccessDetail(authentication.getName())
                 .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                 .flatMap(userDetails -> {
-                    if (!userDetails.isAccountNonExpired() || !userDetails.isAccountNonLocked() || !userDetails.isCredentialsNonExpired() || !userDetails.isEnabled()) {
+                    if (!userDetails.isAccessExpired() || !userDetails.isAccessLocked() || !userDetails.isCredentialsExpired() || !userDetails.isAccessEnabled()) {
                         return Mono.error(new AuthenticationException("This account is forbiddon the access"));
                     }
                     if (!passwordEncoder.matches(password, userDetails.getPassword())) {
                         return Mono.error(new BadCredentialsException("Invalid Credentials"));
                     }
                     if (passwordEncoder.upgradeEncoding(userDetails.getPassword())) {
-                        return accessDetailsPasswordService.updatePassword(userDetails, passwordEncoder.encode(password));
+                        return accessDetailsPasswordService.updatePassword(userDetails, passwordEncoder.encode(password)).flatMap(userDetails1 -> entityToReadMapper.buildAccessDetail(userDetails1.getUsername()));
                     }
                     return Mono.just(userDetails);
                 })

@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @Data
 @Table(value = "authority",schema = "auth")
-public class AuthorityEntity implements GrantedAuthority {
+public class AuthorityEntity {
 
     @Id
     private Long id;
@@ -24,10 +24,5 @@ public class AuthorityEntity implements GrantedAuthority {
 
     @Transient
     private List<RoleEntity> roleEntities = new ArrayList<>();
-
-    @Override
-    public @Nullable String getAuthority() {
-        return name;
-    }
 
 }
