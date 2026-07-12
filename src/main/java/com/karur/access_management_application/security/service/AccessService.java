@@ -4,12 +4,16 @@ import com.karur.access_management_application.security.compare.ChangeUtil;
 import com.karur.access_management_application.security.compare.CompareUtil;
 import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.AuthorityEntity;
+import com.karur.access_management_application.security.entity.PermissionEntity;
+import com.karur.access_management_application.security.entity.RoleEntity;
 import com.karur.access_management_application.security.mapper.requestToEntity.EntityToAccessReuestMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.RequestToEntityMapper;
 import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
+import com.karur.access_management_application.security.model.request.PermissionRequest;
+import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.AccessDetailsUpdateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +38,50 @@ public class AccessService {
     @Autowired
     EntityToReadMapper entityToReadMapper;
 
-    public Mono<AccessDetail> saveAccess(AccessRequest accessRequest) {
-        return accessRepository.fetchAccessEntity(accessRequest.getUsername())
-                .switchIfEmpty(Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest)))
-                .flatMap(accessEntity -> {
-                    Mono.just(AccessDetailsUpdateUtil.accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest))
-                            .flatMap(changes -> newAuthorities(accessEntity, changes)
-                                    .map(unused -> updateAuthorities(accessEntity, changes)));
-                    return entityToReadMapper.buildAccessDetail(accessEntity.getUsername());
-                });
+
+    private Mono<Void> updatePermissionEntities(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes))
+                .flatMap(change -> {
+                    PermissionRequest permissionRequest = (PermissionRequest) change.getRight();
+                    PermissionEntity permissionEntity = roleEntity.getPermissionEntities().stream().filter(permissionEntity1 -> permissionEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(permissionRequest.fullyQualifiedClassPath())).findFirst().get();
+                    switch (PermissionRequest.Fields.valueOf(change.getField().getName())) {
+                        case read -> permissionEntity.setRead(ChangeUtil.getBooleanElseConvert(change));
+                        case create -> permissionEntity.setCreate(ChangeUtil.getBooleanElseConvert(change));
+                        case update -> permissionEntity.setUpdate(ChangeUtil.getBooleanElseConvert(change));
+                        case delete -> permissionEntity.setDelete(ChangeUtil.getBooleanElseConvert(change));
+                    }
+                    return Mono.empty();
+                }).then();
+    }
+
+    private Mono<Void> newPermissionEntities(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(AccessDetailsUpdateUtil.getNewPermissionRequest(changes))
+                .flatMap(change -> Mono.just(requestToEntityMapper.buildPermissionEntity((PermissionRequest) change.getRightValue())))
+                .flatMap(permissionEntity -> {
+                    roleEntity.getPermissionEntities().add(permissionEntity);
+                    return Mono.empty();
+                }).then();
+    }
+
+    private Mono<Void> updateRoleEntities(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateRoleRequest(changes))
+                .flatMap(change -> {
+                    RoleRequest roleRequest = (RoleRequest) change.getRight();
+                    RoleEntity roleEntity = authorityEntity.getRoleEntities().stream().filter(roleEntity1 -> roleEntity1.getName().equalsIgnoreCase(roleRequest.getName())).findFirst().get();
+                    switch (RoleRequest.Fields.valueOf(change.getField().getName())) {
+                        case description -> authorityEntity.setName(ChangeUtil.getStringElseConvert(change));
+                    }
+                    return Mono.empty();
+                }).then();
+    }
+
+    private Mono<Void> newRoleEntities(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(AccessDetailsUpdateUtil.getNewRoleRequest(changes))
+                .flatMap(change -> Mono.just(requestToEntityMapper.buildRoleEntity((RoleRequest) change.getRightValue())))
+                .flatMap(roleEntity -> {
+                    authorityEntity.getRoleEntities().add(roleEntity);
+                    return Mono.empty();
+                }).then();
     }
 
     private Mono<Void> newAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
