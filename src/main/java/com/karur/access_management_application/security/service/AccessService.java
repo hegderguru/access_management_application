@@ -72,26 +72,10 @@ public class AccessService {
     }
 
     public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        return newPermissionEntitiesOnChanges(roleEntity, changes).flatMap(unused -> updatePermissionEntitiesOnChanges(roleEntity, changes));
+        return newPermissionEntitiesOnChanges(roleEntity, changes).flatMap(unused -> updatePermissionsOnChanges(roleEntity, changes));
     }
 
-
-    /// ///////////////
-    private Mono<Void> updatePermissionEntitiesOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes))
-                .flatMap(change -> {
-                    PermissionRequest permissionRequest = (PermissionRequest) change.getRight();
-                    PermissionEntity permissionEntity = roleEntity.getPermissionEntities().stream().filter(permissionEntity1 -> permissionEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(permissionRequest.fullyQualifiedClassPath())).findFirst().get();
-                    switch (PermissionRequest.Fields.valueOf(change.getField().getName())) {
-                        case read -> permissionEntity.setRead(ChangeUtil.getBooleanElseConvert(change));
-                        case create -> permissionEntity.setCreate(ChangeUtil.getBooleanElseConvert(change));
-                        case update -> permissionEntity.setUpdate(ChangeUtil.getBooleanElseConvert(change));
-                        case delete -> permissionEntity.setDelete(ChangeUtil.getBooleanElseConvert(change));
-                    }
-                    return Mono.empty();
-                }).then();
-    }
-
+    /////
     private Mono<Void> newPermissionEntitiesOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getNewPermissionRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildPermissionEntity((PermissionRequest) change.getRightValue())))
@@ -119,7 +103,7 @@ public class AccessService {
                 }).then();
     }
 
-    /// /
+    /////////
     private Mono<Void> updateAccessOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAccessRequest(changes))
                 .flatMap(change -> {
@@ -176,10 +160,17 @@ public class AccessService {
     }
 
     private Mono<Void> updatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes))
+        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessDetailsUpdateUtil.getUpdateRoleRequest(changes);
+        return Flux.fromIterable(updateRoleRequest1.entrySet())
+                .flatMap(stringListEntry -> {
+                    PermissionEntity permissionEntity = roleEntity.getPermissionEntities().stream().filter(authorityEntity1 -> authorityEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();
+                    return updatePermissionOnChanges(permissionEntity, stringListEntry.getValue());
+                }).then();
+    }
+
+    private Mono<Void> updatePermissionOnChanges(PermissionEntity permissionEntity, List<CompareUtil.Change> changes) {
+        return Flux.fromIterable(changes)
                 .flatMap(change -> {
-                    PermissionRequest permissionRequest = (PermissionRequest) change.getRight();
-                    PermissionEntity permissionEntity = roleEntity.getPermissionEntities().stream().filter(permissionEntity1 -> permissionEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(permissionRequest.fullyQualifiedClassPath())).findFirst().get();
                     switch (PermissionRequest.Fields.valueOf(change.getField().getName())) {
                         case read -> permissionEntity.setRead(ChangeUtil.getBooleanElseConvert(change));
                         case create -> permissionEntity.setCreate(ChangeUtil.getBooleanElseConvert(change));
