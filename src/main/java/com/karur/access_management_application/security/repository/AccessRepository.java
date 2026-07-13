@@ -90,15 +90,10 @@ public class AccessRepository {
         return authorityEntityRepository.findById(id)
                 .flatMap(authorityEntity -> authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId())
                         .collectList()
-                        .flatMap(authorityRoleEntities -> fetchAllRoleEntities(authorityRoleEntities)
+                        .flatMap(authorityRoleEntities -> Flux.fromIterable(authorityRoleEntities.stream().map(AuthorityRoleEntity::getRoleId).toList()).flatMap(this::fetchRoleEntity)
                                 .collectList()
                                 .doOnNext(authorityEntity::setRoleEntities)
                                 .then(Mono.just(authorityEntity))));
-    }
-
-    public Flux<RoleEntity> fetchAllRoleEntities(List<AuthorityRoleEntity> authorityRoleEntities) {
-        List<Long> ids = authorityRoleEntities.stream().map(AuthorityRoleEntity::getRoleId).toList();
-        return Flux.fromIterable(ids).flatMap(this::fetchRoleEntity);
     }
 
     public Mono<RoleEntity> fetchRoleEntity(Long id) {
