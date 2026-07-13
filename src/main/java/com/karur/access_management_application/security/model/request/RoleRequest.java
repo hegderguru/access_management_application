@@ -2,6 +2,7 @@ package com.karur.access_management_application.security.model.request;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.karur.access_management_application.security.compare.DiffId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @FieldNameConstants(asEnum = true)
 public class RoleRequest {
+    @DiffId
     private String name;
     private String description;
 

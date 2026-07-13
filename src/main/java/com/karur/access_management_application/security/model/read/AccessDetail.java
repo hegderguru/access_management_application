@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.model.read;
 
+import com.karur.access_management_application.security.compare.SecretChange;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccessDetail implements UserDetails {
+
     private String username;
+
+    @SecretChange
     private String password;
+
     private String firstName;
     private String middleName;
     private String lastName;

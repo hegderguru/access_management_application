@@ -28,9 +28,8 @@ public class AccessRequest {
 
     private String firstName;
     private String middleName;
-
-    @IgnoreChange
     private String lastName;
+
     private Boolean accessEnabled;
     private Boolean accessLocked;
     private Boolean accessExpired;

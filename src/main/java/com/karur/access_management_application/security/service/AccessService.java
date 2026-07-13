@@ -108,7 +108,7 @@ public class AccessService {
     private Mono<Void> updateAccessOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAccessRequest(changes))
                 .flatMap(change -> {
-                    switch (AccessRequest.Fields.valueOf(change.getField().getName())) {
+                    switch (AccessRequest.Fields.valueOf(change.getField())) {
                         case firstName -> accessEntity.setFirstName(ChangeUtil.getStringElseConvert(change));
                         case middleName -> accessEntity.setMiddleName(ChangeUtil.getStringElseConvert(change));
                         case lastName -> accessEntity.setLastName(ChangeUtil.getStringElseConvert(change));
@@ -134,7 +134,7 @@ public class AccessService {
     private Mono<Void> updateAuthorityOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(changes)
                 .flatMap(change -> {
-                    switch (AuthorityRequest.Fields.valueOf(change.getField().getName())) {
+                    switch (AuthorityRequest.Fields.valueOf(change.getField())) {
                         case description -> authorityEntity.setName(ChangeUtil.getStringElseConvert(change));
                     }
                     return Mono.empty();
@@ -153,7 +153,7 @@ public class AccessService {
     private Mono<Void> updateRoleOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(changes)
                 .flatMap(change -> {
-                    switch (RoleRequest.Fields.valueOf(change.getField().getName())) {
+                    switch (RoleRequest.Fields.valueOf(change.getField())) {
                         case description -> roleEntity.setDescription(ChangeUtil.getStringElseConvert(change));
                     }
                     return Mono.empty();
@@ -172,7 +172,7 @@ public class AccessService {
     private Mono<Void> updatePermissionOnChanges(PermissionEntity permissionEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(changes)
                 .flatMap(change -> {
-                    switch (PermissionRequest.Fields.valueOf(change.getField().getName())) {
+                    switch (PermissionRequest.Fields.valueOf(change.getField())) {
                         case read -> permissionEntity.setRead(ChangeUtil.getBooleanElseConvert(change));
                         case create -> permissionEntity.setCreate(ChangeUtil.getBooleanElseConvert(change));
                         case update -> permissionEntity.setUpdate(ChangeUtil.getBooleanElseConvert(change));
