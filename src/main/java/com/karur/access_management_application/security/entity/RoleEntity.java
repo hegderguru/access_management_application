@@ -8,6 +8,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -22,4 +23,11 @@ public class RoleEntity {
 
     @Transient
     private List<PermissionEntity> permissionEntities = new ArrayList<>();
+
+    public void addPermissionEntity(PermissionEntity permissionEntity){
+        if(Objects.isNull(permissionEntities)){
+            permissionEntities=new ArrayList<>();
+            permissionEntities.add(permissionEntity);
+        }
+    }
 }

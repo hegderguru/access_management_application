@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -24,5 +25,12 @@ public class AuthorityEntity {
 
     @Transient
     private List<RoleEntity> roleEntities = new ArrayList<>();
+
+    public void addRoleEntity(RoleEntity roleEntity){
+        if(Objects.isNull(roleEntities)){
+            roleEntities=new ArrayList<>();
+            roleEntities.add(roleEntity);
+        }
+    }
 
 }

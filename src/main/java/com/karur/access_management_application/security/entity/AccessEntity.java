@@ -9,12 +9,14 @@ import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Builder
 @Data
-@Table(value = "access",schema = "auth")
+@Table(value = "access", schema = "auth")
 public class AccessEntity {
 
     @Id
@@ -33,7 +35,14 @@ public class AccessEntity {
     @Transient
     private List<AuthorityEntity> authorityEntities;
 
-    public List<AuthorityEntity> accessGrantedAuthorities(){
+    public List<AuthorityEntity> accessGrantedAuthorities() {
         return authorityEntities;
+    }
+
+    public void addAuthorityEntity(AuthorityEntity authorityEntity) {
+        if (Objects.isNull(authorityEntities)) {
+            authorityEntities = new ArrayList<>();
+            authorityEntities.add(authorityEntity);
+        }
     }
 }

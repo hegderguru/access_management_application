@@ -21,12 +21,12 @@ public class RequestToEntityMapper {
         AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
         accessRequest.getAuthorityRequests().forEach(authorityRequest -> {
             AuthorityEntity authorityEntity = buildAuthorityEntity(authorityRequest);
-            accessEntity.getAuthorityEntities().add(authorityEntity);
+            accessEntity.addAuthorityEntity(authorityEntity);
             authorityRequest.getRoleRequests().forEach(roleRequest -> {
                 RoleEntity roleEntity = buildRoleEntity(roleRequest);
-                authorityEntity.getRoleEntities().add(roleEntity);
+                authorityEntity.addRoleEntity(roleEntity);
                 roleRequest.getPermissionRequests().forEach(permissionRequest -> {
-                    roleEntity.getPermissionEntities().add(buildPermissionEntity(permissionRequest));
+                    roleEntity.addPermissionEntity(buildPermissionEntity(permissionRequest));
                 });
             });
         });
