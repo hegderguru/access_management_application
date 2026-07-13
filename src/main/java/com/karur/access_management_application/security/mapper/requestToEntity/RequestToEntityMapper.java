@@ -22,23 +22,25 @@ public class RequestToEntityMapper {
         accessRequest.getAuthorityRequests().forEach(authorityRequest -> {
             AuthorityEntity authorityEntity = buildAuthorityEntity(authorityRequest);
             accessEntity.addAuthorityEntity(authorityEntity);
-            authorityRequest.getRoleRequests().forEach(roleRequest -> {
-                RoleEntity roleEntity = buildRoleEntity(roleRequest);
-                authorityEntity.addRoleEntity(roleEntity);
-                roleRequest.getPermissionRequests().forEach(permissionRequest -> {
-                    roleEntity.addPermissionEntity(buildPermissionEntity(permissionRequest));
-                });
-            });
         });
         return accessEntity;
     }
 
     public AuthorityEntity buildAuthorityEntity(AuthorityRequest authorityRequest) {
-        return accessRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
+        AuthorityEntity authorityEntity = accessRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
+        authorityRequest.getRoleRequests().forEach(roleRequest -> {
+            RoleEntity roleEntity = buildRoleEntity(roleRequest);
+            authorityEntity.addRoleEntity(roleEntity);
+        });
+        return authorityEntity;
     }
 
     public RoleEntity buildRoleEntity(RoleRequest roleRequest) {
-        return accessRequestToEntityMapper.buildRoleEntity(roleRequest);
+        RoleEntity roleEntity = accessRequestToEntityMapper.buildRoleEntity(roleRequest);
+        roleRequest.getPermissionRequests().forEach(permissionRequest -> {
+            roleEntity.addPermissionEntity(buildPermissionEntity(permissionRequest));
+        });
+        return roleEntity;
     }
 
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
