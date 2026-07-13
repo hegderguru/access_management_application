@@ -18,7 +18,8 @@ public class AccessDetailsUpdateUtil {
     }
 
     public static List<CompareUtil.Change> getNewChanges(List<CompareUtil.Change> changes) {
-        return changes.stream().filter(change -> Objects.isNull(change.getLeft()) && Objects.isNull(change.getRight()) && Objects.isNull(change.getLeftValue()) && Objects.nonNull(change.getRightValue())).toList();
+        return changes.stream().filter(change -> ((Objects.isNull(change.getLeft()) ^ Objects.isNull(change.getRight())) || (Objects.isNull(change.getLeftValue()) ^ Objects.nonNull(change.getRightValue())))
+        && (Objects.isNull(change.getLeftValue()) && Objects.nonNull(change.getRightValue()))).toList();
     }
 
     public static List<CompareUtil.Change> accessChanges(AccessRequest existing, AccessRequest updates) {
