@@ -81,7 +81,7 @@ public class AccessService {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getNewPermissionRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildPermissionEntity((PermissionRequest) change.getRightValue())))
                 .flatMap(permissionEntity -> {
-                    roleEntity.getPermissionEntities().add(permissionEntity);
+                    roleEntity.addPermissionEntity(permissionEntity);
                     return Mono.empty();
                 }).then();
     }
@@ -90,7 +90,7 @@ public class AccessService {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getNewRoleRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildRoleEntity((RoleRequest) change.getRightValue())))
                 .flatMap(roleEntity -> {
-                    authorityEntity.getRoleEntities().add(roleEntity);
+                    authorityEntity.addRoleEntity(roleEntity);
                     return Mono.empty();
                 }).then();
     }
@@ -99,7 +99,7 @@ public class AccessService {
         return Flux.fromIterable(AccessDetailsUpdateUtil.getNewAuthorityRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildAuthorityEntity((AuthorityRequest) change.getRightValue())))
                 .flatMap(authorityEntity -> {
-                    accessEntity.getAuthorityEntities().add(authorityEntity);
+                    accessEntity.addAuthorityEntity(authorityEntity);
                     return Mono.empty();
                 }).then();
     }
