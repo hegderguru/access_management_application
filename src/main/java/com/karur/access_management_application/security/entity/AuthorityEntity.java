@@ -29,8 +29,8 @@ public class AuthorityEntity {
     public void addRoleEntity(RoleEntity roleEntity){
         if(Objects.isNull(roleEntities)){
             roleEntities=new ArrayList<>();
-            roleEntities.add(roleEntity);
         }
+        roleEntities.add(roleEntity);
     }
 
 }

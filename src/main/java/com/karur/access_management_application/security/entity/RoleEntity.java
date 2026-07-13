@@ -27,7 +27,7 @@ public class RoleEntity {
     public void addPermissionEntity(PermissionEntity permissionEntity){
         if(Objects.isNull(permissionEntities)){
             permissionEntities=new ArrayList<>();
-            permissionEntities.add(permissionEntity);
         }
+        permissionEntities.add(permissionEntity);
     }
 }
