@@ -11,8 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @Data
+@Builder
 @Table(value = "authority",schema = "auth")
 public class AuthorityEntity {
 

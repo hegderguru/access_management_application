@@ -48,7 +48,7 @@ public class AccessDetailsService implements ReactiveUserDetailsService {
                 .map(authentication -> authentication.getPrincipal().toString())
                 .filter(username::equalsIgnoreCase)
                 .flatMap(un -> entityToReadMapper.buildAccessDetail(un)
-                        .map(accessDetail -> AccessDetail.builder().username(un).authorityDetails(accessDetail.getAuthorityDetails()).build()));
+                        .map(accessDetail -> AccessDetail.builder().username(un).authorities(accessDetail.getAuthorities()).build()));
     }
 
     public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {

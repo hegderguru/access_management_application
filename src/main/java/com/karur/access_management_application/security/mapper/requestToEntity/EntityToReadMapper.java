@@ -43,7 +43,7 @@ public class EntityToReadMapper {
                 .accessLocked(accessEntity.isAccessLocked())
                 .accessExpired(accessEntity.isAccessExpired())
                 .credentialsExpired(accessEntity.isCredentialsExpired())
-                .authorityDetails(buildAuthorityDetails(accessEntity.accessGrantedAuthorities()))
+                .authorities(buildAuthorityDetails(accessEntity.accessGrantedAuthorities()))
                 .build();
     }
 

@@ -38,7 +38,7 @@ class ChangesUtilTest {
 
         // Act - Call using the instance variable 'changesUtil' instead of static call
         List<CompareUtil.Change> compare = compareUtil.compare(accessRequestOld, accessRequestNew);
-        log.info("Compare: Objects Object1: {} and Object2: {} with differences: {} ", CommonUtil.writeValueAsString(accessRequestOld), CommonUtil.writeValueAsString(accessRequestNew), CommonUtil.writeValueAsString(compare));
+        //log.info("Compare: Objects Object1: {} and Object2: {} with differences: {} ", CommonUtil.writeValueAsString(accessRequestOld), CommonUtil.writeValueAsString(accessRequestNew), CommonUtil.writeValueAsString(compare));
         // Assert - Validate that changes were correctly identified
         assertNotNull(compare);
 

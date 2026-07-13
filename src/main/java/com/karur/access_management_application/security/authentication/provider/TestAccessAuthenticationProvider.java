@@ -37,6 +37,6 @@ public class TestAccessAuthenticationProvider implements SupportedAuthentication
         return entityToReadMapper.buildAccessDetail(authentication.getName())
                 .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                 .flatMap(Mono::just)
-                .map(userDetails -> new TestingAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorityDetails()));
+                .map(userDetails -> new TestingAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()));
     }
 }

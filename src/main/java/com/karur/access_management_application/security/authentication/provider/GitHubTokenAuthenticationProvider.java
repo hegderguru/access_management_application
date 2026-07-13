@@ -64,7 +64,7 @@ public class GitHubTokenAuthenticationProvider implements SupportedAuthenticatio
                     return entityToReadMapper.buildAccessDetail(authentication.getName())
                             .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                             .flatMap(Mono::just)
-                            .map(userDetails -> new GitHubTokenAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorityDetails()));
+                            .map(userDetails -> new GitHubTokenAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()));
                 });
     }
 }

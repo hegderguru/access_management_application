@@ -24,7 +24,7 @@ public class AccessDetail implements UserDetails {
     private boolean accessLocked;
     private boolean accessExpired;
     private boolean credentialsExpired;
-    private List<AuthorityDetail> authorityDetails;
+    private List<AuthorityDetail> authorities;
 
     @Override
     public String getUsername(){
@@ -32,8 +32,8 @@ public class AccessDetail implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorityDetails;
+    public List<AuthorityDetail> getAuthorities() {
+        return authorities;
     }
 
     @Override
