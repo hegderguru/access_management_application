@@ -52,7 +52,7 @@ public class CompareUtil {
         if (isSimpleType(left.getClass())) {
             if (!left.equals(right)) {
                 changes.add(Change.builder()
-                                .field(field.getName())
+                        .field(field.getName())
                         .leftParent(leftParent).rightParent(rightParent)
                         .left(leftParent).right(rightParent)
                         .leftValue(left).rightValue(right)
@@ -94,9 +94,11 @@ public class CompareUtil {
         if (left.isEmpty() || right.isEmpty()) {
             addCollectionChanges(leftParent, rightParent, changes, left, right, field);
         }
-        Object firstElement = left.iterator().next();
-        List<Field> diffIdFields = findDiffIdFields(firstElement);
-        compareCollectionsByDiffId(leftParent, rightParent, changes, left, right, field, diffIdFields);
+        if (left.iterator().hasNext()) {
+            Object firstElement = left.iterator().next();
+            List<Field> diffIdFields = findDiffIdFields(firstElement);
+            compareCollectionsByDiffId(leftParent, rightParent, changes, left, right, field, diffIdFields);
+        }
     }
 
     private static void compareCollectionsByDiffId(Object leftParent, Object rightParent, List<Change> changes, Collection<?> left, Collection<?> right, Field field, List<Field> diffIdFields) {
@@ -108,7 +110,7 @@ public class CompareUtil {
             IndexedElement rightIndexedElement = rightMap.get(key);
             if (Objects.isNull(rightIndexedElement)) {
                 changes.add(Change.builder()
-                                .field(field.getName())
+                        .field(field.getName())
                         .leftParent(leftParent).rightParent(rightParent)
                         .left(leftIndexedElement.element).right(null)
                         .leftValue(null).rightValue(null)
@@ -122,7 +124,7 @@ public class CompareUtil {
         for (Map.Entry<String, IndexedElement> elementEntry : rightMap.entrySet()) {
             if (!leftMap.containsKey(elementEntry.getKey())) {
                 changes.add(Change.builder()
-                                .field(field.getName())
+                        .field(field.getName())
                         .leftParent(leftParent).rightParent(rightParent)
                         .left(null).right(elementEntry.getValue().element)
                         .leftValue(null).rightValue(null)
@@ -184,7 +186,7 @@ public class CompareUtil {
         int index = 0;
         for (Object object : left) {
             changes.add(Change.builder()
-                            .field(field.getName())
+                    .field(field.getName())
                     .leftParent(leftParent).rightParent(rightParent)
                     .left(object).right(null)
                     .leftValue(null).rightValue(null)
@@ -195,7 +197,7 @@ public class CompareUtil {
         index = 0;
         for (Object object : right) {
             changes.add(Change.builder()
-                            .field(field.getName())
+                    .field(field.getName())
                     .leftParent(leftParent).rightParent(rightParent)
                     .left(null).right(object)
                     .leftValue(null).rightValue(null)
