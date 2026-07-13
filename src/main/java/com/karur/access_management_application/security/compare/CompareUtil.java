@@ -117,7 +117,7 @@ public class CompareUtil {
                         .leftIndex(leftIndexedElement.index).rightIndex(null)
                         .build());
             } else {
-                compare(leftParent, rightParent, changes, leftIndexedElement.element, rightIndexedElement.element, leftIndexedElement.index, rightIndexedElement.index, null);
+                compare(leftParent, rightParent, changes, leftIndexedElement.element, rightIndexedElement.element, leftIndexedElement.index, rightIndexedElement.index, field);
             }
         }
 
