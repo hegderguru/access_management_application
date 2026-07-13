@@ -52,7 +52,7 @@ CREATE TABLE auth.role (
 );
 
 CREATE TABLE auth.authority_role_id (
-    id BIGINT PRIMARY KEY DEFAULT nextval('auth.authority_role_id'),
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_authority_role_id'),
     authority_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL
 );
@@ -69,7 +69,7 @@ CREATE TABLE auth.permission (
     "delete" BOOLEAN NOT NULL DEFAULT FALSE  -- Escaped reserved keyword
 );
 CREATE TABLE auth.role_permission_id (
-    id BIGINT PRIMARY KEY DEFAULT nextval('auth.role_permission_id'),
+    id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_role_permission_id'),
     role_id BIGINT NOT NULL,
     permission_id BIGINT NOT NULL
 );

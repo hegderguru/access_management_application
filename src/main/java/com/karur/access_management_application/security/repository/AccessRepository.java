@@ -68,7 +68,7 @@ public class AccessRepository {
     }
 
     public Flux<AuthorityEntity> fetchAllAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities) {
-        List<Long> ids = accessAuthorityEntities.stream().map(AccessAuthorityEntity::authorityId).toList();
+        List<Long> ids = accessAuthorityEntities.stream().map(AccessAuthorityEntity::getAuthorityId).toList();
         return fetchAuthorityEntities(ids);
     }
 
@@ -91,7 +91,7 @@ public class AccessRepository {
     }
 
     public Flux<RoleEntity> fetchAllRoleEntities(List<AuthorityRoleEntity> authorityRoleEntities) {
-        List<Long> ids = authorityRoleEntities.stream().map(AuthorityRoleEntity::roleId).toList();
+        List<Long> ids = authorityRoleEntities.stream().map(AuthorityRoleEntity::getRoleId).toList();
         return fetchRoleEntities(ids);
     }
 
@@ -115,7 +115,7 @@ public class AccessRepository {
     }
 
     public Flux<PermissionEntity> fetchAllPermissionEntities(List<RolePermissionEntity> rolePermissionEntities) {
-        List<Long> ids = rolePermissionEntities.stream().map(RolePermissionEntity::permissionId).toList();
+        List<Long> ids = rolePermissionEntities.stream().map(RolePermissionEntity::getPermissionId).toList();
         return fetchPermissionEntities(ids);
     }
 

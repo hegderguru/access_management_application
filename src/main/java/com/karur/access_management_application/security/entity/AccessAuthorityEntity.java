@@ -6,7 +6,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 
+@Data
 @Builder
-@Table(value = "access_authority_id",schema = "auth")
-public record AccessAuthorityEntity(@Id Long id, Long accessId, Long authorityId) {
+@Table(value = "access_authority_id", schema = "auth")
+public class AccessAuthorityEntity {
+    @Id
+    private Long id;
+    private Long accessId;
+    private Long authorityId;
 }

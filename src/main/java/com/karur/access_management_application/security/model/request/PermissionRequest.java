@@ -17,16 +17,24 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants(asEnum = true)
 public class PermissionRequest {
 
+    @DiffId
     private String classPath;
+
+    @DiffId
     private String className;
+
+    @DiffId
     private String fieldName;
+
     private Boolean read;
     private Boolean create;
     private Boolean update;
     private Boolean delete;
     private String fullyQualifiedClassPath;
-    @DiffId
+
+
     private String fullyQualifiedFieldPath;
+
     private Boolean[] permissions;
 
     @PostConstruct
