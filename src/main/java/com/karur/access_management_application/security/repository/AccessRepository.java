@@ -72,7 +72,8 @@ public class AccessRepository {
                 .doOnSuccess(accessEntity -> log.info("User: {} with details: {}", username, accessEntity))
                 .flatMap(accessEntity -> accessAuthorityIdRepository.findByAccessId(accessEntity.getId())
                         .collectList()
-                        .flatMap(accessAuthorityEntities -> fetchAllAuthorityEntities(accessAuthorityEntities)
+                        .flatMap(accessAuthorityEntities -> Flux.fromIterable(accessAuthorityEntities.stream()
+                                        .map(AccessAuthorityEntity::getAuthorityId).toList()).flatMap(this::fetchAuthorityEntity)
                                 .collectList()
                                 .map(authorityEntities -> {
                                     // 1. Mutate the object safely inside the map function
@@ -83,11 +84,6 @@ public class AccessRepository {
                         )
                 );
 
-    }
-
-    public Flux<AuthorityEntity> fetchAllAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities) {
-        List<Long> ids = accessAuthorityEntities.stream().map(AccessAuthorityEntity::getAuthorityId).toList();
-        return Flux.fromIterable(ids).flatMap(this::fetchAuthorityEntity);
     }
 
     public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
