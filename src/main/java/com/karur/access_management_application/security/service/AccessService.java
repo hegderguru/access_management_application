@@ -144,7 +144,7 @@ public class AccessService {
         return Flux.fromIterable(changes)
                 .flatMap(change -> {
                     switch (AuthorityRequest.Fields.valueOf(change.getField())) {
-                        case description -> authorityEntity.setName(ChangeUtil.getStringElseConvert(change));
+                        case description -> authorityEntity.setDescription(ChangeUtil.getStringElseConvert(change));
                     }
                     return Mono.empty();
                 }).then();
