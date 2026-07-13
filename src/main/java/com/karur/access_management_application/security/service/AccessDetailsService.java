@@ -38,32 +38,4 @@ public class AccessDetailsService implements ReactiveUserDetailsService {
     public Mono<UserDetails> findByUsername(String username) {
         return accessRepository.findAccessEntityByUsername(username).flatMap(accessEntity -> Mono.just((UserDetails) accessEntity));
     }
-
-    public Mono<AccessDetail> fetchAccessDetails(String username) {
-        return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
-    }
-
-    public Mono<AccessDetail> fetchAuthorityDetails(String username) {
-        return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-                .map(authentication -> authentication.getPrincipal().toString())
-                .filter(username::equalsIgnoreCase)
-                .flatMap(un -> entityToReadMapper.buildAccessDetail(un)
-                        .map(accessDetail -> AccessDetail.builder().username(un).authorities(accessDetail.getAuthorities()).build()));
-    }
-
-    public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {
-        return accessRepository.saveAccessEntity(requestToEntityMapper.buildAccessEntity(accessRequest));
-    }
-
-    public Mono<AuthorityEntity> createAuthority(AuthorityRequest authorityRequest) {
-        return accessRepository.saveAuthorityEntity(requestToEntityMapper.buildAuthorityEntity(authorityRequest));
-    }
-
-    public Mono<RoleEntity> createRole(RoleRequest roleRequest) {
-        return accessRepository.saveRoleEntity(requestToEntityMapper.buildRoleEntity(roleRequest));
-    }
-
-    public Mono<PermissionEntity> createPermission(PermissionRequest permissionRequest) {
-        return accessRepository.savePermissionEntity(requestToEntityMapper.buildPermissionEntity(permissionRequest));
-    }
 }

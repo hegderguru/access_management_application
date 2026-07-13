@@ -19,6 +19,8 @@ import com.karur.access_management_application.security.util.AccessDetailsUpdate
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,6 +44,35 @@ public class AccessService {
     @Autowired
     EntityToReadMapper entityToReadMapper;
 
+    public Mono<AccessDetail> fetchAccessDetails(String username) {
+        return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
+    }
+
+    public Mono<AccessDetail> fetchAuthorityDetails(String username) {
+        return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
+                .map(authentication -> authentication.getPrincipal().toString())
+                .filter(username::equalsIgnoreCase)
+                .flatMap(un -> entityToReadMapper.buildAccessDetail(un)
+                        .map(accessDetail -> AccessDetail.builder().username(un).authorities(accessDetail.getAuthorities()).build()));
+    }
+
+    public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {
+        return accessRepository.saveAccessEntity(requestToEntityMapper.buildAccessEntity(accessRequest));
+    }
+
+    public Mono<AuthorityEntity> createAuthority(AuthorityRequest authorityRequest) {
+        return accessRepository.saveAuthorityEntity(requestToEntityMapper.buildAuthorityEntity(authorityRequest));
+    }
+
+    public Mono<RoleEntity> createRole(RoleRequest roleRequest) {
+        return accessRepository.saveRoleEntity(requestToEntityMapper.buildRoleEntity(roleRequest));
+    }
+
+    public Mono<PermissionEntity> createPermission(PermissionRequest permissionRequest) {
+        return accessRepository.savePermissionEntity(requestToEntityMapper.buildPermissionEntity(permissionRequest));
+    }
+
+///
     public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
         return accessRepository.fetchAccessEntity(accessRequest.getUsername())
                 .doOnSuccess(accessEntity -> log.info("Fetched Access Entity: {}", accessEntity))
