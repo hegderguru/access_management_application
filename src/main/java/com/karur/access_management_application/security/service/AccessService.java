@@ -82,7 +82,7 @@ public class AccessService {
     }
 
     public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        return newPermissionsOnChanges(roleEntity, changes).flatMap(unused -> updatePermissionsOnChanges(roleEntity, changes));
+        return newPermissionsOnChanges(roleEntity, changes).then(Mono.defer(() -> updatePermissionsOnChanges(roleEntity, changes)));
     }
 
     /// //
@@ -170,7 +170,7 @@ public class AccessService {
     }
 
     private Mono<Void> updatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessDetailsUpdateUtil.getUpdateRoleRequest(changes);
+        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes);
         return Flux.fromIterable(updateRoleRequest1.entrySet())
                 .flatMap(stringListEntry -> {
                     PermissionEntity permissionEntity = roleEntity.getPermissionEntities().stream().filter(authorityEntity1 -> authorityEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();
