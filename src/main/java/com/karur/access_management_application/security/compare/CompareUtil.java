@@ -37,6 +37,7 @@ public class CompareUtil {
         }
         if (Objects.isNull(left) || Objects.isNull(right)) {
             changes.add(Change.builder()
+                    .field(field)
                     .leftParent(leftParent).rightParent(rightParent)
                     .left(null).right(null)
                     .leftValue(left).rightValue(right)
@@ -51,6 +52,7 @@ public class CompareUtil {
         if (isSimpleType(left.getClass())) {
             if (!left.equals(right)) {
                 changes.add(Change.builder()
+                                .field(field)
                         .leftParent(leftParent).rightParent(rightParent)
                         .left(leftParent).right(rightParent)
                         .leftValue(left).rightValue(right)
@@ -106,6 +108,7 @@ public class CompareUtil {
             IndexedElement rightIndexedElement = rightMap.get(key);
             if (Objects.isNull(rightIndexedElement)) {
                 changes.add(Change.builder()
+                                .field(field)
                         .leftParent(leftParent).rightParent(rightParent)
                         .left(leftIndexedElement.element).right(null)
                         .leftValue(null).rightValue(null)
@@ -119,6 +122,7 @@ public class CompareUtil {
         for (Map.Entry<String, IndexedElement> elementEntry : rightMap.entrySet()) {
             if (!leftMap.containsKey(elementEntry.getKey())) {
                 changes.add(Change.builder()
+                                .field(field)
                         .leftParent(leftParent).rightParent(rightParent)
                         .left(null).right(elementEntry.getValue().element)
                         .leftValue(null).rightValue(null)
@@ -180,6 +184,7 @@ public class CompareUtil {
         int index = 0;
         for (Object object : left) {
             changes.add(Change.builder()
+                            .field(field)
                     .leftParent(leftParent).rightParent(rightParent)
                     .left(object).right(null)
                     .leftIndex(null).rightValue(null)
@@ -190,6 +195,7 @@ public class CompareUtil {
         index = 0;
         for (Object object : right) {
             changes.add(Change.builder()
+                            .field(field)
                     .leftParent(leftParent).rightParent(rightParent)
                     .left(null).right(object)
                     .leftIndex(null).rightValue(null)

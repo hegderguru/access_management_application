@@ -38,21 +38,21 @@ public class AccessDetailsUpdateUtil {
     }
 
     public static Map<String, List<CompareUtil.Change>> getUpdateAuthorityRequest(List<CompareUtil.Change> changes) {
-        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AuthorityRequest.class))
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AuthorityRequest.class) && Objects.nonNull(change.getRightValue()))
                 .collect(Collectors.groupingBy(change -> ((AuthorityRequest) change.getRight()).getName()));
     }
 
     public static Map<String, List<CompareUtil.Change>> getUpdateRoleRequest(List<CompareUtil.Change> changes) {
-        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(RoleRequest.class))
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(RoleRequest.class) && Objects.nonNull(change.getRightValue()) )
                 .collect(Collectors.groupingBy(change -> ((RoleRequest) change.getRight()).getName()));
     }
 
     public static Map<String, List<CompareUtil.Change>> getUpdatePermissionRequest(List<CompareUtil.Change> changes) {
-        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(PermissionRequest.class))
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(PermissionRequest.class)  && Objects.nonNull(change.getRightValue()))
                 .collect(Collectors.groupingBy(change -> ((PermissionRequest) change.getRight()).fullyQualifiedFieldPath()));
     }
 
     public static List<CompareUtil.Change> getUpdateAccessRequest(List<CompareUtil.Change> changes) {
-        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AccessRequest.class)).toList();
+        return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(AccessRequest.class)  && Objects.nonNull(change.getRightValue())).toList();
     }
 }
