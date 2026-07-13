@@ -74,11 +74,11 @@ public class AccessService {
 
     /////
     public Mono<Void> saveOrUpdateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return newAuthoritiesOnChanges(accessEntity, changes).flatMap(unused -> updateAuthoritiesOnChanges(accessEntity, changes));
+        return newAuthoritiesOnChanges(accessEntity, changes).then(Mono.defer(() -> updateAuthoritiesOnChanges(accessEntity, changes)));
     }
 
     public Mono<Void> saveOrUpdateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return newRolesOnChanges(authorityEntity, changes).flatMap(unused -> updateRolesOnChanges(authorityEntity, changes));
+        return newRolesOnChanges(authorityEntity, changes).then(Mono.defer(() -> updateRolesOnChanges(authorityEntity, changes)));
     }
 
     public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
