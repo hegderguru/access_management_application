@@ -2,6 +2,7 @@ package com.karur.access_management_application.security.repository;
 
 import com.karur.access_management_application.security.entity.*;
 import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
+import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -132,7 +133,7 @@ public class AccessRepository {
 
     public Mono<RoleEntity> saveRoleEntity(RoleEntity roleEntity) {
         return roleEntityRepository.save(roleEntity)
-                .flatMap(roleEntity1 -> Flux.fromIterable(roleEntity1.getPermissionEntities()).flatMap(this::savePermissionEntity)
+                .flatMap(roleEntity1 -> Flux.fromIterable(CommonUtil.returnListElseEmpty(roleEntity1.getPermissionEntities())).flatMap(this::savePermissionEntity)
                         .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleEntity1.getId(), permissionEntity.getId())
                                 .switchIfEmpty(Flux.just(accessRequestToEntityMapper.buildRolePermissionEntity(roleEntity1.getId(), permissionEntity)))
                                 .flatMap(rolePermissionEntity -> rolePermissionIdRepository.save(rolePermissionEntity)))
