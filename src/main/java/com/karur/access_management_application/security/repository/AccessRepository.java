@@ -85,13 +85,9 @@ public class AccessRepository {
 
     }
 
-    public Flux<AuthorityEntity> fetchAuthorityEntities(List<Long> ids) {
-        return Flux.fromIterable(ids).flatMap(this::fetchAuthorityEntity);
-    }
-
     public Flux<AuthorityEntity> fetchAllAuthorityEntities(List<AccessAuthorityEntity> accessAuthorityEntities) {
         List<Long> ids = accessAuthorityEntities.stream().map(AccessAuthorityEntity::getAuthorityId).toList();
-        return fetchAuthorityEntities(ids);
+        return Flux.fromIterable(ids).flatMap(this::fetchAuthorityEntity);
     }
 
     public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
