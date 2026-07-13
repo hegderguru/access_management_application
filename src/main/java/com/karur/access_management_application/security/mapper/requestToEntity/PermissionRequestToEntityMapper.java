@@ -1,7 +1,7 @@
 package com.karur.access_management_application.security.mapper.requestToEntity;
 
 import com.karur.access_management_application.security.entity.PermissionEntity;
-import com.karur.access_management_application.security.entity.RolePermissionEntity;
+import com.karur.access_management_application.security.entity.join.RolePermissionEntity;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 
 public class PermissionRequestToEntityMapper {

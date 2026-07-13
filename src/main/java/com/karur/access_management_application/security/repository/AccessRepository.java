@@ -1,10 +1,20 @@
 package com.karur.access_management_application.security.repository;
 
 import com.karur.access_management_application.security.entity.*;
+import com.karur.access_management_application.security.entity.join.AccessAuthorityEntity;
+import com.karur.access_management_application.security.entity.join.AuthorityRoleEntity;
+import com.karur.access_management_application.security.entity.join.RolePermissionEntity;
 import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.AuthorityRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.PermissionRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.RoleRequestToEntityMapper;
+import com.karur.access_management_application.security.repository.inter.AccessEntityRepository;
+import com.karur.access_management_application.security.repository.inter.AuthorityEntityRepository;
+import com.karur.access_management_application.security.repository.inter.PermissionEntityRepository;
+import com.karur.access_management_application.security.repository.inter.RoleEntityRepository;
+import com.karur.access_management_application.security.repository.join.AccessAuthorityIdRepository;
+import com.karur.access_management_application.security.repository.join.AuthorityRoleIdRepository;
+import com.karur.access_management_application.security.repository.join.RolePermissionIdRepository;
 import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
