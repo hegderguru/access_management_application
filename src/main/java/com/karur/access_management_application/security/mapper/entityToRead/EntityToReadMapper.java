@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class EntityToReadMapper {
@@ -87,7 +86,4 @@ public class EntityToReadMapper {
                 .build();
     }
 
-    public String generateJwtToken(String subject, Map<String, Object> claims){
-        return jwtTokenProvider.generateToken(subject,claims);
-    }
 }

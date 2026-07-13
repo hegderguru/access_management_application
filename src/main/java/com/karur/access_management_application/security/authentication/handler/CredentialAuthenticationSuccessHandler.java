@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.authentication.handler;
 
+import com.karur.access_management_application.security.authentication.provider.JwtTokenProvider;
 import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import com.karur.access_management_application.security.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class CredentialAuthenticationSuccessHandler implements ServerAuthenticat
     @Autowired
     private EntityToReadMapper entityToReadMapper;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @Override
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
         ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
@@ -38,7 +42,7 @@ public class CredentialAuthenticationSuccessHandler implements ServerAuthenticat
                             .map(GrantedAuthority::getAuthority).toList());
                     claims.put("authorities", authorities);
 
-                    return entityToReadMapper.generateJwtToken(accessDetail.getUsername(), claims);
+                    return jwtTokenProvider.generateToken(accessDetail.getUsername(), claims);
                 })
                 .flatMap(token -> {
                     response.setStatusCode(HttpStatus.OK);
