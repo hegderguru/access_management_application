@@ -1,12 +1,9 @@
 package com.karur.access_management_application.security.authentication.provider;
 
 import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
-import com.karur.access_management_application.security.service.AccessDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

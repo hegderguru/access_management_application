@@ -6,7 +6,6 @@ import com.karur.access_management_application.security.model.request.AuthorityR
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.model.response.AccessResponse;
-import com.karur.access_management_application.security.service.AccessDetailsService;
 import com.karur.access_management_application.security.service.AccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
