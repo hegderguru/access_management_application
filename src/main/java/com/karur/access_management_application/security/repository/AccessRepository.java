@@ -98,22 +98,13 @@ public class AccessRepository {
 
     public Mono<RoleEntity> fetchRoleEntity(Long id) {
         return roleEntityRepository.findById(id)
-                .flatMap(roleEntity -> fetchAllRolePermissionEntities(roleEntity)
+                .flatMap(roleEntity -> rolePermissionIdRepository.findByRoleId(roleEntity.getId())
                         .collectList()
-                        .flatMap(rolePermissionEntities -> fetchAllPermissionEntities(rolePermissionEntities)
+                        .flatMap(rolePermissionEntities -> fetchPermissionEntities(rolePermissionEntities.stream().map(RolePermissionEntity::getPermissionId).toList())
                                 .collectList()
                                 .doOnNext(roleEntity::setPermissionEntities)
                                 .then(Mono.just(roleEntity)))
                 );
-    }
-
-    public Flux<RolePermissionEntity> fetchAllRolePermissionEntities(RoleEntity roleEntity) {
-        return rolePermissionIdRepository.findByRoleId(roleEntity.getId());
-    }
-
-    public Flux<PermissionEntity> fetchAllPermissionEntities(List<RolePermissionEntity> rolePermissionEntities) {
-        List<Long> ids = rolePermissionEntities.stream().map(RolePermissionEntity::getPermissionId).toList();
-        return fetchPermissionEntities(ids);
     }
 
     public Flux<PermissionEntity> fetchPermissionEntities(List<Long> ids) {
