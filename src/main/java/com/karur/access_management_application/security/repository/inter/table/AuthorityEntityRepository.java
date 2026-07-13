@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.repository.inter;
+package com.karur.access_management_application.security.repository.inter.table;
 
 import com.karur.access_management_application.security.entity.AuthorityEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

@@ -1,7 +1,7 @@
 package com.karur.access_management_application.security.authentication.service;
 
 import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
-import com.karur.access_management_application.security.repository.inter.AccessEntityRepository;
+import com.karur.access_management_application.security.repository.inter.table.AccessEntityRepository;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsPasswordService;

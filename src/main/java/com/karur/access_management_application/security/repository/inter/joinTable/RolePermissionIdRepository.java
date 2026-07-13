@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.repository.join;
+package com.karur.access_management_application.security.repository.inter.joinTable;
 
 import com.karur.access_management_application.security.entity.join.RolePermissionEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
