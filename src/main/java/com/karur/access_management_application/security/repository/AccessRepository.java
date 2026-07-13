@@ -70,7 +70,7 @@ public class AccessRepository {
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
                 .doOnSuccess(accessEntity -> log.info("User: {} with details: {}", username, accessEntity))
-                .flatMap(accessEntity -> fetchAllAccessAuthorityEntities(accessEntity)
+                .flatMap(accessEntity -> accessAuthorityIdRepository.findByAccessId(accessEntity.getId())
                         .collectList()
                         .flatMap(accessAuthorityEntities -> fetchAllAuthorityEntities(accessAuthorityEntities)
                                 .collectList()
@@ -94,13 +94,9 @@ public class AccessRepository {
         return fetchAuthorityEntities(ids);
     }
 
-    public Flux<AccessAuthorityEntity> fetchAllAccessAuthorityEntities(AccessEntity accessEntity) {
-        return accessAuthorityIdRepository.findByAccessId(accessEntity.getId());
-    }
-
     public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
         return authorityEntityRepository.findById(id)
-                .flatMap(authorityEntity -> fetchAllAuthorityRoleEntities(authorityEntity)
+                .flatMap(authorityEntity -> authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId())
                         .collectList()
                         .flatMap(authorityRoleEntities -> fetchAllRoleEntities(authorityRoleEntities)
                                 .collectList()
@@ -108,16 +104,8 @@ public class AccessRepository {
                                 .then(Mono.just(authorityEntity))));
     }
 
-    public Flux<AuthorityRoleEntity> fetchAllAuthorityRoleEntities(AuthorityEntity authorityEntity) {
-        return authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId());
-    }
-
     public Flux<RoleEntity> fetchAllRoleEntities(List<AuthorityRoleEntity> authorityRoleEntities) {
         List<Long> ids = authorityRoleEntities.stream().map(AuthorityRoleEntity::getRoleId).toList();
-        return fetchRoleEntities(ids);
-    }
-
-    public Flux<RoleEntity> fetchRoleEntities(List<Long> ids) {
         return Flux.fromIterable(ids).flatMap(this::fetchRoleEntity);
     }
 
