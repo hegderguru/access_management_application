@@ -7,12 +7,14 @@ import com.karur.access_management_application.security.entity.RoleEntity;
 import com.karur.access_management_application.security.entity.join.RolePermissionEntity;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.util.AccessRequestUpdateUtil;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class PermissionRequestToEntityMapper {
 
     public RolePermissionEntity buildRolePermissionEntity(Long roleId, PermissionEntity permissionEntity) {
