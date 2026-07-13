@@ -16,6 +16,7 @@ import com.karur.access_management_application.security.model.request.Permission
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.AccessDetailsUpdateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class AccessService {
 
@@ -42,13 +44,22 @@ public class AccessService {
 
     public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
         return accessRepository.fetchAccessEntity(accessRequest.getUsername())
-                .switchIfEmpty(Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest)))
+                .doOnSuccess(accessEntity -> log.info("E:{}", accessEntity))
+                // 1. Fallback to building a new entity if none exists
+                .switchIfEmpty(Mono.defer(() -> Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest))))
                 .flatMap(accessEntity -> {
-                    List<CompareUtil.Change> changes = AccessDetailsUpdateUtil.accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
+                    List<CompareUtil.Change> changes = AccessDetailsUpdateUtil
+                            .accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity),accessRequest);
                     return updateAccessOnChanges(accessEntity, changes)
-                            .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes))).thenReturn(accessEntity);
-                }).flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
+                            // 2. Safely defer execution of authority updates
+                            .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes)))
+                            // 3. FIX: Ensures the entity is emitted only AFTER authorities finish saving
+                            .then(Mono.just(accessEntity));
+                })
+                // 4. Persist the fully updated entity hierarchy
+                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
                 .map(entityToReadMapper::buildAccessDetail);
+
     }
 
     public @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {

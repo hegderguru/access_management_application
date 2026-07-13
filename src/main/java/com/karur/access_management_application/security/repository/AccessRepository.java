@@ -4,6 +4,7 @@ import com.karur.access_management_application.security.entity.*;
 import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
 import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -11,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Slf4j
 @Data
 @Repository
 public class AccessRepository {
@@ -45,12 +47,20 @@ public class AccessRepository {
 
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
+                .doOnSuccess(accessEntity -> log.info("User: {} with details: {}", username, accessEntity))
                 .flatMap(accessEntity -> fetchAllAccessAuthorityEntities(accessEntity)
                         .collectList()
                         .flatMap(accessAuthorityEntities -> fetchAllAuthorityEntities(accessAuthorityEntities)
                                 .collectList()
-                                .doOnNext(accessEntity::setAuthorityEntities)
-                                .then(Mono.just(accessEntity))));
+                                .map(authorityEntities -> {
+                                    // 1. Mutate the object safely inside the map function
+                                    accessEntity.setAuthorityEntities(authorityEntities);
+                                    // 2. Pass the modified object down the stream
+                                    return accessEntity;
+                                })
+                        )
+                );
+
     }
 
     public Flux<AuthorityEntity> fetchAuthorityEntities(List<Long> ids) {
