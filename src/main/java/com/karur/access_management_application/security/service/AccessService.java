@@ -61,7 +61,7 @@ public class AccessService {
     private @NonNull Flux<Void> saveOrUpdateRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return saveOrUpdateRolesOnChanges(authorityEntity, changes)
                 .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
-                .flatMap(roleEntity -> saveOrUpdatePermissionsOnChanges(roleEntity, changes));
+                .flatMap(roleEntity -> saveOrUpdatePermissions(roleEntity, changes));
     }
 
     public Mono<Void> saveOrUpdateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
@@ -72,7 +72,7 @@ public class AccessService {
         return newRoleEntitiesOnChanges(authorityEntity, changes).flatMap(unused -> updateRolesOnChanges(authorityEntity, changes));
     }
 
-    public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+    public Mono<Void> saveOrUpdatePermissions(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return newPermissionEntitiesOnChanges(roleEntity, changes).flatMap(unused -> updatePermissionsOnChanges(roleEntity, changes));
     }
 
