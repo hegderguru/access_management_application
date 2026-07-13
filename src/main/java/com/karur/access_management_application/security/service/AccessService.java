@@ -15,7 +15,7 @@ import com.karur.access_management_application.security.model.request.AuthorityR
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
-import com.karur.access_management_application.security.util.AccessDetailsUpdateUtil;
+import com.karur.access_management_application.security.util.AccessRequestUpdateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +78,7 @@ public class AccessService {
                 .doOnSuccess(accessEntity -> log.info("Fetched Access Entity: {}", accessEntity))
                 .switchIfEmpty(Mono.defer(() -> Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest))))
                 .flatMap(accessEntity -> {
-                    List<CompareUtil.Change> changes = AccessDetailsUpdateUtil
+                    List<CompareUtil.Change> changes = AccessRequestUpdateUtil
                             .accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
 
                     return updateAccessOnChanges(accessEntity, changes)
@@ -118,7 +118,7 @@ public class AccessService {
 
     /// //
     private Mono<Void> newAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getNewAuthorityRequest(changes))
+        return Flux.fromIterable(AccessRequestUpdateUtil.getNewAuthorityRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildAuthorityEntity((AuthorityRequest) change.getRightValue())))
                 .flatMap(authorityEntity -> {
                     accessEntity.addAuthorityEntity(authorityEntity);
@@ -127,7 +127,7 @@ public class AccessService {
     }
 
     private Mono<Void> newRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getNewRoleRequest(changes))
+        return Flux.fromIterable(AccessRequestUpdateUtil.getNewRoleRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildRoleEntity((RoleRequest) change.getRightValue())))
                 .flatMap(roleEntity -> {
                     authorityEntity.addRoleEntity(roleEntity);
@@ -136,7 +136,7 @@ public class AccessService {
     }
 
     private Mono<Void> newPermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getNewPermissionRequest(changes))
+        return Flux.fromIterable(AccessRequestUpdateUtil.getNewPermissionRequest(changes))
                 .flatMap(change -> Mono.just(requestToEntityMapper.buildPermissionEntity((PermissionRequest) change.getRightValue())))
                 .flatMap(permissionEntity -> {
                     roleEntity.addPermissionEntity(permissionEntity);
@@ -146,7 +146,7 @@ public class AccessService {
 
     /// //////
     private Mono<Void> updateAccessOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return Flux.fromIterable(AccessDetailsUpdateUtil.getUpdateAccessRequest(changes))
+        return Flux.fromIterable(AccessRequestUpdateUtil.getUpdateAccessRequest(changes))
                 .flatMap(change -> {
                     switch (AccessRequest.Fields.valueOf(change.getField())) {
                         case firstName -> accessEntity.setFirstName(ChangeUtil.getStringElseConvert(change));
@@ -163,7 +163,7 @@ public class AccessService {
     }
 
     private Mono<Void> updateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        Map<String, List<CompareUtil.Change>> updateAuthorityRequest1 = AccessDetailsUpdateUtil.getUpdateAuthorityRequest(changes);
+        Map<String, List<CompareUtil.Change>> updateAuthorityRequest1 = AccessRequestUpdateUtil.getUpdateAuthorityRequest(changes);
         return Flux.fromIterable(updateAuthorityRequest1.entrySet())
                 .flatMap(stringListEntry -> {
                     AuthorityEntity authorityEntity = accessEntity.getAuthorityEntities().stream().filter(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();
@@ -182,7 +182,7 @@ public class AccessService {
     }
 
     private Mono<Void> updateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessDetailsUpdateUtil.getUpdateRoleRequest(changes);
+        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessRequestUpdateUtil.getUpdateRoleRequest(changes);
         return Flux.fromIterable(updateRoleRequest1.entrySet())
                 .flatMap(stringListEntry -> {
                     RoleEntity roleEntity = authorityEntity.getRoleEntities().stream().filter(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();
@@ -201,7 +201,7 @@ public class AccessService {
     }
 
     private Mono<Void> updatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessDetailsUpdateUtil.getUpdatePermissionRequest(changes);
+        Map<String, List<CompareUtil.Change>> updateRoleRequest1 = AccessRequestUpdateUtil.getUpdatePermissionRequest(changes);
         return Flux.fromIterable(updateRoleRequest1.entrySet())
                 .flatMap(stringListEntry -> {
                     PermissionEntity permissionEntity = roleEntity.getPermissionEntities().stream().filter(authorityEntity1 -> authorityEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(stringListEntry.getKey())).findFirst().get();

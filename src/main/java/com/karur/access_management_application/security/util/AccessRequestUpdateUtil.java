@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class AccessDetailsUpdateUtil {
+public class AccessRequestUpdateUtil {
 
     public static List<CompareUtil.Change> getUpdateChanges(List<CompareUtil.Change> changes) {
         return changes.stream().filter(change -> Objects.nonNull(change.getLeft()) && Objects.nonNull(change.getRight()) && Objects.nonNull(change.getRightValue())).toList();
