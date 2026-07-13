@@ -23,8 +23,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Slf4j
 @Data
 @Repository
@@ -100,16 +98,12 @@ public class AccessRepository {
         return roleEntityRepository.findById(id)
                 .flatMap(roleEntity -> rolePermissionIdRepository.findByRoleId(roleEntity.getId())
                         .collectList()
-                        .flatMap(rolePermissionEntities -> fetchPermissionEntities(rolePermissionEntities.stream()
+                        .flatMap(rolePermissionEntities -> permissionEntityRepository.findByIdIn(rolePermissionEntities.stream()
                                 .map(RolePermissionEntity::getPermissionId).toList())
                                 .collectList()
                                 .doOnNext(roleEntity::setPermissionEntities)
                                 .then(Mono.just(roleEntity)))
                 );
-    }
-
-    public Flux<PermissionEntity> fetchPermissionEntities(List<Long> ids) {
-        return permissionEntityRepository.findByIdIn(ids);
     }
 
     public Mono<AccessEntity> saveAccessEntity(AccessEntity accessEntity) {
