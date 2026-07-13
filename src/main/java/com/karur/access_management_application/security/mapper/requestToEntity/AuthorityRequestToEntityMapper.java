@@ -7,7 +7,6 @@ import com.karur.access_management_application.security.entity.join.AccessAuthor
 import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.util.AccessRequestUpdateUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,9 +17,6 @@ import java.util.Map;
 
 @Service
 public class AuthorityRequestToEntityMapper {
-
-    @Autowired
-    AuthorityRequestToEntityMapper authorityRequestToEntityMapper;
 
     public AccessAuthorityEntity buildAccessAuthorityEntity(Long accessId, AuthorityEntity authorityEntity) {
         return AccessAuthorityEntity.builder()
