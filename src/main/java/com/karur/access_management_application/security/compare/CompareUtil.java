@@ -187,8 +187,8 @@ public class CompareUtil {
                             .field(field.getName())
                     .leftParent(leftParent).rightParent(rightParent)
                     .left(object).right(null)
-                    .leftIndex(null).rightValue(null)
-                    .rightIndex(index).rightIndex(null)
+                    .leftValue(null).rightValue(null)
+                    .leftIndex(index).rightIndex(null)
                     .build());
             index++;
         }
@@ -198,8 +198,8 @@ public class CompareUtil {
                             .field(field.getName())
                     .leftParent(leftParent).rightParent(rightParent)
                     .left(null).right(object)
-                    .leftIndex(null).rightValue(null)
-                    .rightIndex(null).rightIndex(index)
+                    .leftValue(null).rightValue(null)
+                    .leftIndex(null).rightIndex(index)
                     .build());
             index++;
         }
