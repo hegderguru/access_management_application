@@ -34,6 +34,10 @@ public class PermissionRequestToEntityMapper {
                 .build();
     }
 
+    public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+        return newPermissionsOnChanges(roleEntity, changes).then(Mono.defer(() -> updatePermissionsOnChanges(roleEntity, changes)));
+    }
+
     public Mono<Void> newPermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessRequestUpdateUtil.getNewPermissionRequest(changes))
                 .flatMap(change -> Mono.just(buildPermissionEntity((PermissionRequest) change.getRightValue())))

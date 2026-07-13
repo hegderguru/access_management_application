@@ -31,6 +31,10 @@ public class RoleRequestToEntityMapper {
                 .build();
     }
 
+    public Mono<Void> saveOrUpdateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return newRolesOnChanges(authorityEntity, changes).then(Mono.defer(() -> updateRolesOnChanges(authorityEntity, changes)));
+    }
+
     public Mono<Void> newRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessRequestUpdateUtil.getNewRoleRequest(changes))
                 .flatMap(change -> Mono.just(buildRoleEntity((RoleRequest) change.getRightValue())))

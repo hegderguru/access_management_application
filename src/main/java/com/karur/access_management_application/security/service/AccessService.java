@@ -102,28 +102,16 @@ public class AccessService {
 
 
     public @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return saveOrUpdateAuthoritiesOnChanges(accessEntity, changes)
+        return authorityRequestToEntityMapper.saveOrUpdateAuthoritiesOnChanges(accessEntity, changes)
                 .thenMany(Flux.defer(() -> Flux.fromIterable(accessEntity.getAuthorityEntities())))
                 .flatMap(authorityEntity -> saveOrUpdateRoles(authorityEntity, changes)
                 ).then(Mono.just(accessEntity));
     }
 
     private @NonNull Flux<Void> saveOrUpdateRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return saveOrUpdateRolesOnChanges(authorityEntity, changes)
+        return roleRequestToEntityMapper.saveOrUpdateRolesOnChanges(authorityEntity, changes)
                 .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
-                .flatMap(roleEntity -> saveOrUpdatePermissionsOnChanges(roleEntity, changes));
-    }
-
-    public Mono<Void> saveOrUpdateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return authorityRequestToEntityMapper.newAuthoritiesOnChanges(accessEntity, changes).then(Mono.defer(() -> authorityRequestToEntityMapper.updateAuthoritiesOnChanges(accessEntity, changes)));
-    }
-
-    public Mono<Void> saveOrUpdateRolesOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return roleRequestToEntityMapper.newRolesOnChanges(authorityEntity, changes).then(Mono.defer(() -> roleRequestToEntityMapper.updateRolesOnChanges(authorityEntity, changes)));
-    }
-
-    public Mono<Void> saveOrUpdatePermissionsOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
-        return permissionRequestToEntityMapper.newPermissionsOnChanges(roleEntity, changes).then(Mono.defer(() -> permissionRequestToEntityMapper.updatePermissionsOnChanges(roleEntity, changes)));
+                .flatMap(roleEntity ->permissionRequestToEntityMapper. saveOrUpdatePermissionsOnChanges(roleEntity, changes));
     }
 
 

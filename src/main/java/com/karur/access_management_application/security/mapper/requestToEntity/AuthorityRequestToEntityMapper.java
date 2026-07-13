@@ -37,6 +37,10 @@ public class AuthorityRequestToEntityMapper {
                 .build();
     }
 
+    public Mono<Void> saveOrUpdateAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
+        return newAuthoritiesOnChanges(accessEntity, changes).then(Mono.defer(() -> updateAuthoritiesOnChanges(accessEntity, changes)));
+    }
+
     public Mono<Void> newAuthoritiesOnChanges(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(AccessRequestUpdateUtil.getNewAuthorityRequest(changes))
                 .flatMap(change -> Mono.just(buildAuthorityEntity((AuthorityRequest) change.getRightValue())))
