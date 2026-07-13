@@ -2,6 +2,9 @@ package com.karur.access_management_application.security.repository;
 
 import com.karur.access_management_application.security.entity.*;
 import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
+import com.karur.access_management_application.security.mapper.requestToEntity.AuthorityRequestToEntityMapper;
+import com.karur.access_management_application.security.mapper.requestToEntity.PermissionRequestToEntityMapper;
+import com.karur.access_management_application.security.mapper.requestToEntity.RoleRequestToEntityMapper;
 import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +43,15 @@ public class AccessRepository {
 
     @Autowired
     AccessRequestToEntityMapper accessRequestToEntityMapper;
+
+    @Autowired
+    AuthorityRequestToEntityMapper authorityRequestToEntityMapper;
+
+    @Autowired
+    RoleRequestToEntityMapper roleRequestToEntityMapper;
+
+    @Autowired
+    PermissionRequestToEntityMapper permissionRequestToEntityMapper;
 
     public Mono<AccessEntity> findAccessEntityByUsername(String username) {
         return fetchAccessEntity(username);
@@ -127,7 +139,7 @@ public class AccessRepository {
         return accessEntityRepository.save(accessEntity)
                 .flatMap(accessEntity1 -> Flux.fromIterable(accessEntity1.getAuthorityEntities()).flatMap(this::saveAuthorityEntity)
                         .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessEntity1.getId(), authorityEntity.getId())
-                                .switchIfEmpty(Flux.just(accessRequestToEntityMapper.buildAccessAuthorityEntity(accessEntity1.getId(), authorityEntity)))
+                                .switchIfEmpty(Flux.just(authorityRequestToEntityMapper.buildAccessAuthorityEntity(accessEntity1.getId(), authorityEntity)))
                                 .flatMap(accessAuthorityEntity -> accessAuthorityIdRepository.save(accessAuthorityEntity)))
                         .then(Mono.just(accessEntity1)));
     }
@@ -136,7 +148,7 @@ public class AccessRepository {
         return authorityEntityRepository.save(authorityEntity)
                 .flatMap(authorityEntity1 -> Flux.fromIterable(authorityEntity1.getRoleEntities()).flatMap(this::saveRoleEntity)
                         .flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityEntity1.getId(), roleEntity.getId())
-                                .switchIfEmpty(Flux.just(accessRequestToEntityMapper.buildAuthorityRoleEntity(authorityEntity1.getId(), roleEntity)))
+                                .switchIfEmpty(Flux.just(roleRequestToEntityMapper.buildAuthorityRoleEntity(authorityEntity1.getId(), roleEntity)))
                                 .flatMap(rolePermissionEntity -> authorityRoleIdRepository.save(rolePermissionEntity)))
                         .then(Mono.just(authorityEntity1)));
     }
@@ -145,7 +157,7 @@ public class AccessRepository {
         return roleEntityRepository.save(roleEntity)
                 .flatMap(roleEntity1 -> Flux.fromIterable(CommonUtil.returnListElseEmpty(roleEntity1.getPermissionEntities())).flatMap(this::savePermissionEntity)
                         .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleEntity1.getId(), permissionEntity.getId())
-                                .switchIfEmpty(Flux.just(accessRequestToEntityMapper.buildRolePermissionEntity(roleEntity1.getId(), permissionEntity)))
+                                .switchIfEmpty(Flux.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleEntity1.getId(), permissionEntity)))
                                 .flatMap(rolePermissionEntity -> rolePermissionIdRepository.save(rolePermissionEntity)))
                         .then(Mono.just(roleEntity1)));
     }

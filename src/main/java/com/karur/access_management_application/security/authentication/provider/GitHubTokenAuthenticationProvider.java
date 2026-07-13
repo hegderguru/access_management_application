@@ -1,12 +1,10 @@
 package com.karur.access_management_application.security.authentication.provider;
 
 import com.karur.access_management_application.security.authentication.token.GitHubTokenAuthenticationToken;
-import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

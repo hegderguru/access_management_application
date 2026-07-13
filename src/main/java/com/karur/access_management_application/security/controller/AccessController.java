@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.controller;
 
-import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
+import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;

@@ -17,6 +17,15 @@ public class RequestToEntityMapper {
     @Autowired
     AccessRequestToEntityMapper accessRequestToEntityMapper;
 
+    @Autowired
+    AuthorityRequestToEntityMapper authorityRequestToEntityMapper;
+
+    @Autowired
+    RoleRequestToEntityMapper roleRequestToEntityMapper;
+
+    @Autowired
+    PermissionRequestToEntityMapper permissionRequestToEntityMapper;
+
     public AccessEntity buildAccessEntity(AccessRequest accessRequest) {
         AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
         accessRequest.getAuthorityRequests().forEach(authorityRequest -> {
@@ -27,7 +36,7 @@ public class RequestToEntityMapper {
     }
 
     public AuthorityEntity buildAuthorityEntity(AuthorityRequest authorityRequest) {
-        AuthorityEntity authorityEntity = accessRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
+        AuthorityEntity authorityEntity = authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
         authorityRequest.getRoleRequests().forEach(roleRequest -> {
             RoleEntity roleEntity = buildRoleEntity(roleRequest);
             authorityEntity.addRoleEntity(roleEntity);
@@ -36,7 +45,7 @@ public class RequestToEntityMapper {
     }
 
     public RoleEntity buildRoleEntity(RoleRequest roleRequest) {
-        RoleEntity roleEntity = accessRequestToEntityMapper.buildRoleEntity(roleRequest);
+        RoleEntity roleEntity = roleRequestToEntityMapper.buildRoleEntity(roleRequest);
         roleRequest.getPermissionRequests().forEach(permissionRequest -> {
             roleEntity.addPermissionEntity(buildPermissionEntity(permissionRequest));
         });
@@ -44,7 +53,7 @@ public class RequestToEntityMapper {
     }
 
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
-        return accessRequestToEntityMapper.buildPermissionEntity(permissionRequest);
+        return permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest);
     }
 
 }

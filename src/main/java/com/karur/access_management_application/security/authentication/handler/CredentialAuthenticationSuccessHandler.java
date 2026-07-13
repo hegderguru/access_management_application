@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.authentication.handler;
 
-import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
+import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import com.karur.access_management_application.security.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

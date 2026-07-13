@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.mapper.requestToEntity;
+package com.karur.access_management_application.security.mapper.entityToRead;
 
 import com.karur.access_management_application.security.authentication.provider.JwtTokenProvider;
 import com.karur.access_management_application.security.entity.AuthorityEntity;

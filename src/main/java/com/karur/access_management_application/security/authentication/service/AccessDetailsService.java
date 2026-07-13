@@ -1,6 +1,6 @@
 package com.karur.access_management_application.security.authentication.service;
 
-import com.karur.access_management_application.security.mapper.requestToEntity.EntityToReadMapper;
+import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.RequestToEntityMapper;
 import com.karur.access_management_application.security.repository.AccessRepository;
 import lombok.Data;
