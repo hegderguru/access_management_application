@@ -51,35 +51,6 @@ public class AccessService {
         return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
     }
 
-    public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
-        return accessRepository.fetchAccessEntity(accessRequest.getUsername())
-                .doOnSuccess(accessEntity -> log.info("Fetched Access Entity: {}", accessEntity))
-                .switchIfEmpty(Mono.defer(() -> Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest))))
-                .flatMap(accessEntity -> {
-                    List<CompareUtil.Change> changes = AccessRequestUpdateUtil
-                            .accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
-                    return accessRequestToEntityMapper.updateAccessOnChanges(accessEntity, changes)
-                            .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes)))
-                            .then(Mono.just(accessEntity));
-                })
-                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
-                .map(entityToReadMapper::buildAccessDetail);
-    }
-
-
-    public @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return authorityRequestToEntityMapper.saveOrUpdateAuthoritiesOnChanges(accessEntity, changes)
-                .thenMany(Flux.defer(() -> Flux.fromIterable(accessEntity.getAuthorityEntities())))
-                .flatMap(authorityEntity -> saveOrUpdateRoles(authorityEntity, changes)
-                ).then(Mono.just(accessEntity));
-    }
-
-    private @NonNull Flux<Void> saveOrUpdateRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return roleRequestToEntityMapper.saveOrUpdateRolesOnChanges(authorityEntity, changes)
-                .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
-                .flatMap(roleEntity ->permissionRequestToEntityMapper. saveOrUpdatePermissionsOnChanges(roleEntity, changes));
-    }
-
     public Mono<AccessDetail> update(AccessRequest accessRequest) {
         return requestToEntityMapper.buildAccessEntity1(accessRequest)
                 // 1. flatMap allows you to wait for the asynchronous DB save to complete
