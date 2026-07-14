@@ -82,6 +82,7 @@ public class AccessRepository {
 
     public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
         return authorityEntityRepository.findById(id)
+                .doOnRequest(value -> log.info("id: {}",id))
                 .flatMap(authorityEntity -> authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId())
                         .map(AuthorityRoleEntity::getRoleId) // Extract IDs directly within the Flux stream
                         .flatMap(this::fetchRoleEntity)      // Executes correctly if IDs are present
@@ -95,6 +96,7 @@ public class AccessRepository {
 
     public Mono<RoleEntity> fetchRoleEntity(Long id) {
         return roleEntityRepository.findById(id)
+                .doOnRequest(value -> log.info("id: {}",id))
                 .flatMap(roleEntity -> rolePermissionIdRepository.findByRoleId(roleEntity.getId())
                         .map(RolePermissionEntity::getPermissionId) // Extract IDs directly within the Flux stream
                         .flatMap(permissionEntityRepository::findById)      // Executes correctly if IDs are present
