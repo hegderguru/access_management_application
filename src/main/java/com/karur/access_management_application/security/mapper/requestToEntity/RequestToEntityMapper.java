@@ -155,6 +155,11 @@ public class RequestToEntityMapper {
                 );
     }
 
+    public Flux<AuthorityEntity> buildAndMapOnlyAuthorityEntities(List<AuthorityRequest> authorityRequests) {
+        return Flux.fromIterable(authorityRequests)
+                .flatMap(this::buildAndMapOnlyAuthorityEntity);
+    }
+
     public Mono<AuthorityEntity> buildAndMapOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
         return buildOnlyAuthorityEntity(authorityRequest)
                 .flatMap(authorityEntity -> buildOnlyRoleEntities(authorityRequest.getRoleRequests())
@@ -166,6 +171,10 @@ public class RequestToEntityMapper {
                         }));
     }
 
+    public Flux<RoleEntity> buildAndMapOnlyRoleEntities(List<RoleRequest> roleRequests) {
+        return Flux.fromIterable(roleRequests).flatMap(this::buildAndMapOnlyRoleEntity);
+    }
+
     public Mono<RoleEntity> buildAndMapOnlyRoleEntity(RoleRequest roleRequest) {
         return buildOnlyRoleEntity(roleRequest)
                 .flatMap(roleEntity -> buildOnlyPermissionEntities(roleRequest.getPermissionRequests())
@@ -175,5 +184,21 @@ public class RequestToEntityMapper {
                             return buildOnlyRolePermissionEntity(roleEntity, permissionEntities)
                                     .then(Mono.just(roleEntity));
                         }));
+    }
+
+    public Mono<AccessEntity> buildAndMapAccessEntity(AccessRequest accessRequest) {
+        return buildAndMapOnlyAccessEntity(accessRequest)
+                .flatMap(accessEntity -> buildAndMapAuthorityEntities(accessRequest.getAuthorityRequests())
+                        .then(Mono.defer(() -> Mono.just(accessEntity))));
+    }
+
+    public Flux<AuthorityEntity> buildAndMapAuthorityEntities(List<AuthorityRequest> authorityRequests) {
+        return Flux.fromIterable(authorityRequests).flatMap(this::buildAndMapAuthorityEntity);
+    }
+
+    public Mono<AuthorityEntity> buildAndMapAuthorityEntity(AuthorityRequest authorityRequest) {
+        return buildAndMapOnlyAuthorityEntity(authorityRequest)
+                .flatMap(authorityEntity -> buildAndMapOnlyRoleEntities(authorityRequest.getRoleRequests())
+                        .then(Mono.defer(() -> Mono.just(authorityEntity))));
     }
 }
