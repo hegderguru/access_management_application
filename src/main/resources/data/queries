@@ -34,8 +34,9 @@ CREATE TABLE auth.access (
 -- Authorities Table (Linked via access_id)
 CREATE TABLE auth.authority (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_authority_id'),
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    CONSTRAINT uq_access_authority_comb UNIQUE (access_id, authority_id);
 );
 
 CREATE TABLE auth.access_authority_id (
@@ -47,8 +48,9 @@ CREATE TABLE auth.access_authority_id (
 -- Roles Table (Linked via authority_id)
 CREATE TABLE auth.role (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_role_id'),
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    CONSTRAINT uq_authority_role_id UNIQUE (authority_id, role_id);
 );
 
 CREATE TABLE auth.authority_role_id (
@@ -71,7 +73,8 @@ CREATE TABLE auth.permission (
 CREATE TABLE auth.role_permission_id (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_role_permission_id'),
     role_id BIGINT NOT NULL,
-    permission_id BIGINT NOT NULL
+    permission_id BIGINT NOT NULL,
+    CONSTRAINT uq_role_permission_id UNIQUE (role_id, permission_id);
 );
 
 INSERT INTO auth.access(
