@@ -42,6 +42,8 @@ public class AccessEntity {
     public void addAuthorityEntity(AuthorityEntity authorityEntity) {
         if (Objects.isNull(authorityEntities)) {
             authorityEntities = new ArrayList<>();
+        }
+        if (authorityEntities.isEmpty() || authorityEntities.stream().noneMatch(authorityEntity1 -> authorityEntity1.getName().equalsIgnoreCase(authorityEntity.getName()))) {
             authorityEntities.add(authorityEntity);
         }
     }

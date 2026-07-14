@@ -24,10 +24,12 @@ public class RoleEntity {
     @Transient
     private List<PermissionEntity> permissionEntities = new ArrayList<>();
 
-    public void addPermissionEntity(PermissionEntity permissionEntity){
-        if(Objects.isNull(permissionEntities)){
-            permissionEntities=new ArrayList<>();
+    public synchronized void addPermissionEntity(PermissionEntity permissionEntity) {
+        if (Objects.isNull(permissionEntities)) {
+            permissionEntities = new ArrayList<>();
         }
-        permissionEntities.add(permissionEntity);
+        if (permissionEntities.isEmpty() || permissionEntities.stream().noneMatch(permissionEntity1 -> permissionEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(permissionEntity.fullyQualifiedFieldPath()))) {
+            permissionEntities.add(permissionEntity);
+        }
     }
 }

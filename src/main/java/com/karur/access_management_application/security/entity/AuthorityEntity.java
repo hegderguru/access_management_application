@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Data
 @Builder
-@Table(value = "authority",schema = "auth")
+@Table(value = "authority", schema = "auth")
 public class AuthorityEntity {
 
     @Id
@@ -26,11 +26,13 @@ public class AuthorityEntity {
     @Transient
     private List<RoleEntity> roleEntities = new ArrayList<>();
 
-    public void addRoleEntity(RoleEntity roleEntity){
-        if(Objects.isNull(roleEntities)){
-            roleEntities=new ArrayList<>();
+    public void addRoleEntity(RoleEntity roleEntity) {
+        if (Objects.isNull(roleEntities)) {
+            roleEntities = new ArrayList<>();
         }
-        roleEntities.add(roleEntity);
+        if (roleEntities.isEmpty() || roleEntities.stream().noneMatch(roleEntity1 -> roleEntity1.getName().equalsIgnoreCase(roleEntity.getName()))) {
+            roleEntities.add(roleEntity);
+        }
     }
 
 }
