@@ -53,9 +53,6 @@ public class AccessRepository {
     AccessAuthorityIdRepository accessAuthorityIdRepository;
 
     @Autowired
-    AccessRequestToEntityMapper accessRequestToEntityMapper;
-
-    @Autowired
     AuthorityRequestToEntityMapper authorityRequestToEntityMapper;
 
     @Autowired
