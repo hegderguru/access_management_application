@@ -25,6 +25,6 @@ public class AccessDetailsService implements ReactiveUserDetailsService {
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        return accessRepository.findAccessEntityByUsername(username).flatMap(accessEntity -> Mono.just((UserDetails) accessEntity));
+        return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just((UserDetails) accessEntity));
     }
 }

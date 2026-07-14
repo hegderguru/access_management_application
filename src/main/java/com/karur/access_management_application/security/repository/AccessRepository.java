@@ -60,10 +60,6 @@ public class AccessRepository {
     @Autowired
     PermissionRequestToEntityMapper permissionRequestToEntityMapper;
 
-    public Mono<AccessEntity> findAccessEntityByUsername(String username) {
-        return fetchAccessEntity(username);
-    }
-
     /*Fetch Access Entity and nested entities*/
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)

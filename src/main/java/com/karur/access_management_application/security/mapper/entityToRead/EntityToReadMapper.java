@@ -23,7 +23,7 @@ public class EntityToReadMapper {
     AccessRepository accessRepository;
 
     public Mono<AccessDetail> buildAccessDetail(String username) {
-        return accessRepository.findAccessEntityByUsername(username)
+        return accessRepository.fetchAccessEntity(username)
                 .map(this::buildAccessDetail);
     }
 
