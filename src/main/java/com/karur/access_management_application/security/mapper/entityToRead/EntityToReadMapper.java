@@ -1,6 +1,5 @@
 package com.karur.access_management_application.security.mapper.entityToRead;
 
-import com.karur.access_management_application.security.authentication.provider.JwtTokenProvider;
 import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
@@ -22,9 +21,6 @@ public class EntityToReadMapper {
 
     @Autowired
     AccessRepository accessRepository;
-
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
 
     public Mono<AccessDetail> buildAccessDetail(String username) {
         return accessRepository.findAccessEntityByUsername(username)
