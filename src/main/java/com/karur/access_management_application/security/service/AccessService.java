@@ -58,7 +58,6 @@ public class AccessService {
                 .flatMap(accessEntity -> {
                     List<CompareUtil.Change> changes = AccessRequestUpdateUtil
                             .accessChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
-
                     return accessRequestToEntityMapper.updateAccessOnChanges(accessEntity, changes)
                             .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes)))
                             .then(Mono.just(accessEntity));
