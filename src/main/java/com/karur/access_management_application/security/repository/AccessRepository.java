@@ -68,6 +68,7 @@ public class AccessRepository {
         return fetchAccessEntity(username);
     }
 
+    /*Fetch Access Entity and nested entities*/
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
                 .flatMap(accessEntity -> accessAuthorityIdRepository.findByAccessId(accessEntity.getId())
@@ -108,6 +109,7 @@ public class AccessRepository {
                         })
                 );
     }
+    /*Fetch Access Entity and nested entities*/
 
     /*Save Access Entity and nested entities*/
     public Mono<AccessEntity> saveAccessEntity(AccessEntity accessEntity) {
