@@ -23,8 +23,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Slf4j
 @Service
 public class RequestToEntityMapper {
@@ -94,106 +92,6 @@ public class RequestToEntityMapper {
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
         return permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest);
     }
-
-    ///
-
-
-    //Access Mapping
-    public Mono<AccessEntity> buildAndMapAccessEntity(AccessRequest accessRequest) {
-        return buildAndMapOnlyAccessEntity(accessRequest)
-                .flatMap(accessEntity -> Flux.fromIterable(CommonUtil.returnListElseEmpty(accessRequest.getAuthorityRequests()))
-                        .flatMap(this::buildAndMapAuthorityEntity)
-                        .collectList()
-                        .doOnSuccess(authorityEntities -> {
-                            log.info("authorityEntities: {}", authorityEntities);
-                        })
-                        .thenReturn(accessEntity));
-    }
-    //Access Mapping
-
-    // Authority Mapping
-    public Mono<AuthorityEntity> buildAndMapAuthorityEntity(AuthorityRequest authorityRequest) {
-        return buildAndMapOnlyAuthorityEntity(authorityRequest)
-                .flatMap(authorityEntity -> Flux.fromIterable(CommonUtil.returnListElseEmpty(authorityRequest.getRoleRequests()))
-                        .flatMap(this::buildAndMapOnlyRoleEntity)
-                        .then(Mono.defer(() -> Mono.just(authorityEntity))));
-    }
-    // Authority Mapping
-
-    //Mappings start
-    public Mono<AccessEntity> buildAndMapOnlyAccessEntity(AccessRequest accessRequest) {
-        return buildOnlyAccessEntity(accessRequest)
-                .flatMap(accessEntity -> buildOnlyAuthorityEntities(CommonUtil.returnListElseEmpty(accessRequest.getAuthorityRequests()))
-                        .collectList()
-                        .flatMap(authorityEntities -> {
-                            accessEntity.setAuthorityEntities(authorityEntities);
-                            return accessRepository.buildOnlyAccessAuthorityEntity(accessEntity, authorityEntities)
-                                    .then(Mono.just(accessEntity));
-                        })
-                );
-    }
-
-    public Mono<AuthorityEntity> buildAndMapOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
-        return buildOnlyAuthorityEntity(authorityRequest)
-                .flatMap(authorityEntity -> buildOnlyRoleEntities(CommonUtil.returnListElseEmpty(authorityRequest.getRoleRequests()))
-                        .collectList()
-                        .flatMap(roleEntities -> {
-                            authorityEntity.setRoleEntities(roleEntities);
-                            return accessRepository.buildOnlyAuthorityRoleEntity(authorityEntity, roleEntities)
-                                    .then(Mono.just(authorityEntity));
-                        }));
-    }
-
-    public Mono<RoleEntity> buildAndMapOnlyRoleEntity(RoleRequest roleRequest) {
-        return buildOnlyRoleEntity(roleRequest)
-                .flatMap(roleEntity -> buildOnlyPermissionEntities(CommonUtil.returnListElseEmpty(roleRequest.getPermissionRequests()))
-                        .collectList()
-                        .flatMap(permissionEntities -> {
-                            roleEntity.setPermissionEntities(permissionEntities);
-                            return accessRepository.buildOnlyRolePermissionEntity(roleEntity, permissionEntities)
-                                    .then(Mono.just(roleEntity));
-                        }));
-    }
-    //Mapping Ends
-
-    //Multiple Entity starts
-    public Flux<AuthorityEntity> buildOnlyAuthorityEntities(List<AuthorityRequest> authorityRequests) {
-        return Flux.fromIterable(CommonUtil.returnListElseEmpty(authorityRequests))
-                .flatMap(this::buildOnlyAuthorityEntity);
-    }
-
-    public Flux<RoleEntity> buildOnlyRoleEntities(List<RoleRequest> roleRequests) {
-        return Flux.fromIterable(CommonUtil.returnListElseEmpty(roleRequests))
-                .flatMap(this::buildOnlyRoleEntity);
-    }
-
-    public Flux<PermissionEntity> buildOnlyPermissionEntities(List<PermissionRequest> permissionRequests) {
-        return Flux.fromIterable(CommonUtil.returnListElseEmpty(permissionRequests))
-                .flatMap(this::buildOnlyPermissionEntity);
-    }
-    //Multiple Entity starts
-
-    //Single Entity starts
-    public Mono<AccessEntity> buildOnlyAccessEntity(AccessRequest accessRequest) {
-        return accessEntityRepository.findByUsername(accessRequest.getUsername())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(accessRequestToEntityMapper.buildAccessEntity(accessRequest))));
-    }
-
-    public Mono<AuthorityEntity> buildOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
-        return authorityEntityRepository.findByName(authorityRequest.getName())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest))));
-    }
-
-    public Mono<RoleEntity> buildOnlyRoleEntity(RoleRequest roleRequest) {
-        return roleEntityRepository.findByName(roleRequest.getName())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(roleRequestToEntityMapper.buildRoleEntity(roleRequest))));
-    }
-
-    public Mono<PermissionEntity> buildOnlyPermissionEntity(PermissionRequest permissionRequest) {
-        return permissionEntityRepository.ClassPathAndClassNameAndFieldName(permissionRequest.getClassPath(), permissionRequest.getClassName(), permissionRequest.getFieldName())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest))));
-    }
-    //Single Entity ends
 
     /*New Implementation*/
 

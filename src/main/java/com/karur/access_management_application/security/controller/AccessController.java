@@ -23,33 +23,9 @@ public class AccessController {
     @Autowired
     AccessService accessService;
 
-    @PostMapping("/welcome")
-    public Mono<ResponseEntity<String>> welcome() {
-        return Mono.just(ResponseEntity.ok("Welcome"));
-    }
-
-    @PostMapping("createAccess")
-    public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
-        return accessRequestMono.flatMap(accessorRequest -> accessService.createAccessEntity(accessorRequest))
-                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
-    }
-
-    @PostMapping("createAuthority")
-    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
-        return authorityRequestMono.flatMap(authorityRequest -> accessService.createAuthority(authorityRequest))
-                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
-    }
-
-    @PostMapping("createRole")
-    public Mono<ResponseEntity<AccessResponse>> createRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
-        return roleRequestMono.flatMap(roleRequest -> accessService.createRole(roleRequest))
-                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
-    }
-
-    @PostMapping("createPermission")
-    public Mono<ResponseEntity<AccessResponse>> createPermission(@RequestBody Mono<PermissionRequest> permissionRequestMono) {
-        return permissionRequestMono.flatMap(permissionRequest -> accessService.createPermission(permissionRequest))
-                .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
+    @PostMapping("/create")
+    public Mono<ResponseEntity<AccessResponse>> create(@RequestBody Mono<AccessRequest> accessRequestMono) {
+        return updateAccessDetail(accessRequestMono);
     }
 
     @PostMapping("accessDetail")

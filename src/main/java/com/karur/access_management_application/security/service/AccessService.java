@@ -1,19 +1,13 @@
 package com.karur.access_management_application.security.service;
 
-import com.karur.access_management_application.security.compare.ChangeUtil;
 import com.karur.access_management_application.security.compare.CompareUtil;
 import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.AuthorityEntity;
-import com.karur.access_management_application.security.entity.PermissionEntity;
-import com.karur.access_management_application.security.entity.RoleEntity;
 import com.karur.access_management_application.security.mapper.entiyToRequest.EntityToAccessReuestMapper;
 import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.*;
 import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.request.AccessRequest;
-import com.karur.access_management_application.security.model.request.AuthorityRequest;
-import com.karur.access_management_application.security.model.request.PermissionRequest;
-import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.AccessRequestUpdateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +20,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -66,22 +59,6 @@ public class AccessService {
                 .filter(username::equalsIgnoreCase)
                 .flatMap(un -> entityToReadMapper.buildAccessDetail(un)
                         .map(accessDetail -> AccessDetail.builder().username(un).authorities(accessDetail.getAuthorities()).build()));
-    }
-
-    public Mono<AccessEntity> createAccessEntity(AccessRequest accessRequest) {
-        return accessRepository.saveAccessEntity(requestToEntityMapper.buildAccessEntity(accessRequest));
-    }
-
-    public Mono<AuthorityEntity> createAuthority(AuthorityRequest authorityRequest) {
-        return accessRepository.saveAuthorityEntity(requestToEntityMapper.buildAuthorityEntity(authorityRequest));
-    }
-
-    public Mono<RoleEntity> createRole(RoleRequest roleRequest) {
-        return accessRepository.saveRoleEntity(requestToEntityMapper.buildRoleEntity(roleRequest));
-    }
-
-    public Mono<PermissionEntity> createPermission(PermissionRequest permissionRequest) {
-        return accessRepository.savePermissionEntity(requestToEntityMapper.buildPermissionEntity(permissionRequest));
     }
 
     public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
