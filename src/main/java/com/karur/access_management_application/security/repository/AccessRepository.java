@@ -24,7 +24,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -157,46 +156,4 @@ public class AccessRepository {
                 })
                 .then();
     }
-
-
-    public Mono<AuthorityEntity> saveAuthorityEntity(AuthorityEntity authorityEntity) {
-        return authorityEntityRepository.save(authorityEntity)
-                .flatMap(authorityEntity1 -> Flux.fromIterable(authorityEntity1.getRoleEntities()).flatMap(this::saveRoleEntity)
-                        .flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityEntity1.getId(), roleEntity.getId())
-                                .switchIfEmpty(Flux.just(roleRequestToEntityMapper.buildAuthorityRoleEntity(authorityEntity1.getId(), roleEntity)))
-                                .flatMap(rolePermissionEntity -> authorityRoleIdRepository.save(rolePermissionEntity)))
-                        .then(Mono.just(authorityEntity1)));
-    }
-
-    public Mono<RoleEntity> saveRoleEntity(RoleEntity roleEntity) {
-        return roleEntityRepository.save(roleEntity)
-                .flatMap(roleEntity1 -> Flux.fromIterable(CommonUtil.returnListElseEmpty(roleEntity1.getPermissionEntities())).flatMap(this::savePermissionEntity)
-                        .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleEntity1.getId(), permissionEntity.getId())
-                                .switchIfEmpty(Flux.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleEntity1.getId(), permissionEntity)))
-                                .flatMap(rolePermissionEntity -> rolePermissionIdRepository.save(rolePermissionEntity)))
-                        .then(Mono.just(roleEntity1)));
-    }
-
-    public Mono<PermissionEntity> savePermissionEntity(PermissionEntity permissionEntity) {
-        return permissionEntityRepository.save(permissionEntity);
-    }
-
-
-    //mapping starts
-    public Flux<AccessAuthorityEntity> buildOnlyAccessAuthorityEntity(AccessEntity accessEntity, List<AuthorityEntity> authorityEntities) {
-        return Flux.fromIterable(authorityEntities).flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessEntity.getId(), authorityEntity.getId())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(authorityRequestToEntityMapper.buildAccessAuthorityEntity(accessEntity.getId(), authorityEntity)))));
-    }
-
-    public Flux<AuthorityRoleEntity> buildOnlyAuthorityRoleEntity(AuthorityEntity authorityEntity, List<RoleEntity> roleEntities) {
-        return Flux.fromIterable(roleEntities).flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityEntity.getId(), roleEntity.getId())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(roleRequestToEntityMapper.buildAuthorityRoleEntity(authorityEntity.getId(), roleEntity))))
-        );
-    }
-
-    public Flux<RolePermissionEntity> buildOnlyRolePermissionEntity(RoleEntity roleEntity, List<PermissionEntity> permissionEntities) {
-        return Flux.fromIterable(permissionEntities).flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleEntity.getId(), permissionEntity.getId())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleEntity.getId(), permissionEntity)))));
-    }
-    //mapping ends
 }
