@@ -55,7 +55,7 @@ public class RequestToEntityMapper {
     @Autowired
     EntityToReadMapper entityToReadMapper;
 
-    public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
+    public Mono<AccessEntity> saveOrUpdateAccess(AccessRequest accessRequest) {
         return accessRepository.fetchAccessEntity(accessRequest.getUsername())
                 .doOnSuccess(accessEntity -> log.info("Fetched Access Entity: {}", accessEntity))
                 .switchIfEmpty(Mono.defer(() -> Mono.just(buildAccessEntity(accessRequest))))
@@ -66,8 +66,7 @@ public class RequestToEntityMapper {
                             .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes)))
                             .then(Mono.just(accessEntity));
                 })
-                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
-                .map(entityToReadMapper::buildAccessDetail);
+                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity));
     }
 
 

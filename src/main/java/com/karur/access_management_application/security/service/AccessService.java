@@ -52,7 +52,7 @@ public class AccessService {
     }
 
     public Mono<AccessDetail> update(AccessRequest accessRequest) {
-        return requestToEntityMapper.buildAccessEntity1(accessRequest)
+        return requestToEntityMapper.saveOrUpdateAccess(accessRequest)
                 // 1. flatMap allows you to wait for the asynchronous DB save to complete
                 .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
                 // 2. map synchronously transforms the saved result into your read DTO
