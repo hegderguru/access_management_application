@@ -13,8 +13,6 @@ import com.karur.access_management_application.security.util.AccessRequestUpdate
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -51,14 +49,6 @@ public class AccessService {
 
     public Mono<AccessDetail> fetchAccessDetails(String username) {
         return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
-    }
-
-    public Mono<AccessDetail> fetchAuthorityDetails(String username) {
-        return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-                .map(authentication -> authentication.getPrincipal().toString())
-                .filter(username::equalsIgnoreCase)
-                .flatMap(un -> entityToReadMapper.buildAccessDetail(un)
-                        .map(accessDetail -> AccessDetail.builder().username(un).authorities(accessDetail.getAuthorities()).build()));
     }
 
     public Mono<AccessDetail> saveOrUpdateAccess(AccessRequest accessRequest) {
