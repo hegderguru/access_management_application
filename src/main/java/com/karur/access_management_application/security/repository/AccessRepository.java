@@ -111,8 +111,8 @@ public class AccessRepository {
     public Mono<AccessEntity> saveAccessEntity(AccessEntity accessEntity) {
         return accessEntityRepository.save(accessEntity)
                 .flatMap(savedAccessEntity -> {
-                    List<AuthorityEntity> incomingAuthorities = CommonUtil.returnListElseEmpty(savedAccessEntity.getAuthorityEntities());
-                    return saveAuthorityEntities(savedAccessEntity, incomingAuthorities)
+                    List<AuthorityEntity> authorityEntities = CommonUtil.returnListElseEmpty(savedAccessEntity.getAuthorityEntities());
+                    return saveAuthorityEntities(savedAccessEntity, authorityEntities)
                             .then(Mono.just(savedAccessEntity)); // Emits clean, duplicate-free graph
                 });
     }
