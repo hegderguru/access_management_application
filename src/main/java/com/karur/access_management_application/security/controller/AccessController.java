@@ -16,7 +16,7 @@ public class AccessController {
     @Autowired
     AccessService accessService;
 
-    @PostMapping("accessDetail/{username}")
+    @GetMapping("accessDetail/{username}")
     public Mono<ResponseEntity<AccessResponse>> fetchAccessDetail(@PathVariable String username) {
         return accessService.fetchAccessDetails(username)
                 .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
