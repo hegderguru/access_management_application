@@ -113,12 +113,12 @@ public class AccessRepository {
         return accessEntityRepository.save(accessEntity)
                 .flatMap(savedAccessEntity -> {
                     List<AuthorityEntity> incomingAuthorities = CommonUtil.returnListElseEmpty(savedAccessEntity.getAuthorityEntities());
-                    return getAuthorityEntityFlux(savedAccessEntity, incomingAuthorities)
+                    return saveAuthorityEntities(savedAccessEntity, incomingAuthorities)
                             .then(Mono.just(savedAccessEntity)); // Emits clean, duplicate-free graph
                 });
     }
 
-    private @NonNull Flux<AuthorityEntity> getAuthorityEntityFlux(AccessEntity savedAccessEntity, List<AuthorityEntity> authorityEntities) {
+    private @NonNull Flux<AuthorityEntity> saveAuthorityEntities(AccessEntity savedAccessEntity, List<AuthorityEntity> authorityEntities) {
         return authorityEntityRepository.saveAll(authorityEntities)
                 .flatMap(savedAuthorityEntity -> {
                     List<RoleEntity> roleEntities = CommonUtil.returnListElseEmpty(savedAuthorityEntity.getRoleEntities());
