@@ -4,7 +4,6 @@ import com.karur.access_management_application.security.entity.*;
 import com.karur.access_management_application.security.entity.join.AccessAuthorityEntity;
 import com.karur.access_management_application.security.entity.join.AuthorityRoleEntity;
 import com.karur.access_management_application.security.entity.join.RolePermissionEntity;
-import com.karur.access_management_application.security.mapper.requestToEntity.AccessRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.AuthorityRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.PermissionRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.RoleRequestToEntityMapper;
