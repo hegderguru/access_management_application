@@ -19,8 +19,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthorityDetail implements GrantedAuthority {
     private String name;
-
-    @VerifyAuthority
     private String description;
     private List<RoleDetail> roleDetails;
 

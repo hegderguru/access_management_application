@@ -23,14 +23,11 @@ public class AccessDetail implements UserDetails {
 
     @SecretChange
     private String password;
-
-    @VerifyAuthority
     private String firstName;
     private String middleName;
     private String lastName;
     private boolean accessEnabled;
     private boolean accessLocked;
-    @VerifyAuthority
     private boolean accessExpired;
     private boolean credentialsExpired;
     private List<AuthorityDetail> authorities;

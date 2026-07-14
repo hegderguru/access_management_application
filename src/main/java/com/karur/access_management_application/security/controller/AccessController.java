@@ -3,6 +3,7 @@ package com.karur.access_management_application.security.controller;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.response.AccessResponse;
 import com.karur.access_management_application.security.service.AccessService;
+import com.karur.access_management_application.verifyAuthority.annotation.VerifyAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class AccessController {
         return updateAccessDetail(accessRequestMono);
     }
 
+    @VerifyAuthority
     @PutMapping("updateAccessDetail")
     public Mono<ResponseEntity<AccessResponse>> updateAccessDetail(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono.flatMap(accessorRequest -> accessService.update(accessorRequest))
