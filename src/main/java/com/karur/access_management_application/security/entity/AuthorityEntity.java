@@ -26,7 +26,7 @@ public class AuthorityEntity {
     @Transient
     private List<RoleEntity> roleEntities = new ArrayList<>();
 
-    public void addRoleEntity(RoleEntity roleEntity) {
+    public synchronized void addRoleEntity(RoleEntity roleEntity) {
         if (Objects.isNull(roleEntities)) {
             roleEntities = new ArrayList<>();
         }

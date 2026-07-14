@@ -115,8 +115,11 @@ public class AccessService {
     }
 
     public Mono<AccessDetail> update(AccessRequest accessRequest) {
-        return requestToEntityMapper.buildAndMapAccessEntity(accessRequest)
-                .map(accessEntity -> entityToReadMapper.buildAccessDetail(accessEntity));
+        return requestToEntityMapper.buildAccessEntity1(accessRequest)
+                .map(accessEntity -> {
+                    accessRepository.saveAccessEntity(accessEntity);
+                    return entityToReadMapper.buildAccessDetail(accessEntity);
+                });
     }
 
 }

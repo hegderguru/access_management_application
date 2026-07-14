@@ -23,6 +23,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Slf4j
 @Data
 @Repository
@@ -136,4 +138,24 @@ public class AccessRepository {
     public Mono<PermissionEntity> savePermissionEntity(PermissionEntity permissionEntity) {
         return permissionEntityRepository.save(permissionEntity);
     }
+
+
+
+    //mapping starts
+    public Flux<AccessAuthorityEntity> buildOnlyAccessAuthorityEntity(AccessEntity accessEntity, List<AuthorityEntity> authorityEntities) {
+        return Flux.fromIterable(authorityEntities).flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessEntity.getId(), authorityEntity.getId())
+                .switchIfEmpty(Mono.defer(() -> Mono.just(authorityRequestToEntityMapper.buildAccessAuthorityEntity(accessEntity.getId(), authorityEntity)))));
+    }
+
+    public Flux<AuthorityRoleEntity> buildOnlyAuthorityRoleEntity(AuthorityEntity authorityEntity, List<RoleEntity> roleEntities) {
+        return Flux.fromIterable(roleEntities).flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityEntity.getId(), roleEntity.getId())
+                .switchIfEmpty(Mono.defer(() -> Mono.just(roleRequestToEntityMapper.buildAuthorityRoleEntity(authorityEntity.getId(), roleEntity))))
+        );
+    }
+
+    public Flux<RolePermissionEntity> buildOnlyRolePermissionEntity(RoleEntity roleEntity, List<PermissionEntity> permissionEntities) {
+        return Flux.fromIterable(permissionEntities).flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleEntity.getId(), permissionEntity.getId())
+                .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleEntity.getId(), permissionEntity)))));
+    }
+    //mapping ends
 }
