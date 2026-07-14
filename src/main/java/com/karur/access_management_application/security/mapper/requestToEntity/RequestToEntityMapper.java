@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class RequestToEntityMapper {
@@ -96,10 +98,10 @@ public class RequestToEntityMapper {
     /*New Implementation*/
 
     public Mono<AccessEntity> buildAccessEntity1(AccessRequest accessRequest) {
-        return accessEntityRepository.findByUsername(accessRequest.getUsername())
+        return accessRepository.fetchAccessEntity(accessRequest.getUsername())
                 .switchIfEmpty(Mono.defer(() -> Mono.just(accessRequestToEntityMapper.buildAccessEntity(accessRequest))))
                 .flatMap(accessEntity -> Flux.fromIterable(CommonUtil.returnListElseEmpty(accessRequest.getAuthorityRequests()))
-                        .flatMap(this::buildAuthorityEntity1)
+                        .flatMap(authorityRequest -> buildAuthorityEntity1(authorityRequest, accessEntity.getAuthorityEntities()))
                         .collectList()
                         .map(authorityEntities -> {
                             authorityEntities.forEach(accessEntity::addAuthorityEntity);
@@ -108,11 +110,12 @@ public class RequestToEntityMapper {
                 );
     }
 
-    public Mono<AuthorityEntity> buildAuthorityEntity1(AuthorityRequest authorityRequest) {
-        return authorityEntityRepository.findByName(authorityRequest.getName())
+    public Mono<AuthorityEntity> buildAuthorityEntity1(AuthorityRequest authorityRequest, List<AuthorityEntity> authorityEntities) {
+        return Flux.fromIterable(authorityEntities).filter(authorityEntity -> authorityEntity.getName().equalsIgnoreCase(authorityRequest.getName()))
+                .next()
                 .switchIfEmpty(Mono.defer(() -> Mono.just(authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest))))
                 .flatMap(authorityEntity -> Flux.fromIterable(CommonUtil.returnListElseEmpty(authorityRequest.getRoleRequests()))
-                        .flatMap(this::buildRoleEntity1)
+                        .flatMap(roleRequest -> buildRoleEntity1(roleRequest, authorityEntity.getRoleEntities()))
                         .collectList()
                         .map(roleEntities -> {
                             roleEntities.forEach(authorityEntity::addRoleEntity);
@@ -121,11 +124,12 @@ public class RequestToEntityMapper {
                 );
     }
 
-    public Mono<RoleEntity> buildRoleEntity1(RoleRequest roleRequest) {
-        return roleEntityRepository.findByName(roleRequest.getName())
+    public Mono<RoleEntity> buildRoleEntity1(RoleRequest roleRequest, List<RoleEntity> roleEntities) {
+        return Flux.fromIterable(roleEntities).filter(roleEntity -> roleEntity.getName().equalsIgnoreCase(roleRequest.getName()))
+                .next()
                 .switchIfEmpty(Mono.defer(() -> Mono.just(roleRequestToEntityMapper.buildRoleEntity(roleRequest))))
                 .flatMap(roleEntity -> Flux.fromIterable(CommonUtil.returnListElseEmpty(roleRequest.getPermissionRequests()))
-                        .flatMap(this::buildPermissionEntity1)
+                        .flatMap(permissionRequest -> buildPermissionEntity1(permissionRequest, roleEntity.getPermissionEntities()))
                         .collectList()
                         .map(permissionEntities -> {
                             permissionEntities.forEach(roleEntity::addPermissionEntity);
@@ -134,8 +138,8 @@ public class RequestToEntityMapper {
                 );
     }
 
-    public Mono<PermissionEntity> buildPermissionEntity1(PermissionRequest permissionRequest) {
-        return permissionEntityRepository.ClassPathAndClassNameAndFieldName(permissionRequest.getClassPath(), permissionRequest.getClassName(), permissionRequest.getFieldName())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest))));
+    public Mono<PermissionEntity> buildPermissionEntity1(PermissionRequest permissionRequest, List<PermissionEntity> permissionEntities) {
+        return Flux.fromIterable(permissionEntities).filter(permissionEntity -> permissionEntity.fullyQualifiedFieldPath().equalsIgnoreCase(permissionEntity.fullyQualifiedFieldPath()))
+                .next().switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest))));
     }
 }
