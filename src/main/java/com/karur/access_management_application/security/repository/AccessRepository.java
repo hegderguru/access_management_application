@@ -69,42 +69,40 @@ public class AccessRepository {
 
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
-                .doOnSuccess(accessEntity -> log.info("User: {} with details: {}", username, accessEntity))
                 .flatMap(accessEntity -> accessAuthorityIdRepository.findByAccessId(accessEntity.getId())
-                        .collectList()
-                        .flatMap(accessAuthorityEntities -> Flux.fromIterable(accessAuthorityEntities.stream()
-                                        .map(AccessAuthorityEntity::getAuthorityId).toList()).flatMap(this::fetchAuthorityEntity)
-                                .collectList()
-                                .map(authorityEntities -> {
-                                    // 1. Mutate the object safely inside the map function
-                                    accessEntity.setAuthorityEntities(authorityEntities);
-                                    // 2. Pass the modified object down the stream
-                                    return accessEntity;
-                                })
-                        )
+                        .map(AccessAuthorityEntity::getAuthorityId) // Extract IDs directly within the Flux stream
+                        .flatMap(this::fetchAuthorityEntity)      // Executes correctly if IDs are present
+                        .collectList()                       // Safe to collect even if empty
+                        .map(authorityEntities -> {
+                            accessEntity.setAuthorityEntities(authorityEntities);
+                            return accessEntity;
+                        })
                 );
-
     }
 
     public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
         return authorityEntityRepository.findById(id)
                 .flatMap(authorityEntity -> authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId())
-                        .collectList()
-                        .flatMap(authorityRoleEntities -> Flux.fromIterable(authorityRoleEntities.stream().map(AuthorityRoleEntity::getRoleId).toList()).flatMap(this::fetchRoleEntity)
-                                .collectList()
-                                .doOnNext(authorityEntity::setRoleEntities)
-                                .then(Mono.just(authorityEntity))));
+                        .map(AuthorityRoleEntity::getRoleId) // Extract IDs directly within the Flux stream
+                        .flatMap(this::fetchRoleEntity)      // Executes correctly if IDs are present
+                        .collectList()                       // Safe to collect even if empty
+                        .map(roleEntities -> {
+                            authorityEntity.setRoleEntities(roleEntities);
+                            return authorityEntity;
+                        })
+                );
     }
 
     public Mono<RoleEntity> fetchRoleEntity(Long id) {
         return roleEntityRepository.findById(id)
                 .flatMap(roleEntity -> rolePermissionIdRepository.findByRoleId(roleEntity.getId())
-                        .collectList()
-                        .flatMap(rolePermissionEntities -> permissionEntityRepository.findByIdIn(rolePermissionEntities.stream()
-                                .map(RolePermissionEntity::getPermissionId).toList())
-                                .collectList()
-                                .doOnNext(roleEntity::setPermissionEntities)
-                                .then(Mono.just(roleEntity)))
+                        .map(RolePermissionEntity::getPermissionId) // Extract IDs directly within the Flux stream
+                        .flatMap(permissionEntityRepository::findById)      // Executes correctly if IDs are present
+                        .collectList()                       // Safe to collect even if empty
+                        .map(permissionEntities -> {
+                            roleEntity.setPermissionEntities(permissionEntities);
+                            return roleEntity;
+                        })
                 );
     }
 
