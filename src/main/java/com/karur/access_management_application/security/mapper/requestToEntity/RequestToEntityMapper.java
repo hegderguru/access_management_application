@@ -145,7 +145,7 @@ public class RequestToEntityMapper {
 
     public Mono<AccessEntity> buildAndMapOnlyAccessEntity(AccessRequest accessRequest) {
         return buildOnlyAccessEntity(accessRequest)
-                .flatMap(accessEntity -> buildOnlyAuthorityEntities(accessRequest.getAuthorityRequests())
+                .flatMap(accessEntity -> buildOnlyAuthorityEntities(CommonUtil.returnListElseEmpty(accessRequest.getAuthorityRequests()))
                         .collectList()
                         .flatMap(authorityEntities -> {
                             accessEntity.setAuthorityEntities(authorityEntities);
@@ -162,7 +162,7 @@ public class RequestToEntityMapper {
 
     public Mono<AuthorityEntity> buildAndMapOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
         return buildOnlyAuthorityEntity(authorityRequest)
-                .flatMap(authorityEntity -> buildOnlyRoleEntities(authorityRequest.getRoleRequests())
+                .flatMap(authorityEntity -> buildOnlyRoleEntities(CommonUtil.returnListElseEmpty(authorityRequest.getRoleRequests()))
                         .collectList()
                         .flatMap(roleEntities -> {
                             authorityEntity.setRoleEntities(roleEntities);
@@ -177,7 +177,7 @@ public class RequestToEntityMapper {
 
     public Mono<RoleEntity> buildAndMapOnlyRoleEntity(RoleRequest roleRequest) {
         return buildOnlyRoleEntity(roleRequest)
-                .flatMap(roleEntity -> buildOnlyPermissionEntities(roleRequest.getPermissionRequests())
+                .flatMap(roleEntity -> buildOnlyPermissionEntities(CommonUtil.returnListElseEmpty(roleRequest.getPermissionRequests()))
                         .collectList()
                         .flatMap(permissionEntities -> {
                             roleEntity.setPermissionEntities(permissionEntities);
@@ -188,7 +188,7 @@ public class RequestToEntityMapper {
 
     public Mono<AccessEntity> buildAndMapAccessEntity(AccessRequest accessRequest) {
         return buildAndMapOnlyAccessEntity(accessRequest)
-                .flatMap(accessEntity -> buildAndMapAuthorityEntities(accessRequest.getAuthorityRequests())
+                .flatMap(accessEntity -> buildAndMapAuthorityEntities(CommonUtil.returnListElseEmpty(accessRequest.getAuthorityRequests()))
                         .then(Mono.defer(() -> Mono.just(accessEntity))));
     }
 
@@ -198,7 +198,7 @@ public class RequestToEntityMapper {
 
     public Mono<AuthorityEntity> buildAndMapAuthorityEntity(AuthorityRequest authorityRequest) {
         return buildAndMapOnlyAuthorityEntity(authorityRequest)
-                .flatMap(authorityEntity -> buildAndMapOnlyRoleEntities(authorityRequest.getRoleRequests())
+                .flatMap(authorityEntity -> buildAndMapOnlyRoleEntities(CommonUtil.returnListElseEmpty(authorityRequest.getRoleRequests()))
                         .then(Mono.defer(() -> Mono.just(authorityEntity))));
     }
 }
