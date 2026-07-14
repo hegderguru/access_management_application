@@ -35,8 +35,8 @@ public class AccessController {
     }
 
     @PostMapping("createAuthority")
-    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
-        return authorityRequestMono.flatMap(authorityRequest -> accessService.createAuthority(authorityRequest))
+    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestBody Mono<AccessRequest> accessRequestMono) {
+        return accessRequestMono.flatMap(authorityRequest -> accessService.createAuthority(authorityRequest))
                 .flatMap(accessEntity -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.CREATED).build())));
     }
 
