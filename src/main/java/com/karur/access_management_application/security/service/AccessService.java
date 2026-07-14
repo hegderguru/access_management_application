@@ -114,5 +114,9 @@ public class AccessService {
                 .flatMap(roleEntity ->permissionRequestToEntityMapper. saveOrUpdatePermissionsOnChanges(roleEntity, changes));
     }
 
+    public Mono<AccessDetail> update(AccessRequest accessRequest) {
+        return requestToEntityMapper.buildAndMapAccessEntity(accessRequest)
+                .map(accessEntity -> entityToReadMapper.buildAccessDetail(accessEntity));
+    }
 
 }
