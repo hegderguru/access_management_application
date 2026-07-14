@@ -18,11 +18,13 @@ import com.karur.access_management_application.security.repository.inter.joinTab
 import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -82,7 +84,7 @@ public class AccessRepository {
 
     public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
         return authorityEntityRepository.findById(id)
-                .doOnRequest(value -> log.info("id: {}",id))
+                .doOnRequest(value -> log.info("id: {}", id))
                 .flatMap(authorityEntity -> authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId())
                         .map(AuthorityRoleEntity::getRoleId) // Extract IDs directly within the Flux stream
                         .flatMap(this::fetchRoleEntity)      // Executes correctly if IDs are present
@@ -96,7 +98,7 @@ public class AccessRepository {
 
     public Mono<RoleEntity> fetchRoleEntity(Long id) {
         return roleEntityRepository.findById(id)
-                .doOnRequest(value -> log.info("id: {}",id))
+                .doOnRequest(value -> log.info("id: {}", id))
                 .flatMap(roleEntity -> rolePermissionIdRepository.findByRoleId(roleEntity.getId())
                         .map(RolePermissionEntity::getPermissionId) // Extract IDs directly within the Flux stream
                         .flatMap(permissionEntityRepository::findById)      // Executes correctly if IDs are present
@@ -110,12 +112,52 @@ public class AccessRepository {
 
     public Mono<AccessEntity> saveAccessEntity(AccessEntity accessEntity) {
         return accessEntityRepository.save(accessEntity)
-                .flatMap(accessEntity1 -> Flux.fromIterable(accessEntity1.getAuthorityEntities()).flatMap(this::saveAuthorityEntity)
-                        .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessEntity1.getId(), authorityEntity.getId())
-                                .switchIfEmpty(Flux.just(authorityRequestToEntityMapper.buildAccessAuthorityEntity(accessEntity1.getId(), authorityEntity)))
-                                .flatMap(accessAuthorityEntity -> accessAuthorityIdRepository.save(accessAuthorityEntity)))
-                        .then(Mono.just(accessEntity1)));
+                .flatMap(savedAccessEntity -> {
+                    List<AuthorityEntity> incomingAuthorities = CommonUtil.returnListElseEmpty(savedAccessEntity.getAuthorityEntities());
+                    return getAuthorityEntityFlux(savedAccessEntity, incomingAuthorities)
+                            .then(Mono.just(savedAccessEntity)); // Emits clean, duplicate-free graph
+                });
     }
+
+    private @NonNull Flux<AuthorityEntity> getAuthorityEntityFlux(AccessEntity savedAccessEntity, List<AuthorityEntity> authorityEntities) {
+        return authorityEntityRepository.saveAll(authorityEntities)
+                .flatMap(savedAuthorityEntity -> {
+                    List<RoleEntity> roleEntities = CommonUtil.returnListElseEmpty(savedAuthorityEntity.getRoleEntities());
+                    savedAccessEntity.addAuthorityEntity(savedAuthorityEntity);
+                    return accessAuthorityIdRepository.findByAccessIdAndAuthorityId(savedAccessEntity.getId(), savedAuthorityEntity.getId())
+                            .switchIfEmpty(Mono.defer(() -> Mono.just(authorityRequestToEntityMapper.buildAccessAuthorityEntity(savedAccessEntity.getId(), savedAuthorityEntity))))
+                            .flatMap(accessAuthorityIdRepository::save)
+                            .then(saveRoleEntities(savedAuthorityEntity, roleEntities))
+                            .then(Mono.just(savedAuthorityEntity));
+                });
+    }
+
+    private @NonNull Mono<Void> saveRoleEntities(AuthorityEntity savedAuthorityEntity, List<RoleEntity> roleEntities) {
+        return roleEntityRepository.saveAll(roleEntities)
+                .flatMap(savedRoleEntity -> {
+                    List<PermissionEntity> permissionEntities = CommonUtil.returnListElseEmpty(savedRoleEntity.getPermissionEntities());
+                    savedAuthorityEntity.addRoleEntity(savedRoleEntity);
+                    return authorityRoleIdRepository.findByAuthorityIdAndRoleId(savedAuthorityEntity.getId(), savedRoleEntity.getId())
+                            .switchIfEmpty(Mono.defer(() -> Mono.just(roleRequestToEntityMapper.buildAuthorityRoleEntity(savedAuthorityEntity.getId(), savedRoleEntity))))
+                            .flatMap(authorityRoleIdRepository::save)
+                            .then(savePermissionEntities(savedRoleEntity, permissionEntities))
+                            .then(Mono.just(savedRoleEntity));
+                })
+                .then();
+    }
+
+    private Mono<Void> savePermissionEntities(RoleEntity savedRoleEntity, List<PermissionEntity> permissionEntities) {
+        return permissionEntityRepository.saveAll(permissionEntities)
+                .flatMap(savedPermissionEntity -> {
+                    savedRoleEntity.addPermissionEntity(savedPermissionEntity);
+                    return rolePermissionIdRepository.findByRoleIdAndPermissionId(savedRoleEntity.getId(), savedPermissionEntity.getId())
+                            .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(savedRoleEntity.getId(), savedPermissionEntity))))
+                            .flatMap(rolePermissionIdRepository::save)
+                            .then(Mono.just(savedPermissionEntity));
+                })
+                .then();
+    }
+
 
     public Mono<AuthorityEntity> saveAuthorityEntity(AuthorityEntity authorityEntity) {
         return authorityEntityRepository.save(authorityEntity)
@@ -138,7 +180,6 @@ public class AccessRepository {
     public Mono<PermissionEntity> savePermissionEntity(PermissionEntity permissionEntity) {
         return permissionEntityRepository.save(permissionEntity);
     }
-
 
 
     //mapping starts
