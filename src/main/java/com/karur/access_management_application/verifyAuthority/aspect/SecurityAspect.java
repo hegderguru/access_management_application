@@ -1,5 +1,6 @@
-package com.karur.access_management_application.verifyAuthority.annotation;
+package com.karur.access_management_application.verifyAuthority.aspect;
 
+import com.karur.access_management_application.verifyAuthority.service.SecurityAnnotationProcessor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;

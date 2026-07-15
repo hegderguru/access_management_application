@@ -1,5 +1,6 @@
-package com.karur.access_management_application.verifyAuthority.annotation;
+package com.karur.access_management_application.verifyAuthority.service;
 
+import com.karur.access_management_application.verifyAuthority.annotation.VerifyAuthority;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
