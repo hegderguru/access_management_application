@@ -1,7 +1,6 @@
 package com.karur.access_management_application.security.model.read;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.karur.access_management_application.verifyAuthority.annotation.VerifyAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.karur.access_management_application.verifyAuthority.annotation;
+package com.karur.access_management_application.validate.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
