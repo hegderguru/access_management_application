@@ -19,4 +19,13 @@ public class PermissionDetail {
     private boolean create;
     private boolean update;
     private boolean delete;
+
+    public String fullyQualifiedClassPath() {
+        return classPath + "." + className;
+    }
+
+    public String fullyQualifiedFieldPath() {
+        return fullyQualifiedClassPath() + "." + fieldName;
+    }
+
 }

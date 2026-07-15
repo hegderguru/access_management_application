@@ -5,6 +5,7 @@ import com.karur.access_management_application.security.mapper.requestToEntity.*
 import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
+import com.karur.access_management_application.validate.annotation.ValidateData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class AccessService {
     @Autowired
     EntityToReadMapper entityToReadMapper;
 
+    @ValidateData
     public Mono<AccessDetail> fetchAccessDetails(String username) {
         return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
     }
