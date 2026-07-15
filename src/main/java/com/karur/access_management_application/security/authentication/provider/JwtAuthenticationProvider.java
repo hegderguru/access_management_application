@@ -30,7 +30,7 @@ public class JwtAuthenticationProvider implements SupportedAuthenticationProvide
                 String username = jwtTokenProvider.getUsernameFromToken(token);
                 List<String> authorities = jwtTokenProvider.getAuthorities(token);
                 List<AuthorityDetail> authorityDetails = authorities.stream().map(authority -> AuthorityDetail.builder().name(authority).build()).toList();
-                return Mono.just(new JwtAuthenticationToken(token, username, authorityDetails));
+                return Mono.just(new JwtAuthenticationToken(username,token, authorityDetails));
             }
         }
         return Mono.empty();
