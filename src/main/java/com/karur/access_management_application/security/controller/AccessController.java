@@ -17,12 +17,14 @@ public class AccessController {
     @Autowired
     AccessService accessService;
 
+    @VerifyAuthority
     @GetMapping("accessDetail/{username}")
     public Mono<ResponseEntity<AccessResponse>> fetchAccessDetail(@PathVariable String username) {
         return accessService.fetchAccessDetails(username)
                 .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
     }
 
+    @VerifyAuthority
     @PostMapping("/create")
     public Mono<ResponseEntity<AccessResponse>> create(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return updateAccessDetail(accessRequestMono);
