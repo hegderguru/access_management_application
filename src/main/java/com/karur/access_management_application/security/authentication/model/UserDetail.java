@@ -20,10 +20,10 @@ public class UserDetail implements UserDetails {
     public UserDetail(AccessDetail accessDetail) {
         username = accessDetail.getUsername();
         password = accessDetail.getPassword();
-        accessEnabled = accessDetail.isAccessEnabled();
-        accessLocked = accessDetail.isAccessLocked();
-        accessExpired = accessDetail.isAccessExpired();
-        credentialsExpired = accessDetail.isCredentialsExpired();
+        accessEnabled = accessDetail.getAccessEnabled();
+        accessLocked = accessDetail.getAccessLocked();
+        accessExpired = accessDetail.getAccessExpired();
+        credentialsExpired = accessDetail.getCredentialsExpired();
         authorities = accessDetail.getAuthorityDetails().stream()
                 .map(authorityDetail -> new UserAuthority(authorityDetail.getName())).toList();
     }

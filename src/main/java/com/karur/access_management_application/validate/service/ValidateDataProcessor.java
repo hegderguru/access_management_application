@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -22,6 +23,9 @@ public class ValidateDataProcessor {
     AccessService accessService;
 
     public Mono<Void> validate(Object payload, Authentication authentication) {
+        if(Objects.isNull(payload)){
+            return Mono.empty();
+        }
         if (payload instanceof AccessDetail accessDetail) { // Using Java 16+ Pattern Matching
             log.info("ValidateDataProcessor :: Payload received successfully: {}", accessDetail);
             return Mono.just(accessDetail)
