@@ -5,7 +5,6 @@ import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
-import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import com.karur.access_management_application.security.mapper.entiyToRequest.EntityToAccessReuestMapper;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
@@ -43,23 +42,6 @@ public class RequestToEntityMapper {
     @Autowired
     EntityToAccessReuestMapper entityToAccessReuestMapper;
 
-    @Autowired
-    EntityToReadMapper entityToReadMapper;
-
-    public Mono<AccessEntity> saveOrUpdateAccess(AccessRequest accessRequest) {
-        return accessRepository.fetchAccessEntity(accessRequest.getUsername())
-                .doOnSuccess(accessEntity -> log.info("Fetched Access Entity: {}", accessEntity))
-                .switchIfEmpty(Mono.error(new IllegalAccessError("User not found")))
-                .flatMap(accessEntity -> {
-                    List<CompareUtil.Change> changes = AccessRequestUpdateUtil
-                            .accessUpdateChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
-                    return accessRequestToEntityMapper.updateAccessOnChanges(accessEntity, changes)
-                            .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes)))
-                            .then(Mono.just(accessEntity));
-                })
-                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity));
-    }
-
 
     public @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
         return authorityRequestToEntityMapper.saveOrUpdateAuthoritiesOnChanges(accessEntity, changes)
@@ -73,32 +55,6 @@ public class RequestToEntityMapper {
         return roleRequestToEntityMapper.saveOrUpdateRolesOnChanges(authorityEntity, changes)
                 .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
                 .flatMap(roleEntity -> permissionRequestToEntityMapper.saveOrUpdatePermissionsOnChanges(roleEntity, changes));
-    }
-
-    public AccessEntity buildAccessEntity(AccessRequest accessRequest) {
-        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
-        accessRequest.getAuthorityRequests().forEach(authorityRequest -> {
-            AuthorityEntity authorityEntity = buildAuthorityEntity(authorityRequest);
-            accessEntity.addAuthorityEntity(authorityEntity);
-        });
-        return accessEntity;
-    }
-
-    public AuthorityEntity buildAuthorityEntity(AuthorityRequest authorityRequest) {
-        AuthorityEntity authorityEntity = authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
-        authorityRequest.getRoleRequests().forEach(roleRequest -> {
-            RoleEntity roleEntity = buildRoleEntity(roleRequest);
-            authorityEntity.addRoleEntity(roleEntity);
-        });
-        return authorityEntity;
-    }
-
-    public RoleEntity buildRoleEntity(RoleRequest roleRequest) {
-        RoleEntity roleEntity = roleRequestToEntityMapper.buildRoleEntity(roleRequest);
-        roleRequest.getPermissionRequests().forEach(permissionRequest -> {
-            roleEntity.addPermissionEntity(buildPermissionEntity(permissionRequest));
-        });
-        return roleEntity;
     }
 
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
@@ -144,10 +100,8 @@ public class RequestToEntityMapper {
                     List<CompareUtil.Change> changes = AccessRequestUpdateUtil
                             .accessUpdateChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
                     return accessRequestToEntityMapper.updateAccessOnChanges(accessEntity, changes)
-                            .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes)))
                             .then(Mono.just(accessEntity));
-                })
-                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity));
+                });
     }
 
     public Mono<AuthorityEntity> updateAuthority(AuthorityRequest authorityRequest) {
@@ -157,7 +111,6 @@ public class RequestToEntityMapper {
                     List<CompareUtil.Change> changes = AccessRequestUpdateUtil
                             .accessUpdateChanges(entityToAccessReuestMapper.buildAuthorityRequest(authorityEntity), authorityRequest);
                     return authorityRequestToEntityMapper.updateAuthorityOnChanges(authorityEntity, changes)
-                            .then(Mono.defer(() -> saveOrUpdateOnlyRoles(authorityEntity, changes)))
                             .then(Mono.just(authorityEntity));
                 })
                 .flatMap(authorityEntity -> accessRepository.saveAuthorityEntity(authorityEntity));
@@ -170,7 +123,6 @@ public class RequestToEntityMapper {
                     List<CompareUtil.Change> changes = AccessRequestUpdateUtil
                             .accessUpdateChanges(entityToAccessReuestMapper.buildRoleRequest(roleEntity), roleRequest);
                     return roleRequestToEntityMapper.updateRoleOnChanges(roleEntity, changes)
-                            .then(Mono.defer(() -> permissionRequestToEntityMapper.saveOrUpdatePermissionsOnChanges(roleEntity, changes)))
                             .then(Mono.just(roleEntity));
                 })
                 .flatMap(authorityEntity -> accessRepository.saveRoleEntity(authorityEntity));

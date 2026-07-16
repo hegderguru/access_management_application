@@ -60,6 +60,10 @@ public class AccessRepository {
     @Autowired
     PermissionRequestToEntityMapper permissionRequestToEntityMapper;
 
+    public Flux<AccessAuthorityEntity> fetchAccessAuthorityEntity(Long accessId) {
+        return accessAuthorityIdRepository.findByAccessId(accessId);
+    }
+
     /*Fetch Access Entity and nested entities*/
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
@@ -198,4 +202,28 @@ public class AccessRepository {
                 .then();
     }
     /*Save Access Entity and nested entities*/
+
+    public Mono<Void> updateAccessAuthorityEntity(Long accessId, String authorityName) {
+        return authorityEntityRepository.findByName(authorityName)
+                .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessId, authorityEntity.getId())
+                        .switchIfEmpty(Mono.defer(() -> Mono.just(authorityRequestToEntityMapper.buildAccessAuthorityEntity(accessId, authorityEntity))))
+                        .flatMap(accessAuthorityIdRepository::save)
+                        .then(Mono.empty()));
+    }
+
+    public Mono<Void> updateAuthorityRoleEntity(Long authorityId, String roleName) {
+        return roleEntityRepository.findByName(roleName)
+                .flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityId, roleEntity.getId())
+                        .switchIfEmpty(Mono.defer(() -> Mono.just(roleRequestToEntityMapper.buildAuthorityRoleEntity(authorityId, roleEntity))))
+                        .flatMap(authorityRoleIdRepository::save)
+                        .then(Mono.empty()));
+    }
+
+    public Mono<Void> updateRolePermissionEntity(Long roleId, String classPath, String className, String fieldName) {
+        return permissionEntityRepository.findByClassPathAndClassNameAndFieldName(classPath, className, fieldName)
+                .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleId, permissionEntity.getId())
+                        .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleId, permissionEntity))))
+                        .flatMap(rolePermissionIdRepository::save)
+                        .then(Mono.empty()));
+    }
 }
