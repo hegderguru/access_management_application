@@ -66,7 +66,8 @@ public class ValidateDataProcessor {
         for (Field field : payload.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
-                if (permissionDetails.stream().anyMatch(permissionDetail -> permissionDetail.getFullyQualifiedFieldName().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName()))) {
+                if (permissionDetails.stream().anyMatch(permissionDetail -> permissionDetail.getFullyQualifiedFieldName().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName())
+                && (permissionDetail.getRead()))) {
                     continue;
                 }
                 field.set(payload, null);
@@ -82,7 +83,8 @@ public class ValidateDataProcessor {
         for (Field field : payload.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
-                if (permissionDetails.stream().anyMatch(permissionDetail -> permissionDetail.getFullyQualifiedFieldName().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName()))) {
+                if (permissionDetails.stream().anyMatch(permissionRequest -> permissionRequest.getFullyQualifiedFieldName().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName())
+                && (permissionRequest.getCreate() || permissionRequest.getUpdate()))) {
                     continue;
                 }
                 field.set(payload, null);
