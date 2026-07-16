@@ -3,11 +3,9 @@ package com.karur.access_management_application.security.model.response;
 import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.read.AuthorityDetail;
 import com.karur.access_management_application.security.model.read.RoleDetail;
-import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
-@Builder
 @Data
 public class AccessResponse {
 
@@ -22,10 +20,22 @@ public class AccessResponse {
         this.message = message;
     }
 
-    public AccessResponse(HttpStatus httpStatus, String message,AccessDetail accessDetail) {
+    public AccessResponse(HttpStatus httpStatus, String message, AccessDetail accessDetail) {
         this.httpStatus = httpStatus;
         this.message = message;
-        this.accessDetail=accessDetail;
+        this.accessDetail = accessDetail;
+    }
+
+    public AccessResponse(HttpStatus httpStatus, String message, AuthorityDetail authorityDetail) {
+        this.httpStatus = httpStatus;
+        this.message = message;
+        this.authorityDetail = authorityDetail;
+    }
+
+    public AccessResponse(HttpStatus httpStatus, String message, RoleDetail roleDetail) {
+        this.httpStatus = httpStatus;
+        this.message = message;
+        this.roleDetail = roleDetail;
     }
 
 }
