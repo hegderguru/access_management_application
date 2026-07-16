@@ -60,10 +60,6 @@ public class AccessRepository {
     @Autowired
     PermissionRequestToEntityMapper permissionRequestToEntityMapper;
 
-    public Flux<AccessAuthorityEntity> fetchAccessAuthorityEntity(Long accessId) {
-        return accessAuthorityIdRepository.findByAccessId(accessId);
-    }
-
     /*Fetch Access Entity and nested entities*/
     public Mono<AccessEntity> fetchAccessEntity(String username) {
         return accessEntityRepository.findByUsername(username)
