@@ -54,7 +54,7 @@ public class AccessRequestUpdateUtil {
 
     public static Map<String, List<CompareUtil.Change>> getUpdatePermissionRequest(List<CompareUtil.Change> changes) {
         return getUpdateChanges(changes).stream().filter(change -> change.getRight().getClass().equals(PermissionRequest.class)  && Objects.nonNull(change.getRightValue()))
-                .collect(Collectors.groupingBy(change -> ((PermissionRequest) change.getRight()).fullyQualifiedFieldPath()));
+                .collect(Collectors.groupingBy(change -> ((PermissionRequest) change.getRight()).getFullyQualifiedFieldName()));
     }
 
     public static List<CompareUtil.Change> getUpdateAccessRequest(List<CompareUtil.Change> changes) {

@@ -48,7 +48,7 @@ public class ValidateDataProcessor {
         for (Field field : payload.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
-                if (permissionDetails.stream().anyMatch(permissionDetail -> permissionDetail.fullyQualifiedFieldPath().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName()))) {
+                if (permissionDetails.stream().anyMatch(permissionDetail -> permissionDetail.getFullyQualifiedFieldName().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName()))) {
                     continue;
                 }
                 field.set(payload, null);

@@ -8,7 +8,6 @@ import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.model.read.*;
 import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.CommonUtil;
-import com.karur.access_management_application.validate.annotation.ValidateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -76,13 +75,11 @@ public class EntityToReadMapper {
 
     private PermissionDetail buildPermissionDetail(PermissionEntity permissionEntity) {
         return PermissionDetail.builder()
-                .classPath(permissionEntity.getClassPath())
-                .className(permissionEntity.getClassName())
-                .fieldName(permissionEntity.getFieldName())
-                .read(permissionEntity.isRead())
-                .create(permissionEntity.isCreate())
-                .update(permissionEntity.isUpdate())
-                .delete(permissionEntity.isDelete())
+                .fullyQualifiedFieldName(permissionEntity.getFullyQualifiedFieldName())
+                .read(permissionEntity.getRead_())
+                .create(permissionEntity.getCreate_())
+                .update(permissionEntity.getUpdate_())
+                .delete(permissionEntity.getDelete_())
                 .build();
     }
 

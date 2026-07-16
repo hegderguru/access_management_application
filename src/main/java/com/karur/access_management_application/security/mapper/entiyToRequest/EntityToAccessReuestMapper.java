@@ -61,13 +61,11 @@ public class EntityToAccessReuestMapper {
 
     private PermissionRequest buildPermissionRequest(PermissionEntity permissionEntity) {
         return PermissionRequest.builder()
-                .classPath(permissionEntity.getClassPath())
-                .className(permissionEntity.getClassName())
-                .fieldName(permissionEntity.getFieldName())
-                .read(permissionEntity.isRead())
-                .create(permissionEntity.isCreate())
-                .update(permissionEntity.isUpdate())
-                .delete(permissionEntity.isDelete())
+                .fullyQualifiedFieldName(permissionEntity.getFullyQualifiedFieldName())
+                .read(permissionEntity.getRead_())
+                .create(permissionEntity.getCreate_())
+                .update(permissionEntity.getUpdate_())
+                .delete(permissionEntity.getDelete_())
                 .build();
     }
 

@@ -120,4 +120,9 @@ public class AccessController {
                 });
     }
 
+    @GetMapping("/permissions")
+    public Mono<Void> createPermissions(){
+        return accessService.createPermissions();
+    }
+
 }

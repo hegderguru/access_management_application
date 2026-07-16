@@ -28,7 +28,7 @@ public class RoleEntity {
         if (Objects.isNull(permissionEntities)) {
             permissionEntities = new ArrayList<>();
         }
-        if (permissionEntities.isEmpty() || permissionEntities.stream().noneMatch(permissionEntity1 -> permissionEntity1.fullyQualifiedFieldPath().equalsIgnoreCase(permissionEntity.fullyQualifiedFieldPath()))) {
+        if (permissionEntities.isEmpty() || permissionEntities.stream().noneMatch(permissionEntity1 -> permissionEntity1.getFullyQualifiedFieldName().equalsIgnoreCase(permissionEntity.getFullyQualifiedFieldName()))) {
             permissionEntities.add(permissionEntity);
         }
     }

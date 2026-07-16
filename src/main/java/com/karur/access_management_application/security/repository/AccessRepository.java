@@ -23,6 +23,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -215,11 +217,32 @@ public class AccessRepository {
                         .then(Mono.empty()));
     }
 
-    public Mono<Void> updateRolePermissionEntity(Long roleId, String classPath, String className, String fieldName) {
-        return permissionEntityRepository.findByClassPathAndClassNameAndFieldName(classPath, className, fieldName)
+    public Mono<Void> updateRolePermissionEntity(Long roleId, String fullyQualifiedFieldName) {
+        return permissionEntityRepository.findByFullyQualifiedFieldName(fullyQualifiedFieldName)
                 .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleId, permissionEntity.getId())
                         .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleId, permissionEntity))))
                         .flatMap(rolePermissionIdRepository::save)
                         .then(Mono.empty()));
+    }
+
+    public Mono<Void> createPermissions(List<Object> objects) {
+        return Flux.fromIterable(objects)
+                .flatMap(this::createPermissionOnObject).then();
+    }
+
+    private Flux<PermissionEntity> createPermissionOnObject(Object object) {
+        return Flux.fromIterable(Arrays.stream(object.getClass().getDeclaredFields()).toList())
+                .flatMap(AccessRepository::createPermissionOnField)
+                .flatMap(permissionEntity -> permissionEntityRepository.save(permissionEntity));
+    }
+
+    private static Mono<PermissionEntity> createPermissionOnField(Field field) {
+        return Mono.just(PermissionEntity.builder()
+                .fullyQualifiedFieldName(field.getDeclaringClass().getName() + "." + field.getName())
+                .read_(false)
+                .create_(false)
+                .update_(false)
+                .delete_(false)
+                .build());
     }
 }

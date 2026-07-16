@@ -12,24 +12,10 @@ public class PermissionEntity {
 
     @Id
     private Long id;
-    private String classPath;
-    private String className;
-    private String fieldName;
-    private boolean read;
-    private boolean create;
-    private boolean update;
-    private boolean delete;
+    private String fullyQualifiedFieldName;
 
-    public String fullyQualifiedClassPath() {
-        return classPath + "." + className;
-    }
-
-    public String fullyQualifiedFieldPath() {
-        return fullyQualifiedClassPath() + "." + fieldName;
-    }
-
-    public Boolean[] permissions() {
-        return new Boolean[]{read, create, update, delete};
-    }
-
+    private Boolean read_;
+    private Boolean create_;
+    private Boolean update_;
+    private Boolean delete_;
 }

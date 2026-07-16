@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class AccessService {
@@ -28,6 +30,10 @@ public class AccessService {
 
     @Autowired
     EntityToReadMapper entityToReadMapper;
+
+    public Mono<Void> createPermissions(){
+        return accessRepository.createPermissions(List.of(AccessDetail.builder().build(),AccessRequest.builder().build()));
+    }
 
     @ValidateData
     public Mono<AccessDetail> fetchAccessDetails(String username) {
@@ -87,7 +93,7 @@ public class AccessService {
     public Mono<RoleDetail> updateRole(RoleRequest roleRequest) {
         return Mono.defer(() -> requestToEntityMapper.updateRole(roleRequest))
                 .flatMap(roleEntity -> Flux.fromIterable(roleRequest.getPermissionRequests())
-                        .flatMap(permissionRequest -> accessRepository.updateRolePermissionEntity(roleEntity.getId(), permissionRequest.getClassPath(), permissionRequest.getClassName(), permissionRequest.getFieldName()))
+                        .flatMap(permissionRequest -> accessRepository.updateRolePermissionEntity(roleEntity.getId(), permissionRequest.getFullyQualifiedFieldName()))
                         .then(Mono.just(roleEntity)))
                 .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
                 .map(roleEntity -> entityToReadMapper.buildRoleDetail(roleEntity));
