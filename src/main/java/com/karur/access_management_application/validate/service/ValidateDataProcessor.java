@@ -22,19 +22,13 @@ public class ValidateDataProcessor {
     AccessService accessService;
 
     public Mono<Void> validate(Object payload, Authentication authentication) {
-        // 1. Instantly check if the payload matches the expected class type
         if (payload instanceof AccessDetail accessDetail) { // Using Java 16+ Pattern Matching
-
             log.info("ValidateDataProcessor :: Payload received successfully: {}", accessDetail);
-
-            // 2. Process the data already handed to us by the Aspect (No database call!)
             return Mono.just(accessDetail)
                     .flatMapIterable(AccessDetail::getAuthorities)
                     .flatMapIterable(AuthorityDetail::getRoleDetails)
                     .flatMapIterable(RoleDetail::getPermissionDetails)
-                    // 1. Gather all individual permissions passing through the stream into a List
                     .collectList()
-                    // 2. Pass the complete list into the validation method once gathered
                     .flatMap(allPermissions -> {
                         log.info("Gathered {} total permissions. Invoking deep validation path.", allPermissions.size());
                         return validateDeepPermission(payload, allPermissions);
@@ -42,7 +36,6 @@ public class ValidateDataProcessor {
                     .then();
 
         }
-
         log.warn("ValidateDataProcessor :: Payload is not an instance of AccessDetail. Skipping validation.");
         return Mono.empty();
     }
@@ -51,8 +44,6 @@ public class ValidateDataProcessor {
         for (Field field : payload.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
-                /*log.info("Field Name: '{}' | Field Value: '{}' ",
-                        field.getName(), field.get(payload));*/
                 if (permissionDetails.stream().anyMatch(permissionDetail -> permissionDetail.fullyQualifiedFieldPath().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName()))) {
                     field.set(payload, null);
                 }
