@@ -22,6 +22,7 @@ public class AccessController {
     @Autowired
     AccessService accessService;
 
+    /*Read Starts*/
     @GetMapping("accessDetail/{username}")
     public Mono<ResponseEntity<AccessResponse>> fetchAccessDetail(@PathVariable String username) {
         return accessService.fetchAccessDetails(username)
@@ -43,7 +44,9 @@ public class AccessController {
         return accessService.fetchRoleDetail(name)
                 .flatMap(roleDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).roleDetail(roleDetail).build())));
     }
+    /*Read Ends*/
 
+    /*Create Starts*/
     @PostMapping("/createAccess")
     public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
@@ -82,7 +85,9 @@ public class AccessController {
                     return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
                 });
     }
+    /*Create End*/
 
+    /*Update starts*/
     @PutMapping("/updateAccess")
     public Mono<ResponseEntity<AccessResponse>> updateAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
@@ -121,6 +126,7 @@ public class AccessController {
                     return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
                 });
     }
+    /*Update ends*/
 
     @GetMapping("/permissions")
     public Mono<Void> createPermissions(@RequestBody List<Boolean[]> permissions){
