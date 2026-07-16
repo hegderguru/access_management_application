@@ -7,6 +7,7 @@ import com.karur.access_management_application.security.entity.join.RolePermissi
 import com.karur.access_management_application.security.mapper.requestToEntity.AuthorityRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.PermissionRequestToEntityMapper;
 import com.karur.access_management_application.security.mapper.requestToEntity.RoleRequestToEntityMapper;
+import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.repository.inter.table.AccessEntityRepository;
 import com.karur.access_management_application.security.repository.inter.table.AuthorityEntityRepository;
 import com.karur.access_management_application.security.repository.inter.table.PermissionEntityRepository;
@@ -218,8 +219,8 @@ public class AccessRepository {
                         .then(Mono.empty()));
     }
 
-    public Mono<Void> updateRolePermissionEntity(Long roleId, String fullyQualifiedFieldName) {
-        return permissionEntityRepository.findByFullyQualifiedFieldName(fullyQualifiedFieldName)
+    public Mono<Void> updateRolePermissionEntity(Long roleId, PermissionRequest permissionRequest) {
+        return permissionEntityRepository.findByFullyQualifiedFieldNameAndRead_AndCreate_AndUpdate_AndDelete(permissionRequest.getFullyQualifiedFieldName(),permissionRequest.getRead(),permissionRequest.getCreate(),permissionRequest.getUpdate(),permissionRequest.getDelete())
                 .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleId, permissionEntity.getId())
                         .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleId, permissionEntity))))
                         .flatMap(rolePermissionIdRepository::save)

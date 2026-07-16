@@ -93,7 +93,7 @@ public class AccessService {
     public Mono<RoleDetail> updateRole(RoleRequest roleRequest) {
         return Mono.defer(() -> requestToEntityMapper.updateRole(roleRequest))
                 .flatMap(roleEntity -> Flux.fromIterable(roleRequest.getPermissionRequests())
-                        .flatMap(permissionRequest -> accessRepository.updateRolePermissionEntity(roleEntity.getId(), permissionRequest.getFullyQualifiedFieldName()))
+                        .flatMap(permissionRequest -> accessRepository.updateRolePermissionEntity(roleEntity.getId(), permissionRequest))
                         .then(Mono.just(roleEntity)))
                 .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
                 .map(roleEntity -> entityToReadMapper.buildRoleDetail(roleEntity));

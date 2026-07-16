@@ -83,7 +83,7 @@ public class AccessController {
                 });
     }
 
-    @PostMapping("/updateAccess")
+    @PutMapping("/updateAccess")
     public Mono<ResponseEntity<AccessResponse>> updateAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
                 .flatMap(accessorRequest -> accessService.updateAccess(accessorRequest))
@@ -96,7 +96,7 @@ public class AccessController {
                 });
     }
 
-    @PostMapping("/updateAuthority")
+    @PutMapping("/updateAuthority")
     public Mono<ResponseEntity<AccessResponse>> updateAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
         return authorityRequestMono
                 .flatMap(authorityRequest -> accessService.updateAuthority(authorityRequest))
@@ -109,7 +109,7 @@ public class AccessController {
                 });
     }
 
-    @PostMapping("/updateRole")
+    @PutMapping("/updateRole")
     public Mono<ResponseEntity<AccessResponse>> updateRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
         return roleRequestMono
                 .flatMap(roleRequest -> accessService.updateRole(roleRequest))
