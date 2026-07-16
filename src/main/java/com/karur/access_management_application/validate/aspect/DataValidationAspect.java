@@ -22,26 +22,18 @@ public class DataValidationAspect {
 
     @Around("@annotation(validateData)")
     public Object pursueValidation(ProceedingJoinPoint joinPoint, ValidateData validateData) throws Throwable {
-
-        // 1. Execute the actual repository/service method to get the original Mono pipeline
         Mono<?> originalResultMono = (Mono<?>) joinPoint.proceed();
-
-        // 2. Extract Authentication safely from the Reactive Context
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
-                // Fallback if the user is unauthenticated or context isn't propagated
                 .switchIfEmpty(Mono.defer(() -> {
                     log.warn("ReactiveSecurityContext is EMPTY. Proceeding WITHOUT validation.");
                     return Mono.empty();
                 }))
-                // Use flatMap to evaluate both pipelines concurrently
                 .flatMap(authentication ->
-                        originalResultMono.flatMap(payload ->
-                                validateDataProcessor.validate(payload, authentication)
+                        originalResultMono.flatMap(payload ->validateDataProcessor.validate(payload, authentication)
                                         .then(Mono.just(payload))
                         )
                 )
-                // CRITICAL: If context was empty, make sure we still return the original database data!
                 .switchIfEmpty((Mono) originalResultMono);
     }
 }
