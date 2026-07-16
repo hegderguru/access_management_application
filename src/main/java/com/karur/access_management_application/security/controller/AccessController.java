@@ -1,9 +1,10 @@
 package com.karur.access_management_application.security.controller;
 
 import com.karur.access_management_application.security.model.request.AccessRequest;
+import com.karur.access_management_application.security.model.request.AuthorityRequest;
+import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.model.response.AccessResponse;
 import com.karur.access_management_application.security.service.AccessService;
-import com.karur.access_management_application.validate.annotation.ValidateData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,11 +27,37 @@ public class AccessController {
     }
 
     @PostMapping("/createAccess")
-    public Mono<ResponseEntity<AccessResponse>> create(@RequestBody Mono<AccessRequest> accessRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
-                .flatMap(accessorRequest -> accessService.create(accessorRequest))
+                .flatMap(accessorRequest -> accessService.createAccess(accessorRequest))
                 .map(accessDetail -> ResponseEntity.ok(
                         AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build()
+                ))
+                .onErrorResume(throwable -> {
+                    log.error("Failed to update access details: ", throwable);
+                    return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
+                });
+    }
+
+    @PostMapping("/createAuthority")
+    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
+        return authorityRequestMono
+                .flatMap(authorityRequest -> accessService.createAuthority(authorityRequest))
+                .map(authorityDetail -> ResponseEntity.ok(
+                        AccessResponse.builder().httpStatus(HttpStatus.OK).authorityDetail(authorityDetail).build()
+                ))
+                .onErrorResume(throwable -> {
+                    log.error("Failed to update access details: ", throwable);
+                    return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
+                });
+    }
+
+    @PostMapping("/createRole")
+    public Mono<ResponseEntity<AccessResponse>> createRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
+        return roleRequestMono
+                .flatMap(roleRequest -> accessService.createRole(roleRequest))
+                .map(roleDetail -> ResponseEntity.ok(
+                        AccessResponse.builder().httpStatus(HttpStatus.OK).roleDetail(roleDetail).build()
                 ))
                 .onErrorResume(throwable -> {
                     log.error("Failed to update access details: ", throwable);
