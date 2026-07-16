@@ -45,8 +45,9 @@ public class ValidateDataProcessor {
             try {
                 field.setAccessible(true);
                 if (permissionDetails.stream().anyMatch(permissionDetail -> permissionDetail.fullyQualifiedFieldPath().equalsIgnoreCase(field.getDeclaringClass().getName() + "." + field.getName()))) {
-                    field.set(payload, null);
+                    continue;
                 }
+                field.set(payload, null);
             } catch (IllegalAccessException e) {
                 log.error("Failed to access field values on payload via reflection: {}", field.getName(), e);
             }
