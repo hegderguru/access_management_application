@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Aspect
 @Component
-public class DataValidationAspect {
+public class ValidateDataAspect {
 
     @Autowired
     private ValidateDataProcessor validateDataProcessor;
