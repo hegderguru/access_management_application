@@ -104,6 +104,7 @@ public class RequestToEntityMapper {
         return permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest);
     }
 
+    //Create ->
     public AccessEntity buildOnlyAccessEntity(AccessRequest accessRequest) {
         return accessRequestToEntityMapper.buildAccessEntity(accessRequest);
     }
@@ -111,14 +112,19 @@ public class RequestToEntityMapper {
     public AuthorityEntity buildOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
         AuthorityEntity authorityEntity = authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
         authorityRequest.getRoleRequests().forEach(roleRequest -> {
-            RoleEntity roleEntity = buildOnlyRoleEntity(roleRequest);
-            authorityEntity.addRoleEntity(roleEntity);
+            authorityEntity.addRoleEntity(roleRequestToEntityMapper.buildRoleEntity(roleRequest));
         });
         return authorityEntity;
     }
 
     public RoleEntity buildOnlyRoleEntity(RoleRequest roleRequest) {
-        return roleRequestToEntityMapper.buildRoleEntity(roleRequest);
+        RoleEntity roleEntity = roleRequestToEntityMapper.buildRoleEntity(roleRequest);
+        roleRequest.getPermissionRequests().forEach(permissionRequest -> {
+            roleEntity.addPermissionEntity(buildPermissionEntity(permissionRequest));
+        });
+        return roleEntity;
     }
+    //Create ->
+
 
 }

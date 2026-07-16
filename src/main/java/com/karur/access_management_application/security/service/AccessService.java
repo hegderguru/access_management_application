@@ -46,6 +46,24 @@ public class AccessService {
     }
 
     public Mono<RoleDetail> createRole(RoleRequest roleRequest) {
+        return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyRoleEntity(roleRequest)))
+                .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
+                .map(roleEntity -> entityToReadMapper.buildRoleDetail(roleEntity));
+    }
+
+    public Mono<AccessDetail> updateAccess(AccessRequest accessRequest) {
+        return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyAccessEntity(accessRequest)))
+                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
+                .map(savedAccessEntity -> entityToReadMapper.buildAccessDetail(savedAccessEntity));
+    }
+
+    public Mono<AuthorityDetail> updateAuthority(AuthorityRequest authorityRequest) {
+        return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyAuthorityEntity(authorityRequest)))
+                .flatMap(authorityEntity -> accessRepository.saveAccessEntity(authorityEntity))
+                .map(authorityEntity -> entityToReadMapper.buildAuthorityDetail(authorityEntity));
+    }
+
+    public Mono<RoleDetail> updateRole(RoleRequest roleRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildRoleEntity(roleRequest)))
                 .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
                 .map(roleEntity -> entityToReadMapper.buildRoleDetail(roleEntity));
