@@ -29,7 +29,11 @@ public class AccessController {
     @GetMapping("authorityDetail/{name}")
     public Mono<ResponseEntity<AccessResponse>> fetchAuthorityDetail(@PathVariable String name) {
         return accessService.fetchAuthorityDetail(name)
-                .flatMap(authorityDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).authorityDetail(authorityDetail).build())));
+                .map(authorityDetail -> ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).authorityDetail(authorityDetail).build()))
+                .onErrorResume(throwable -> {
+                    log.error("Failed to update access details: ", throwable);
+                    return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
+                });
     }
 
     @GetMapping("roleDetail/{name}")

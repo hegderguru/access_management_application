@@ -36,7 +36,8 @@ public class AccessService {
     @ValidateData
     public Mono<AuthorityDetail> fetchAuthorityDetail(String name) {
         return accessRepository.fetchAuthorityEntity(name)
-                .flatMap(authorityEntity -> Mono.just(entityToReadMapper.buildAuthorityDetail(authorityEntity)));
+                .doOnNext(authorityEntity -> log.info("Auth {}",authorityEntity))
+                .map(authorityEntity -> entityToReadMapper.buildAuthorityDetail(authorityEntity));
     }
 
     @ValidateData
