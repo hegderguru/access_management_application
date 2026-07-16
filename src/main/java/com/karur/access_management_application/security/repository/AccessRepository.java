@@ -113,6 +113,24 @@ public class AccessRepository {
                 });
     }
 
+    public Mono<AuthorityEntity> saveAccessEntity(AuthorityEntity authorityEntity) {
+        return authorityEntityRepository.save(authorityEntity)
+                .flatMap(savedAuthorityEntity -> {
+                    List<RoleEntity> roleEntities = CommonUtil.returnListElseEmpty(savedAuthorityEntity.getRoleEntities());
+                    return saveRoleEntities(savedAuthorityEntity, roleEntities)
+                            .then(Mono.just(savedAuthorityEntity)); // Emits clean, duplicate-free graph
+                });
+    }
+
+    public Mono<RoleEntity> saveRoleEntity(RoleEntity roleEntity) {
+        return roleEntityRepository.save(roleEntity)
+                .flatMap(savedRoleEntity -> {
+                    List<PermissionEntity> permissionEntities = CommonUtil.returnListElseEmpty(roleEntity.getPermissionEntities());
+                    return savePermissionEntities(roleEntity, permissionEntities)
+                            .then(Mono.just(roleEntity)); // Emits clean, duplicate-free graph
+                });
+    }
+
     private @NonNull Flux<AuthorityEntity> saveAuthorityEntities(AccessEntity savedAccessEntity, List<AuthorityEntity> authorityEntities) {
         return authorityEntityRepository.saveAll(authorityEntities)
                 .flatMap(savedAuthorityEntity -> {
