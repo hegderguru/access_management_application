@@ -25,7 +25,7 @@ public class ValidateDataProcessor {
         if (payload instanceof AccessDetail accessDetail) { // Using Java 16+ Pattern Matching
             log.info("ValidateDataProcessor :: Payload received successfully: {}", accessDetail);
             return Mono.just(accessDetail)
-                    .flatMapIterable(AccessDetail::getAuthorities)
+                    .flatMapIterable(AccessDetail::getAuthorityDetails)
                     .flatMapIterable(AuthorityDetail::getRoleDetails)
                     .flatMapIterable(RoleDetail::getPermissionDetails)
                     .collectList()

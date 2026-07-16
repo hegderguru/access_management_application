@@ -1,9 +1,9 @@
 package com.karur.access_management_application.security.authentication.converter;
 
 import com.karur.access_management_application.security.authentication.provider.JwtTokenProvider;
-import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.authentication.token.JwtAuthenticationToken;
 import com.karur.access_management_application.security.model.read.AuthorityDetail;
+import com.karur.access_management_application.security.model.read.UserAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -26,8 +26,8 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
         String bearerToken = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (Objects.nonNull(bearerToken)) {
             String token = JwtTokenProvider.extractToken(bearerToken);
-            List<AuthorityDetail> grantedAuthorityEntities = jwtTokenProvider.getAuthorities(token).stream().map(authority -> AuthorityDetail.builder().name(authority).build()).toList();
-            return Mono.just(new JwtAuthenticationToken(jwtTokenProvider.getUsernameFromToken(token), token,grantedAuthorityEntities));
+            List<UserAuthority> userAuthorities = jwtTokenProvider.getAuthorities(token).stream().map(UserAuthority::new).toList();
+            return Mono.just(new JwtAuthenticationToken(jwtTokenProvider.getUsernameFromToken(token), token,userAuthorities));
         }
         return Mono.empty();
     }

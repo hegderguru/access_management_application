@@ -24,7 +24,7 @@ public class AccessDetailsPasswordService implements ReactiveUserDetailsPassword
                 .flatMap(accessEntity1 -> {
                     accessEntity1.setPassword(newPassword);
                     return accessEntityRepository.save(accessEntity1)
-                            .flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
+                            .flatMap(accessEntity -> entityToReadMapper.buildUserDetail(accessEntity.getUsername()));
                 });
     }
 }

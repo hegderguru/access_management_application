@@ -59,7 +59,7 @@ public class GitHubTokenAuthenticationProvider implements SupportedAuthenticatio
                     if (!login.equalsIgnoreCase(authentication.getPrincipal().toString())) {
                         return Mono.error(new AuthenticationException("Invalid credentials"));
                     }
-                    return entityToReadMapper.buildAccessDetail(authentication.getName())
+                    return entityToReadMapper.buildUserDetail(authentication.getName())
                             .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                             .flatMap(Mono::just)
                             .map(userDetails -> new GitHubTokenAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()));

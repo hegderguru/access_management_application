@@ -31,7 +31,7 @@ public class TestAccessAuthenticationProvider implements SupportedAuthentication
         if (!supports(authentication.getClass())) {
             Mono.error(new AuthenticationException("Access is not allowed"));
         }
-        return entityToReadMapper.buildAccessDetail(authentication.getName())
+        return entityToReadMapper.buildUserDetail(authentication.getName())
                 .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                 .flatMap(Mono::just)
                 .map(userDetails -> new TestingAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()));

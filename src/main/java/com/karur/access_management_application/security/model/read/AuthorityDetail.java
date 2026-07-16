@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
 
@@ -16,13 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AuthorityDetail implements GrantedAuthority {
+public class AuthorityDetail{
     private String name;
     private String description;
     private List<RoleDetail> roleDetails;
-
-    @Override
-    public @Nullable String getAuthority() {
-        return name;
-    }
 }

@@ -1,9 +1,8 @@
 package com.karur.access_management_application.security.authentication.provider;
 
-import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.authentication.token.JwtAuthenticationToken;
-import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.read.AuthorityDetail;
+import com.karur.access_management_application.security.model.read.UserAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,8 @@ public class JwtAuthenticationProvider implements SupportedAuthenticationProvide
             if (jwtTokenProvider.validateToken(token)) {
                 String username = jwtTokenProvider.getUsernameFromToken(token);
                 List<String> authorities = jwtTokenProvider.getAuthorities(token);
-                List<AuthorityDetail> authorityDetails = authorities.stream().map(authority -> AuthorityDetail.builder().name(authority).build()).toList();
-                return Mono.just(new JwtAuthenticationToken(username,token, authorityDetails));
+                List<UserAuthority> userAuthorities = authorities.stream().map(UserAuthority::new).toList();
+                return Mono.just(new JwtAuthenticationToken(username,token, userAuthorities));
             }
         }
         return Mono.empty();

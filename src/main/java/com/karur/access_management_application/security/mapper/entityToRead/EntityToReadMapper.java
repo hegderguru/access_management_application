@@ -4,10 +4,7 @@ import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
 import com.karur.access_management_application.security.entity.AccessEntity;
-import com.karur.access_management_application.security.model.read.AccessDetail;
-import com.karur.access_management_application.security.model.read.AuthorityDetail;
-import com.karur.access_management_application.security.model.read.PermissionDetail;
-import com.karur.access_management_application.security.model.read.RoleDetail;
+import com.karur.access_management_application.security.model.read.*;
 import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,11 @@ public class EntityToReadMapper {
 
     @Autowired
     AccessRepository accessRepository;
+
+    public Mono<UserDetail> buildUserDetail(String username) {
+        return accessRepository.fetchAccessEntity(username)
+                .map(this::buildAccessDetail).map(UserDetail::new);
+    }
 
     public Mono<AccessDetail> buildAccessDetail(String username) {
         return accessRepository.fetchAccessEntity(username)
@@ -38,7 +40,7 @@ public class EntityToReadMapper {
                 .accessLocked(accessEntity.isAccessLocked())
                 .accessExpired(accessEntity.isAccessExpired())
                 .credentialsExpired(accessEntity.isCredentialsExpired())
-                .authorities(buildAuthorityDetails(accessEntity.accessGrantedAuthorities()))
+                .authorityDetails(buildAuthorityDetails(accessEntity.accessGrantedAuthorities()))
                 .build();
     }
 

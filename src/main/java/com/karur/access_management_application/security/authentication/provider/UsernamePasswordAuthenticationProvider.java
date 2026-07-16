@@ -43,7 +43,7 @@ public class UsernamePasswordAuthenticationProvider implements SupportedAuthenti
             return Mono.error(new BadCredentialsException("Invalid username or password"));
         }
         String password = (String) authentication.getCredentials();
-        return entityToReadMapper.buildAccessDetail(authentication.getName())
+        return entityToReadMapper.buildUserDetail(authentication.getName())
                 .switchIfEmpty(Mono.error(new IllegalAccessException("User not found")))
                 .flatMap(userDetails -> {
                     if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked() || !userDetails.isAccountNonExpired() || !userDetails.isCredentialsNonExpired()) {
@@ -53,7 +53,7 @@ public class UsernamePasswordAuthenticationProvider implements SupportedAuthenti
                         return Mono.error(new BadCredentialsException("Invalid Credentials"));
                     }
                     if (passwordEncoder.upgradeEncoding(userDetails.getPassword())) {
-                        return accessDetailsPasswordService.updatePassword(userDetails, passwordEncoder.encode(password)).flatMap(userDetails1 -> entityToReadMapper.buildAccessDetail(userDetails1.getUsername()));
+                        return accessDetailsPasswordService.updatePassword(userDetails, passwordEncoder.encode(password)).flatMap(userDetails1 -> entityToReadMapper.buildUserDetail(userDetails1.getUsername()));
                     }
                     return Mono.just(userDetails);
                 })
