@@ -26,7 +26,15 @@ public class AccessController {
 
     @PostMapping("/create")
     public Mono<ResponseEntity<AccessResponse>> create(@RequestBody Mono<AccessRequest> accessRequestMono) {
-        return updateAccessDetail(accessRequestMono);
+        return accessRequestMono
+                .flatMap(accessorRequest -> accessService.create(accessorRequest))
+                .map(accessDetail -> ResponseEntity.ok(
+                        AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build()
+                ))
+                .onErrorResume(throwable -> {
+                    log.error("Failed to update access details: ", throwable);
+                    return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
+                });
     }
 
     @PutMapping("updateAccessDetail")

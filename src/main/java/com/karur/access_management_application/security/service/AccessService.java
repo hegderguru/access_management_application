@@ -29,6 +29,12 @@ public class AccessService {
         return accessRepository.fetchAccessEntity(username).flatMap(accessEntity -> Mono.just(entityToReadMapper.buildAccessDetail(accessEntity)));
     }
 
+    public Mono<AccessDetail> create(AccessRequest accessRequest) {
+        return Mono.defer(() -> Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest)))
+                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
+                .map(savedAccessEntity -> entityToReadMapper.buildAccessDetail(savedAccessEntity));
+    }
+
     public Mono<AccessDetail> update(AccessRequest accessRequest) {
         return requestToEntityMapper.saveOrUpdateAccess(accessRequest)
                 .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
