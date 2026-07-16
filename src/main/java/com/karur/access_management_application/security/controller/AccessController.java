@@ -5,14 +5,17 @@ import com.karur.access_management_application.security.model.request.AuthorityR
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.model.response.AccessResponse;
 import com.karur.access_management_application.security.service.AccessService;
+import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -51,6 +54,9 @@ public class AccessController {
     public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
                 .flatMap(accessorRequest -> {
+                    if(!StringUtils.hasText(requesterName)){
+                        return Mono.error(new IllegalArgumentException("Invalid Header"));
+                    }
                     accessorRequest.setUsername(requesterName + "-" + accessorRequest.getUsername());
                     return accessService.createAccess(accessorRequest);
                 })
@@ -67,6 +73,9 @@ public class AccessController {
     public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<AuthorityRequest> authorityRequestMono) {
         return authorityRequestMono
                 .flatMap(authorityRequest -> {
+                    if(!StringUtils.hasText(requesterName)){
+                        return Mono.error(new IllegalArgumentException("Invalid Header"));
+                    }
                     authorityRequest.setName(requesterName + "-" + authorityRequest.getName());
                     return accessService.createAuthority(authorityRequest);
                 })
@@ -83,6 +92,9 @@ public class AccessController {
     public Mono<ResponseEntity<AccessResponse>> createRole(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<RoleRequest> roleRequestMono) {
         return roleRequestMono
                 .flatMap(roleRequest -> {
+                    if(!StringUtils.hasText(requesterName)){
+                        return Mono.error(new IllegalArgumentException("Invalid Header"));
+                    }
                     roleRequest.setName(requesterName + "-" + roleRequest.getName());
                     return accessService.createRole(roleRequest);
                 })
