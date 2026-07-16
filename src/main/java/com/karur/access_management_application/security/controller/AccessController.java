@@ -30,8 +30,8 @@ public class AccessController {
     }
 
     @GetMapping("authorityDetail/{name}")
-    public Mono<ResponseEntity<AccessResponse>> fetchAuthorityDetail(@RequestHeader("X-REQUESTER-NAME") String requesterName, @PathVariable String name) {
-        return accessService.fetchAuthorityDetail(requesterName + "-" + name)
+    public Mono<ResponseEntity<AccessResponse>> fetchAuthorityDetail(@PathVariable String name) {
+        return accessService.fetchAuthorityDetail(name)
                 .map(authorityDetail -> ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).authorityDetail(authorityDetail).build()))
                 .onErrorResume(throwable -> {
                     log.error("Failed to update access details: ", throwable);
@@ -40,8 +40,8 @@ public class AccessController {
     }
 
     @GetMapping("roleDetail/{name}")
-    public Mono<ResponseEntity<AccessResponse>> fetchRoleDetail(@RequestHeader("X-REQUESTER-NAME") String requesterName, @PathVariable String name) {
-        return accessService.fetchRoleDetail(requesterName + "-" + name)
+    public Mono<ResponseEntity<AccessResponse>> fetchRoleDetail(@PathVariable String name) {
+        return accessService.fetchRoleDetail(name)
                 .flatMap(roleDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).roleDetail(roleDetail).build())));
     }
     /*Read Ends*/
@@ -98,10 +98,9 @@ public class AccessController {
 
     /*Update starts*/
     @PutMapping("/updateAccess")
-    public Mono<ResponseEntity<AccessResponse>> updateAccess(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<AccessRequest> accessRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> updateAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
                 .flatMap(accessorRequest -> {
-                    accessorRequest.setUsername(requesterName + "-" + accessorRequest.getUsername());
                     return accessService.updateAccess(accessorRequest);
                 })
                 .map(accessDetail -> ResponseEntity.ok(
@@ -114,12 +113,9 @@ public class AccessController {
     }
 
     @PutMapping("/updateAuthority")
-    public Mono<ResponseEntity<AccessResponse>> updateAuthority(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<AuthorityRequest> authorityRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> updateAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
         return authorityRequestMono
-                .flatMap(authorityRequest -> {
-                    authorityRequest.setName(requesterName + "-" + authorityRequest.getName());
-                    return accessService.updateAuthority(authorityRequest);
-                })
+                .flatMap(authorityRequest -> accessService.updateAuthority(authorityRequest))
                 .map(authorityDetail -> ResponseEntity.ok(
                         AccessResponse.builder().httpStatus(HttpStatus.OK).authorityDetail(authorityDetail).build()
                 ))
@@ -130,12 +126,9 @@ public class AccessController {
     }
 
     @PutMapping("/updateRole")
-    public Mono<ResponseEntity<AccessResponse>> updateRole(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<RoleRequest> roleRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> updateRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
         return roleRequestMono
-                .flatMap(roleRequest -> {
-                    roleRequest.setName(requesterName + "-" + roleRequest.getName());
-                    return accessService.updateRole(roleRequest);
-                })
+                .flatMap(roleRequest -> accessService.updateRole(roleRequest))
                 .map(roleDetail -> ResponseEntity.ok(
                         AccessResponse.builder().httpStatus(HttpStatus.OK).roleDetail(roleDetail).build()
                 ))
