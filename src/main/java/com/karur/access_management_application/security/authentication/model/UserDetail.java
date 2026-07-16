@@ -1,6 +1,7 @@
-package com.karur.access_management_application.security.model.read;
+package com.karur.access_management_application.security.authentication.model;
 
 
+import com.karur.access_management_application.security.model.read.AccessDetail;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
 

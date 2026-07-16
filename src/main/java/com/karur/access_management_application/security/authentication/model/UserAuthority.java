@@ -1,4 +1,4 @@
-package com.karur.access_management_application.security.model.read;
+package com.karur.access_management_application.security.authentication.model;
 
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.Nullable;

@@ -1,5 +1,6 @@
 package com.karur.access_management_application.security.mapper.entityToRead;
 
+import com.karur.access_management_application.security.authentication.model.UserDetail;
 import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;

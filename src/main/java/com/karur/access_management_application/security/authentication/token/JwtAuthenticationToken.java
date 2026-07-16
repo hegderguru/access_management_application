@@ -1,7 +1,6 @@
 package com.karur.access_management_application.security.authentication.token;
 
-import com.karur.access_management_application.security.model.read.AuthorityDetail;
-import com.karur.access_management_application.security.model.read.UserAuthority;
+import com.karur.access_management_application.security.authentication.model.UserAuthority;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
