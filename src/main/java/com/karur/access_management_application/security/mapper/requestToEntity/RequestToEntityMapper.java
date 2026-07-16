@@ -47,7 +47,7 @@ public class RequestToEntityMapper {
 
     //Create ->
     public AccessEntity buildOnlyAccessEntity(AccessRequest accessRequest) {
-        accessRequestToEntityMapper.buildAccessEntity(accessRequest);
+        return accessRequestToEntityMapper.buildAccessEntity(accessRequest);
     }
 
     public AuthorityEntity buildOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
