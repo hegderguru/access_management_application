@@ -31,9 +31,8 @@ public class ValidateDataAspect {
                 }))
                 .flatMap(authentication ->
                         originalResultMono.flatMap(payload ->validateDataProcessor.validate(payload, authentication)
-                                        .then(Mono.just(payload))
-                        )
+                                        .then(Mono.just(payload)))
                 )
-                .switchIfEmpty((Mono) originalResultMono);
+                .switchIfEmpty(Mono.empty());
     }
 }
