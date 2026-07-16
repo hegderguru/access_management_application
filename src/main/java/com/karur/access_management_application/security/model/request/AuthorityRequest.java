@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -21,5 +22,5 @@ public class AuthorityRequest {
     private String name;
     private String description;
 
-    List<RoleRequest> roleRequests;
+    List<RoleRequest> roleRequests = new ArrayList<>();
 }

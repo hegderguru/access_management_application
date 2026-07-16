@@ -9,6 +9,7 @@ import com.karur.access_management_application.security.model.request.AccessRequ
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
+import com.karur.access_management_application.security.util.AccessRequestUtil;
 import com.karur.access_management_application.validate.annotation.ValidateData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ public class AccessService {
     }
 
     public Mono<AccessDetail> updateAccess(AccessRequest accessRequest) {
-        return Mono.defer(() -> requestToEntityMapper.updateAccess(accessRequest))
+        return Mono.defer(() -> requestToEntityMapper.updateAccess(AccessRequestUtil.buildAccessRequest(accessRequest)))
                 .flatMap(accessEntity -> Flux.fromIterable(accessRequest.getAuthorityRequests())
                         .flatMap(authorityRequest -> accessRepository.updateAccessAuthorityEntity(accessEntity.getId(), authorityRequest.getName()))
                         .then(Mono.just(accessEntity)))

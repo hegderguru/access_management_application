@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -35,6 +36,6 @@ public class AccessRequest {
     private Boolean accessExpired;
     private Boolean credentialsExpired;
 
-    private List<AuthorityRequest> authorityRequests;
+    private List<AuthorityRequest> authorityRequests = new ArrayList<>();
 
 }
