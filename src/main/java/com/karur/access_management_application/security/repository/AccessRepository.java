@@ -24,6 +24,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -225,24 +226,23 @@ public class AccessRepository {
                         .then(Mono.empty()));
     }
 
-    public Mono<Void> createPermissions(List<Object> objects) {
+    public Mono<Void> createPermissions(List<Boolean[]> permissions, List<Object> objects) {
         return Flux.fromIterable(objects)
-                .flatMap(this::createPermissionOnObject).then();
+                .flatMap(object -> createPermissionOnObject(permissions, object)).then();
     }
 
-    private Flux<PermissionEntity> createPermissionOnObject(Object object) {
+    private Flux<Void> createPermissionOnObject(List<Boolean[]> permissions, Object object) {
         return Flux.fromIterable(Arrays.stream(object.getClass().getDeclaredFields()).toList())
-                .flatMap(AccessRepository::createPermissionOnField)
-                .flatMap(permissionEntity -> permissionEntityRepository.save(permissionEntity));
+                .flatMap(field -> createPermissionOnField(permissions, field))
+                .flatMap(permissionEntities -> permissionEntityRepository.saveAll(permissionEntities).then());
     }
 
-    private static Mono<PermissionEntity> createPermissionOnField(Field field) {
-        return Mono.just(PermissionEntity.builder()
-                .fullyQualifiedFieldName(field.getDeclaringClass().getName() + "." + field.getName())
-                .read_(false)
-                .create_(false)
-                .update_(false)
-                .delete_(false)
-                .build());
+    private static Mono<List<PermissionEntity>> createPermissionOnField(List<Boolean[]> permissions, Field field) {
+        return Flux.fromIterable(permissions)
+                .flatMap(booleans -> {
+                    String name = field.getDeclaringClass().getName()+"."+field.getName();
+                    return Mono.just(PermissionEntity.builder().fullyQualifiedFieldName(name).read_(booleans[0]).create_(booleans[1]).update_(booleans[2]).delete_(booleans[3]).build());
+                })
+                .collectList();
     }
 }

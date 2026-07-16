@@ -31,8 +31,8 @@ public class AccessService {
     @Autowired
     EntityToReadMapper entityToReadMapper;
 
-    public Mono<Void> createPermissions(){
-        return accessRepository.createPermissions(List.of(AccessDetail.builder().build(),AccessRequest.builder().build()));
+    public Mono<Void> createPermissions(List<Boolean[]> permissions){
+        return accessRepository.createPermissions(permissions,List.of(AccessDetail.builder().build(),AccessRequest.builder().build()));
     }
 
     @ValidateData

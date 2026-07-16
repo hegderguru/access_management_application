@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("access")
@@ -121,8 +123,8 @@ public class AccessController {
     }
 
     @GetMapping("/permissions")
-    public Mono<Void> createPermissions(){
-        return accessService.createPermissions();
+    public Mono<Void> createPermissions(@RequestBody List<Boolean[]> permissions){
+        return accessService.createPermissions(permissions).then();
     }
 
 }

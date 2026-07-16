@@ -88,3 +88,38 @@ INSERT INTO auth.access_authority_id(
 	id, access_id, authority_id)
 	VALUES (nextval('auth.seq_access_authority_id'), 1, 1);
 
+curl --location --request GET 'localhost:8080/access/permissions' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoZWdkZXJndXJ1IiwiZmlyc3ROYW1lIjoiR3VydSIsImxhc3ROYW1lIjoiSGVnZGUiLCJtaWRkbGVOYW1lIjoiUmFnaGF2ZW5kcmEiLCJhdXRob3JpdGllcyI6ImF1dGgiLCJ1c2VybmFtZSI6ImhlZ2Rlcmd1cnUiLCJpYXQiOjE3ODQyMTkyMTUsImV4cCI6MTc4NDIyNDIxNX0.WnOnDMETmgN7e7bdSxZHvGn8ZOiAgsMVyPZWvBJMIezGLyDXtTv59z6e1oYr1iRy3K63CNRJWtbhWVuEyWZcOw' \
+--data '[
+    [
+        false,
+        false,
+        false,
+        false
+    ],
+    [
+        true,
+        false,
+        false,
+        false
+    ],
+    [
+        true,
+        true,
+        false,
+        false
+    ],
+    [
+        true,
+        true,
+        true,
+        false
+    ],
+    [
+        true,
+        true,
+        true,
+        true
+    ]
+]'
