@@ -47,11 +47,7 @@ public class RequestToEntityMapper {
 
     //Create ->
     public AccessEntity buildOnlyAccessEntity(AccessRequest accessRequest) {
-        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
-        accessRequest.getAuthorityRequests().forEach(authorityRequest -> {
-            accessEntity.addAuthorityEntity(authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest));
-        });
-        return accessEntity;
+        accessRequestToEntityMapper.buildAccessEntity(accessRequest);
     }
 
     public AuthorityEntity buildOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
