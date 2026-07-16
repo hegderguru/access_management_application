@@ -30,7 +30,7 @@ public class AccessService {
     }
 
     public Mono<AccessDetail> create(AccessRequest accessRequest) {
-        return Mono.defer(() -> Mono.just(requestToEntityMapper.buildAccessEntity(accessRequest)))
+        return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyAccessEntity(accessRequest)))
                 .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
                 .map(savedAccessEntity -> entityToReadMapper.buildAccessDetail(savedAccessEntity));
     }

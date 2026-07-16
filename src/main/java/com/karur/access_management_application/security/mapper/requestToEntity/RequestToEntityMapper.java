@@ -103,4 +103,8 @@ public class RequestToEntityMapper {
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
         return permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest);
     }
+
+    public AccessEntity buildOnlyAccessEntity(AccessRequest accessRequest) {
+        return accessRequestToEntityMapper.buildAccessEntity(accessRequest);
+    }
 }
