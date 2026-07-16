@@ -62,7 +62,7 @@ public class EntityToReadMapper {
         return CommonUtil.returnListElseEmpty(accessRoleEntities).stream().map(this::buildRoleDetail).toList();
     }
 
-    private RoleDetail buildRoleDetail(RoleEntity roleEntity) {
+    public RoleDetail buildRoleDetail(RoleEntity roleEntity) {
         return RoleDetail.builder()
                 .name(roleEntity.getName())
                 .description(roleEntity.getDescription())
