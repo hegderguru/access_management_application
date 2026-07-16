@@ -26,6 +26,18 @@ public class AccessController {
                 .flatMap(accessDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build())));
     }
 
+    @GetMapping("authorityDetail/{name}")
+    public Mono<ResponseEntity<AccessResponse>> fetchAuthorityDetail(@PathVariable String name) {
+        return accessService.fetchAuthorityDetail(name)
+                .flatMap(authorityDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).authorityDetail(authorityDetail).build())));
+    }
+
+    @GetMapping("roleDetail/{name}")
+    public Mono<ResponseEntity<AccessResponse>> fetchRoleDetail(@PathVariable String name) {
+        return accessService.fetchRoleDetail(name)
+                .flatMap(roleDetail -> Mono.just(ResponseEntity.ok(AccessResponse.builder().httpStatus(HttpStatus.OK).roleDetail(roleDetail).build())));
+    }
+
     @PostMapping("/createAccess")
     public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
@@ -65,12 +77,38 @@ public class AccessController {
                 });
     }
 
-    @PutMapping("updateAccessDetail")
-    public Mono<ResponseEntity<AccessResponse>> updateAccessDetail(@RequestBody Mono<AccessRequest> accessRequestMono) {
+    @PostMapping("/updateAccess")
+    public Mono<ResponseEntity<AccessResponse>> updateAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
-                .flatMap(accessorRequest -> accessService.update(accessorRequest))
+                .flatMap(accessorRequest -> accessService.updateAccess(accessorRequest))
                 .map(accessDetail -> ResponseEntity.ok(
                         AccessResponse.builder().httpStatus(HttpStatus.OK).accessDetail(accessDetail).build()
+                ))
+                .onErrorResume(throwable -> {
+                    log.error("Failed to update access details: ", throwable);
+                    return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
+                });
+    }
+
+    @PostMapping("/updateAuthority")
+    public Mono<ResponseEntity<AccessResponse>> updateAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
+        return authorityRequestMono
+                .flatMap(authorityRequest -> accessService.updateAuthority(authorityRequest))
+                .map(authorityDetail -> ResponseEntity.ok(
+                        AccessResponse.builder().httpStatus(HttpStatus.OK).authorityDetail(authorityDetail).build()
+                ))
+                .onErrorResume(throwable -> {
+                    log.error("Failed to update access details: ", throwable);
+                    return Mono.just(ResponseEntity.badRequest().body(AccessResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).build()));
+                });
+    }
+
+    @PostMapping("/updateRole")
+    public Mono<ResponseEntity<AccessResponse>> updateRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
+        return roleRequestMono
+                .flatMap(roleRequest -> accessService.updateRole(roleRequest))
+                .map(roleDetail -> ResponseEntity.ok(
+                        AccessResponse.builder().httpStatus(HttpStatus.OK).roleDetail(roleDetail).build()
                 ))
                 .onErrorResume(throwable -> {
                     log.error("Failed to update access details: ", throwable);

@@ -68,6 +68,7 @@ public class RequestToEntityMapper {
                 ).then(Mono.just(accessEntity));
     }
 
+
     private @NonNull Flux<Void> saveOrUpdateRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return roleRequestToEntityMapper.saveOrUpdateRolesOnChanges(authorityEntity, changes)
                 .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
@@ -124,7 +125,57 @@ public class RequestToEntityMapper {
         });
         return roleEntity;
     }
+
+
+    private @NonNull Mono<AuthorityEntity> saveOrUpdateOnlyRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+        return roleRequestToEntityMapper.saveOrUpdateRolesOnChanges(authorityEntity, changes)
+                .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
+                .flatMap(roleEntity -> permissionRequestToEntityMapper.saveOrUpdatePermissionsOnChanges(roleEntity, changes))
+                .then(Mono.just(authorityEntity));
+    }
+
     //Create ->
 
+    //Update
+    public Mono<AccessEntity> updateAccess(AccessRequest accessRequest) {
+        return accessRepository.fetchAccessEntity(accessRequest.getUsername())
+                .switchIfEmpty(Mono.error(new IllegalAccessError("User not found")))
+                .flatMap(accessEntity -> {
+                    List<CompareUtil.Change> changes = AccessRequestUpdateUtil
+                            .accessUpdateChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
+                    return accessRequestToEntityMapper.updateAccessOnChanges(accessEntity, changes)
+                            .then(Mono.defer(() -> saveOrUpdateAuthorities(accessEntity, changes)))
+                            .then(Mono.just(accessEntity));
+                })
+                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity));
+    }
+
+    public Mono<AuthorityEntity> updateAuthority(AuthorityRequest authorityRequest) {
+        return accessRepository.fetchAuthorityEntity(authorityRequest.getName())
+                .switchIfEmpty(Mono.error(new IllegalAccessError("Authority not found")))
+                .flatMap(authorityEntity -> {
+                    List<CompareUtil.Change> changes = AccessRequestUpdateUtil
+                            .accessUpdateChanges(entityToAccessReuestMapper.buildAuthorityRequest(authorityEntity), authorityRequest);
+                    return authorityRequestToEntityMapper.updateAuthorityOnChanges(authorityEntity, changes)
+                            .then(Mono.defer(() -> saveOrUpdateOnlyRoles(authorityEntity, changes)))
+                            .then(Mono.just(authorityEntity));
+                })
+                .flatMap(authorityEntity -> accessRepository.saveAuthorityEntity(authorityEntity));
+    }
+
+    public Mono<RoleEntity> updateRole(RoleRequest roleRequest) {
+        return accessRepository.fetchRoleEntity(roleRequest.getName())
+                .switchIfEmpty(Mono.error(new IllegalAccessError("Role not found")))
+                .flatMap(roleEntity -> {
+                    List<CompareUtil.Change> changes = AccessRequestUpdateUtil
+                            .accessUpdateChanges(entityToAccessReuestMapper.buildRoleRequest(roleEntity), roleRequest);
+                    return roleRequestToEntityMapper.updateRoleOnChanges(roleEntity, changes)
+                            .then(Mono.defer(() -> permissionRequestToEntityMapper.saveOrUpdatePermissionsOnChanges(roleEntity, changes)))
+                            .then(Mono.just(roleEntity));
+                })
+                .flatMap(authorityEntity -> accessRepository.saveRoleEntity(authorityEntity));
+    }
+
+    //Update
 
 }

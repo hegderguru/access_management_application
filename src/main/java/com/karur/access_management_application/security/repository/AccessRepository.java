@@ -74,6 +74,34 @@ public class AccessRepository {
                 );
     }
 
+    public Mono<AuthorityEntity> fetchAuthorityEntity(String name) {
+        return authorityEntityRepository.findByName(name)
+                .doOnRequest(value -> log.info("id: {}", name))
+                .flatMap(authorityEntity -> authorityRoleIdRepository.findByAuthorityId(authorityEntity.getId())
+                        .map(AuthorityRoleEntity::getRoleId) // Extract IDs directly within the Flux stream
+                        .flatMap(this::fetchRoleEntity)      // Executes correctly if IDs are present
+                        .collectList()                       // Safe to collect even if empty
+                        .map(roleEntities -> {
+                            authorityEntity.setRoleEntities(roleEntities);
+                            return authorityEntity;
+                        })
+                );
+    }
+
+    public Mono<RoleEntity> fetchRoleEntity(String name) {
+        return roleEntityRepository.findByName(name)
+                .doOnRequest(value -> log.info("id: {}", name))
+                .flatMap(roleEntity -> rolePermissionIdRepository.findByRoleId(roleEntity.getId())
+                        .map(RolePermissionEntity::getPermissionId) // Extract IDs directly within the Flux stream
+                        .flatMap(permissionEntityRepository::findById)      // Executes correctly if IDs are present
+                        .collectList()                       // Safe to collect even if empty
+                        .map(permissionEntities -> {
+                            roleEntity.setPermissionEntities(permissionEntities);
+                            return roleEntity;
+                        })
+                );
+    }
+
     public Mono<AuthorityEntity> fetchAuthorityEntity(Long id) {
         return authorityEntityRepository.findById(id)
                 .doOnRequest(value -> log.info("id: {}", id))
@@ -113,7 +141,7 @@ public class AccessRepository {
                 });
     }
 
-    public Mono<AuthorityEntity> saveAccessEntity(AuthorityEntity authorityEntity) {
+    public Mono<AuthorityEntity> saveAuthorityEntity(AuthorityEntity authorityEntity) {
         return authorityEntityRepository.save(authorityEntity)
                 .flatMap(savedAuthorityEntity -> {
                     List<RoleEntity> roleEntities = CommonUtil.returnListElseEmpty(savedAuthorityEntity.getRoleEntities());

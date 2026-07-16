@@ -55,7 +55,7 @@ public class AuthorityRequestToEntityMapper {
                 }).then();
     }
 
-    private Mono<Void> updateAuthorityOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
+    Mono<Void> updateAuthorityOnChanges(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(changes)
                 .flatMap(change -> {
                     switch (AuthorityRequest.Fields.valueOf(change.getField())) {

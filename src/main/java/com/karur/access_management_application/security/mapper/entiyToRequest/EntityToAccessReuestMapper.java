@@ -62,7 +62,7 @@ public class EntityToAccessReuestMapper {
         return CommonUtil.returnListElseEmpty(accessRoleEntities).stream().map(this::buildRoleRequest).toList();
     }
 
-    private RoleRequest buildRoleRequest(RoleEntity roleEntity) {
+    public RoleRequest buildRoleRequest(RoleEntity roleEntity) {
         return RoleRequest.builder()
                 .name(roleEntity.getName())
                 .description(roleEntity.getDescription())

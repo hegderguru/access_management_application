@@ -53,7 +53,7 @@ public class RoleRequestToEntityMapper {
                 }).then();
     }
 
-    private Mono<Void> updateRoleOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
+    Mono<Void> updateRoleOnChanges(RoleEntity roleEntity, List<CompareUtil.Change> changes) {
         return Flux.fromIterable(changes)
                 .flatMap(change -> {
                     switch (RoleRequest.Fields.valueOf(change.getField())) {

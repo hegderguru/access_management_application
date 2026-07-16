@@ -22,11 +22,11 @@ public class AccessRequestUpdateUtil {
         && (Objects.isNull(change.getLeftValue()) && Objects.nonNull(change.getRightValue()))).toList();
     }
 
-    public static List<CompareUtil.Change> accessUpdateChanges(AccessRequest existing, AccessRequest updates) {
+    public static List<CompareUtil.Change> accessUpdateChanges(Object existing, Object updates) {
         return accessChanges(existing, updates).stream().filter(change -> Objects.nonNull(change.getRightValue()) || Objects.nonNull(change.getRight())).toList();
     }
 
-    public static List<CompareUtil.Change> accessChanges(AccessRequest existing, AccessRequest updates) {
+    public static List<CompareUtil.Change> accessChanges(Object existing, Object updates) {
         return CompareUtil.compare(existing, updates);
     }
 
