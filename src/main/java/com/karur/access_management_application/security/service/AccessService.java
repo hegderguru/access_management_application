@@ -32,10 +32,11 @@ public class AccessService {
     @Autowired
     EntityToReadMapper entityToReadMapper;
 
-    public Mono<Void> createPermissions(List<Boolean[]> permissions){
-        return accessRepository.createPermissions(permissions,List.of(AccessDetail.builder().build(),AccessRequest.builder().build()));
+    public Mono<Void> createPermissions(List<Boolean[]> permissions) {
+        return accessRepository.createPermissions(permissions, List.of(AccessDetail.builder().build(), AccessRequest.builder().build()));
     }
 
+    /*Read Starts*/
     @ValidateData
     public Mono<AccessDetail> fetchAccessDetails(String username) {
         return accessRepository.fetchAccessEntity(username)
@@ -54,25 +55,38 @@ public class AccessService {
         return accessRepository.fetchRoleEntity(name)
                 .flatMap(roleEntity -> Mono.just(entityToReadMapper.buildRoleDetail(roleEntity)));
     }
+    /*Read Ends*/
 
+    /*Create Starts*/
     public Mono<AccessDetail> createAccess(AccessRequest accessRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyAccessEntity(accessRequest)))
+                .flatMap(accessEntity -> Flux.fromIterable(accessRequest.getAuthorityRequests())
+                        .flatMap(authorityRequest -> accessRepository.createAccessAuthorityEntity(accessEntity.getId(), authorityRequest.getName()))
+                        .then(Mono.just(accessEntity)))
                 .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
                 .map(savedAccessEntity -> entityToReadMapper.buildAccessDetail(savedAccessEntity));
     }
 
     public Mono<AuthorityDetail> createAuthority(AuthorityRequest authorityRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyAuthorityEntity(authorityRequest)))
+                .flatMap(authorityEntity -> Flux.fromIterable(authorityRequest.getRoleRequests())
+                        .flatMap(roleRequest -> accessRepository.createAuthorityRoleEntity(authorityEntity.getId(), roleRequest.getName()))
+                        .then(Mono.just(authorityEntity)))
                 .flatMap(authorityEntity -> accessRepository.saveAuthorityEntity(authorityEntity))
                 .map(authorityEntity -> entityToReadMapper.buildAuthorityDetail(authorityEntity));
     }
 
     public Mono<RoleDetail> createRole(RoleRequest roleRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyRoleEntity(roleRequest)))
+                .flatMap(roleEntity -> Flux.fromIterable(roleRequest.getPermissionRequests())
+                        .flatMap(permissionRequest -> accessRepository.createRolePermissionEntity(roleEntity.getId(), permissionRequest))
+                        .then(Mono.just(roleEntity)))
                 .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
                 .map(roleEntity -> entityToReadMapper.buildRoleDetail(roleEntity));
     }
+    /*Create ends*/
 
+    /*Update starts*/
     public Mono<AccessDetail> updateAccess(AccessRequest accessRequest) {
         return Mono.defer(() -> requestToEntityMapper.updateAccess(AccessRequestUtil.buildAccessRequest(accessRequest)))
                 .flatMap(accessEntity -> Flux.fromIterable(accessRequest.getAuthorityRequests())
@@ -99,4 +113,5 @@ public class AccessService {
                 .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
                 .map(roleEntity -> entityToReadMapper.buildRoleDetail(roleEntity));
     }
+    /*Update ends*/
 }

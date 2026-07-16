@@ -42,27 +42,15 @@ public class RequestToEntityMapper {
 
     //Create ->
     public AccessEntity buildOnlyAccessEntity(AccessRequest accessRequest) {
-        AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
-        accessRequest.getAuthorityRequests().forEach(authorityRequest -> {
-            accessEntity.addAuthorityEntity(authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest));
-        });
-        return accessEntity;
+        return accessRequestToEntityMapper.buildAccessEntity(accessRequest);
     }
 
     public AuthorityEntity buildOnlyAuthorityEntity(AuthorityRequest authorityRequest) {
-        AuthorityEntity authorityEntity = authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
-        authorityRequest.getRoleRequests().forEach(roleRequest -> {
-            authorityEntity.addRoleEntity(roleRequestToEntityMapper.buildRoleEntity(roleRequest));
-        });
-        return authorityEntity;
+        return authorityRequestToEntityMapper.buildAuthorityEntity(authorityRequest);
     }
 
     public RoleEntity buildOnlyRoleEntity(RoleRequest roleRequest) {
-        RoleEntity roleEntity = roleRequestToEntityMapper.buildRoleEntity(roleRequest);
-        roleRequest.getPermissionRequests().forEach(permissionRequest -> {
-            roleEntity.addPermissionEntity(buildOnlyPermissionEntity(permissionRequest));
-        });
-        return roleEntity;
+        return roleRequestToEntityMapper.buildRoleEntity(roleRequest);
     }
 
     public PermissionEntity buildOnlyPermissionEntity(PermissionRequest permissionRequest) {

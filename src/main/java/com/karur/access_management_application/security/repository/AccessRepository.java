@@ -200,8 +200,35 @@ public class AccessRepository {
                 })
                 .then();
     }
-    /*Save Access Entity and nested entities*/
 
+    /**/
+    public Mono<Void> createAccessAuthorityEntity(Long accessId, String authorityName) {
+        return authorityEntityRepository.findByName(authorityName)
+                .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessId, authorityEntity.getId())
+                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Authority")))
+                        .flatMap(accessAuthorityIdRepository::save)
+                        .then(Mono.empty()));
+    }
+
+    public Mono<Void> createAuthorityRoleEntity(Long authorityId, String roleName) {
+        return roleEntityRepository.findByName(roleName)
+                .flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityId, roleEntity.getId())
+                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Role")))
+                        .flatMap(authorityRoleIdRepository::save)
+                        .then(Mono.empty()));
+    }
+
+    public Mono<Void> createRolePermissionEntity(Long roleId, PermissionRequest permissionRequest) {
+        return permissionEntityRepository.findByFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(permissionRequest.getFullyQualifiedFieldName(),permissionRequest.getRead(),permissionRequest.getCreate(),permissionRequest.getUpdate(),permissionRequest.getDelete())
+                .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleId, permissionEntity.getId())
+                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Permission")))
+                        .flatMap(rolePermissionIdRepository::save)
+                        .then(Mono.empty()));
+    }
+
+    /**/
+
+    /*Save Access Entity and nested entities*/
     public Mono<Void> updateAccessAuthorityEntity(Long accessId, String authorityName) {
         return authorityEntityRepository.findByName(authorityName)
                 .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessId, authorityEntity.getId())
@@ -226,6 +253,7 @@ public class AccessRepository {
                         .then(Mono.empty()));
     }
 
+    ///  //////////////////////////////////////////////////////////
     public Mono<Void> createPermissions(List<Boolean[]> permissions, List<Object> objects) {
         return Flux.fromIterable(objects)
                 .flatMap(object -> createPermissionOnObject(permissions, object)).then();
