@@ -13,10 +13,8 @@ import com.karur.access_management_application.security.model.request.RoleReques
 import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.AccessRequestUpdateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -43,20 +41,6 @@ public class RequestToEntityMapper {
     EntityToAccessReuestMapper entityToAccessReuestMapper;
 
 
-    public @NonNull Mono<AccessEntity> saveOrUpdateAuthorities(AccessEntity accessEntity, List<CompareUtil.Change> changes) {
-        return authorityRequestToEntityMapper.saveOrUpdateAuthoritiesOnChanges(accessEntity, changes)
-                .thenMany(Flux.defer(() -> Flux.fromIterable(accessEntity.getAuthorityEntities())))
-                .flatMap(authorityEntity -> saveOrUpdateRoles(authorityEntity, changes)
-                ).then(Mono.just(accessEntity));
-    }
-
-
-    private @NonNull Flux<Void> saveOrUpdateRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return roleRequestToEntityMapper.saveOrUpdateRolesOnChanges(authorityEntity, changes)
-                .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
-                .flatMap(roleEntity -> permissionRequestToEntityMapper.saveOrUpdatePermissionsOnChanges(roleEntity, changes));
-    }
-
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
         return permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest);
     }
@@ -82,13 +66,6 @@ public class RequestToEntityMapper {
         return roleEntity;
     }
 
-
-    private @NonNull Mono<AuthorityEntity> saveOrUpdateOnlyRoles(AuthorityEntity authorityEntity, List<CompareUtil.Change> changes) {
-        return roleRequestToEntityMapper.saveOrUpdateRolesOnChanges(authorityEntity, changes)
-                .thenMany(Flux.defer(() -> Flux.fromIterable(authorityEntity.getRoleEntities())))
-                .flatMap(roleEntity -> permissionRequestToEntityMapper.saveOrUpdatePermissionsOnChanges(roleEntity, changes))
-                .then(Mono.just(authorityEntity));
-    }
 
     //Create ->
 

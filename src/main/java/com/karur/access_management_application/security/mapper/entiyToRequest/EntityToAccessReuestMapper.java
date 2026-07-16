@@ -1,6 +1,5 @@
 package com.karur.access_management_application.security.mapper.entiyToRequest;
 
-import com.karur.access_management_application.security.authentication.provider.JwtTokenProvider;
 import com.karur.access_management_application.security.entity.AccessEntity;
 import com.karur.access_management_application.security.entity.AuthorityEntity;
 import com.karur.access_management_application.security.entity.PermissionEntity;
@@ -9,27 +8,13 @@ import com.karur.access_management_application.security.model.request.AccessRequ
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
-import com.karur.access_management_application.security.repository.AccessRepository;
 import com.karur.access_management_application.security.util.CommonUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @Service
 public class EntityToAccessReuestMapper {
-
-    @Autowired
-    AccessRepository accessRepository;
-
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
-
-    public Mono<AccessRequest> buildAccessRequest(String username) {
-        return accessRepository.fetchAccessEntity(username)
-                .map(this::buildAccessRequest);
-    }
 
     public AccessRequest buildAccessRequest(AccessEntity accessEntity) {
         return AccessRequest.builder()
