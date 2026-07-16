@@ -51,7 +51,7 @@ public class AccessController {
 
     /*Create Starts*/
     @PostMapping("/createAccess")
-    public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<AccessRequest> accessRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestHeader("X-REQUESTER-CODE") String requesterName, @RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
                 .flatMap(accessorRequest -> {
                     if(!StringUtils.hasText(requesterName)){
@@ -70,7 +70,7 @@ public class AccessController {
     }
 
     @PostMapping("/createAuthority")
-    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<AuthorityRequest> authorityRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestHeader("X-REQUESTER-CODE") String requesterName, @RequestBody Mono<AuthorityRequest> authorityRequestMono) {
         return authorityRequestMono
                 .flatMap(authorityRequest -> {
                     if(!StringUtils.hasText(requesterName)){
@@ -89,7 +89,7 @@ public class AccessController {
     }
 
     @PostMapping("/createRole")
-    public Mono<ResponseEntity<AccessResponse>> createRole(@RequestHeader("X-REQUESTER-NAME") String requesterName, @RequestBody Mono<RoleRequest> roleRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createRole(@RequestHeader("X-REQUESTER-CODE") String requesterName, @RequestBody Mono<RoleRequest> roleRequestMono) {
         return roleRequestMono
                 .flatMap(roleRequest -> {
                     if(!StringUtils.hasText(requesterName)){
