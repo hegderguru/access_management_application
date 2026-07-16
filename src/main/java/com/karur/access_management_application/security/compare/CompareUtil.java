@@ -26,23 +26,13 @@ public class CompareUtil {
         if (!left.getClass().equals(right.getClass())) {
             return changes;
         }
-        compare(left, right, changes, left, right, null, null, null);
+        compareObjects(null, null, changes, left, right, null, null, null);
         return changes;
     }
 
-    public static void compare(Object leftParent, Object rightParent, List<Change> changes
+    public static void compareObjects(Object leftParent, Object rightParent, List<Change> changes
             , Object left, Object right, Integer leftIndex, Integer rightIndex, Field field) {
         if (Objects.isNull(left) && Objects.isNull(right)) {
-            return;
-        }
-        if (Objects.isNull(left) || Objects.isNull(right)) {
-            changes.add(Change.builder()
-                    .field(field.getName())
-                    .leftParent(leftParent).rightParent(rightParent)
-                    .left(leftParent).right(rightParent)
-                    .leftValue(left).rightValue(right)
-                    .leftIndex(leftIndex).rightIndex(rightIndex)
-                    .build());
             return;
         }
         if (left instanceof Collection<?> && right instanceof Collection<?>) {
@@ -50,21 +40,26 @@ public class CompareUtil {
             return;
         }
         if (isSimpleType(left.getClass())) {
-            if (!left.equals(right)) {
-                changes.add(Change.builder()
-                        .field(field.getName())
-                        .leftParent(leftParent).rightParent(rightParent)
-                        .left(leftParent).right(rightParent)
-                        .leftValue(left).rightValue(right)
-                        .leftIndex(leftIndex).rightIndex(rightIndex)
-                        .build());
-            }
+            compareFieldValueOfSimpleType(leftParent, rightParent, changes, left, right, leftIndex, rightIndex, field);
             return;
         }
-        compare(leftParent, rightParent, changes, leftIndex, rightIndex, left, right);
+        compareNonSimpleType(leftParent, rightParent, changes, leftIndex, rightIndex, left, right);
     }
 
-    private static void compare(Object leftParent, Object rightParent, List<Change> changes, Integer leftIndex, Integer rightIndex, Object left, Object right) {
+    private static void compareFieldValueOfSimpleType(Object leftParent, Object rightParent, List<Change> changes, Object left, Object right, Integer leftIndex, Integer rightIndex, Field field) {
+        if (!left.equals(right)) {
+            changes.add(Change.builder()
+                    .field(field.getName())
+                    .leftParent(leftParent).rightParent(rightParent)
+                    .left(null).right(null)
+                    .leftValue(left).rightValue(right)
+                    .leftIndex(leftIndex).rightIndex(rightIndex)
+                    .build());
+        }
+        return;
+    }
+
+    private static void compareNonSimpleType(Object leftParent, Object rightParent, List<Change> changes, Integer leftIndex, Integer rightIndex, Object left, Object right) {
         Class<?> clazz = left.getClass();
         while (Objects.nonNull(clazz) && !Object.class.equals(clazz)) {
             for (Field field : clazz.getDeclaredFields()) {
@@ -78,7 +73,7 @@ public class CompareUtil {
                     field.setAccessible(true);
                     Object leftValue = field.get(left);
                     Object rightValue = field.get(right);
-                    compare(left, right, changes, leftValue, rightValue, leftIndex, rightIndex, field);
+                    compareObjects(left, right, changes, leftValue, rightValue, leftIndex, rightIndex, field);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -92,7 +87,7 @@ public class CompareUtil {
             return;
         }
         if (left.isEmpty() || right.isEmpty()) {
-            addCollectionChanges(leftParent, rightParent, changes, left, right, field);
+            addAllCollectionsToChanges(leftParent, rightParent, changes, left, right, field);
         }
         if (left.iterator().hasNext()) {
             Object firstElement = left.iterator().next();
@@ -117,7 +112,7 @@ public class CompareUtil {
                         .leftIndex(leftIndexedElement.index).rightIndex(null)
                         .build());
             } else {
-                compare(leftParent, rightParent, changes, leftIndexedElement.element, rightIndexedElement.element, leftIndexedElement.index, rightIndexedElement.index, field);
+                compareObjects(leftParent, rightParent, changes, leftIndexedElement.element, rightIndexedElement.element, leftIndexedElement.index, rightIndexedElement.index, field);
             }
         }
 
@@ -148,7 +143,7 @@ public class CompareUtil {
     }
 
     private static String buildDiffKey(Object object, List<Field> diffIdFields) {
-        return diffIdFields.stream().map(field -> field.getName() + "=" + getFieldValue(field, object))
+        return diffIdFields.stream().map(field -> getFieldValue(field, object).toString())
                 .collect(Collectors.joining("_"));
     }
 
@@ -182,7 +177,12 @@ public class CompareUtil {
         }
     }
 
-    private static void addCollectionChanges(Object leftParent, Object rightParent, List<Change> changes, Collection<?> left, Collection<?> right, Field field) {
+
+
+
+
+    //Verified
+    private static void addAllCollectionsToChanges(Object leftParent, Object rightParent, List<Change> changes, Collection<?> left, Collection<?> right, Field field) {
         int index = 0;
         for (Object object : left) {
             changes.add(Change.builder()
