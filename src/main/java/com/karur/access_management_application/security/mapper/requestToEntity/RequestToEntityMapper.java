@@ -7,21 +7,12 @@ import com.karur.access_management_application.security.entity.PermissionEntity;
 import com.karur.access_management_application.security.entity.RoleEntity;
 import com.karur.access_management_application.security.mapper.entityToRead.EntityToReadMapper;
 import com.karur.access_management_application.security.mapper.entiyToRequest.EntityToAccessReuestMapper;
-import com.karur.access_management_application.security.model.read.AccessDetail;
 import com.karur.access_management_application.security.model.request.AccessRequest;
 import com.karur.access_management_application.security.model.request.AuthorityRequest;
 import com.karur.access_management_application.security.model.request.PermissionRequest;
 import com.karur.access_management_application.security.model.request.RoleRequest;
 import com.karur.access_management_application.security.repository.AccessRepository;
-import com.karur.access_management_application.security.repository.inter.joinTable.AccessAuthorityIdRepository;
-import com.karur.access_management_application.security.repository.inter.joinTable.AuthorityRoleIdRepository;
-import com.karur.access_management_application.security.repository.inter.joinTable.RolePermissionIdRepository;
-import com.karur.access_management_application.security.repository.inter.table.AccessEntityRepository;
-import com.karur.access_management_application.security.repository.inter.table.AuthorityEntityRepository;
-import com.karur.access_management_application.security.repository.inter.table.PermissionEntityRepository;
-import com.karur.access_management_application.security.repository.inter.table.RoleEntityRepository;
 import com.karur.access_management_application.security.util.AccessRequestUpdateUtil;
-import com.karur.access_management_application.security.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +49,7 @@ public class RequestToEntityMapper {
     public Mono<AccessEntity> saveOrUpdateAccess(AccessRequest accessRequest) {
         return accessRepository.fetchAccessEntity(accessRequest.getUsername())
                 .doOnSuccess(accessEntity -> log.info("Fetched Access Entity: {}", accessEntity))
-                .switchIfEmpty(Mono.defer(() -> Mono.just(buildAccessEntity(accessRequest))))
+                .switchIfEmpty(Mono.error(new IllegalAccessError("User not found")))
                 .flatMap(accessEntity -> {
                     List<CompareUtil.Change> changes = AccessRequestUpdateUtil
                             .accessUpdateChanges(entityToAccessReuestMapper.buildAccessRequest(accessEntity), accessRequest);
