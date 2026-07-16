@@ -35,46 +35,45 @@ CREATE TABLE auth.access (
 CREATE TABLE auth.authority (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_authority_id'),
     name VARCHAR(255) UNIQUE NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    CONSTRAINT uq_access_authority_comb UNIQUE (access_id, authority_id);
+    description VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE auth.access_authority_id (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_access_authority_id'),
     access_id BIGINT NOT NULL,
-    authority_id BIGINT NOT NULL
+    authority_id BIGINT NOT NULL,
+	CONSTRAINT uq_access_authority_comb UNIQUE (access_id, authority_id)
 );
 
 -- Roles Table (Linked via authority_id)
 CREATE TABLE auth.role (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_role_id'),
     name VARCHAR(255) UNIQUE NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    CONSTRAINT uq_authority_role_id UNIQUE (authority_id, role_id);
+    description VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE auth.authority_role_id (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_authority_role_id'),
     authority_id BIGINT NOT NULL,
-    role_id BIGINT NOT NULL
+    role_id BIGINT NOT NULL,
+	CONSTRAINT uq_authority_role_id UNIQUE (authority_id, role_id)
 );
 
 -- Permissions Table (Linked via role_id)
 CREATE TABLE auth.permission (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_permission_id'),
-    class_path VARCHAR(255) NOT NULL,
-	class_name VARCHAR(255) NOT NULL,
-    field_name VARCHAR(255) NOT NULL,
-    read BOOLEAN NOT NULL DEFAULT FALSE,
-    "create" BOOLEAN NOT NULL DEFAULT FALSE, -- Escaped reserved keyword
-    "update" BOOLEAN NOT NULL DEFAULT FALSE, -- Escaped reserved keyword
-    "delete" BOOLEAN NOT NULL DEFAULT FALSE  -- Escaped reserved keyword
+    fully_qualified_field_name VARCHAR(255) NOT NULL,
+    read_ BOOLEAN NOT NULL DEFAULT FALSE,
+    create_ BOOLEAN NOT NULL DEFAULT FALSE,
+    update_ BOOLEAN NOT NULL DEFAULT FALSE,
+    delete_ BOOLEAN NOT NULL DEFAULT FALSE
 );
+
 CREATE TABLE auth.role_permission_id (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_role_permission_id'),
     role_id BIGINT NOT NULL,
     permission_id BIGINT NOT NULL,
-    CONSTRAINT uq_role_permission_id UNIQUE (role_id, permission_id);
+    CONSTRAINT uq_role_permission_id UNIQUE (role_id, permission_id)
 );
 
 INSERT INTO auth.access(
@@ -84,10 +83,6 @@ INSERT INTO auth.access(
 INSERT INTO auth.authority(
 	id, name, description)
 	VALUES (nextval('auth.seq_authority_id'), 'auth', 'auth');
-
-INSERT INTO auth.access_authority_id(
-	id, access_id, authority_id)
-	VALUES (nextval('auth.seq_access_authority_id'), ?, ?);
 
 INSERT INTO auth.access_authority_id(
 	id, access_id, authority_id)
