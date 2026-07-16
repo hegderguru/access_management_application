@@ -40,11 +40,6 @@ public class RequestToEntityMapper {
     @Autowired
     EntityToAccessReuestMapper entityToAccessReuestMapper;
 
-
-    public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
-        return permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest);
-    }
-
     //Create ->
     public AccessEntity buildOnlyAccessEntity(AccessRequest accessRequest) {
         AccessEntity accessEntity = accessRequestToEntityMapper.buildAccessEntity(accessRequest);
@@ -65,12 +60,14 @@ public class RequestToEntityMapper {
     public RoleEntity buildOnlyRoleEntity(RoleRequest roleRequest) {
         RoleEntity roleEntity = roleRequestToEntityMapper.buildRoleEntity(roleRequest);
         roleRequest.getPermissionRequests().forEach(permissionRequest -> {
-            roleEntity.addPermissionEntity(buildPermissionEntity(permissionRequest));
+            roleEntity.addPermissionEntity(buildOnlyPermissionEntity(permissionRequest));
         });
         return roleEntity;
     }
 
-
+    public PermissionEntity buildOnlyPermissionEntity(PermissionRequest permissionRequest) {
+        return permissionRequestToEntityMapper.buildPermissionEntity(permissionRequest);
+    }
     //Create ->
 
     //Update
@@ -108,7 +105,6 @@ public class RequestToEntityMapper {
                 })
                 .flatMap(authorityEntity -> accessRepository.saveRoleEntity(authorityEntity));
     }
-
     //Update
 
 }
