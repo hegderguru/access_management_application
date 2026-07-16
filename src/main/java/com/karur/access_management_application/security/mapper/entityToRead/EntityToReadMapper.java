@@ -76,10 +76,10 @@ public class EntityToReadMapper {
     private PermissionDetail buildPermissionDetail(PermissionEntity permissionEntity) {
         return PermissionDetail.builder()
                 .fullyQualifiedFieldName(permissionEntity.getFullyQualifiedFieldName())
-                .read(permissionEntity.getRead_())
-                .create(permissionEntity.getCreate_())
-                .update(permissionEntity.getUpdate_())
-                .delete(permissionEntity.getDelete_())
+                .read(permissionEntity.getRead())
+                .create(permissionEntity.getCreate())
+                .update(permissionEntity.getUpdate())
+                .delete(permissionEntity.getDelete())
                 .build();
     }
 

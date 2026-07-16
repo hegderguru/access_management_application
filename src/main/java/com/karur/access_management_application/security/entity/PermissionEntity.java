@@ -3,6 +3,7 @@ package com.karur.access_management_application.security.entity;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
@@ -14,8 +15,12 @@ public class PermissionEntity {
     private Long id;
     private String fullyQualifiedFieldName;
 
-    private Boolean read_;
-    private Boolean create_;
-    private Boolean update_;
-    private Boolean delete_;
+    @Column("read_")
+    private Boolean read;
+    @Column("create_")
+    private Boolean create;
+    @Column("update_")
+    private Boolean update;
+    @Column("delete_")
+    private Boolean delete;
 }

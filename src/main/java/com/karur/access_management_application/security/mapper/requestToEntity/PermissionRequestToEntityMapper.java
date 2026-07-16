@@ -24,10 +24,10 @@ public class PermissionRequestToEntityMapper {
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
         return PermissionEntity.builder()
                 .fullyQualifiedFieldName(permissionRequest.getFullyQualifiedFieldName())
-                .read_(permissionRequest.getRead())
-                .create_(permissionRequest.getCreate())
-                .update_(permissionRequest.getUpdate())
-                .delete_(permissionRequest.getDelete())
+                .read(permissionRequest.getRead())
+                .create(permissionRequest.getCreate())
+                .update(permissionRequest.getUpdate())
+                .delete(permissionRequest.getDelete())
                 .build();
     }
 
@@ -35,10 +35,10 @@ public class PermissionRequestToEntityMapper {
         return Flux.fromIterable(changes)
                 .flatMap(change -> {
                     switch (PermissionRequest.Fields.valueOf(change.getField())) {
-                        case read -> permissionEntity.setRead_(ChangeUtil.getBooleanElseConvert(change));
-                        case create -> permissionEntity.setCreate_(ChangeUtil.getBooleanElseConvert(change));
-                        case update -> permissionEntity.setUpdate_(ChangeUtil.getBooleanElseConvert(change));
-                        case delete -> permissionEntity.setDelete_(ChangeUtil.getBooleanElseConvert(change));
+                        case read -> permissionEntity.setRead(ChangeUtil.getBooleanElseConvert(change));
+                        case create -> permissionEntity.setCreate(ChangeUtil.getBooleanElseConvert(change));
+                        case update -> permissionEntity.setUpdate(ChangeUtil.getBooleanElseConvert(change));
+                        case delete -> permissionEntity.setDelete(ChangeUtil.getBooleanElseConvert(change));
                     }
                     return Mono.empty();
                 }).then();

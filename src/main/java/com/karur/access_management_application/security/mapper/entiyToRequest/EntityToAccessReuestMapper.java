@@ -62,10 +62,10 @@ public class EntityToAccessReuestMapper {
     private PermissionRequest buildPermissionRequest(PermissionEntity permissionEntity) {
         return PermissionRequest.builder()
                 .fullyQualifiedFieldName(permissionEntity.getFullyQualifiedFieldName())
-                .read(permissionEntity.getRead_())
-                .create(permissionEntity.getCreate_())
-                .update(permissionEntity.getUpdate_())
-                .delete(permissionEntity.getDelete_())
+                .read(permissionEntity.getRead())
+                .create(permissionEntity.getCreate())
+                .update(permissionEntity.getUpdate())
+                .delete(permissionEntity.getDelete())
                 .build();
     }
 

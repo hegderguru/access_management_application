@@ -25,7 +25,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -220,7 +219,7 @@ public class AccessRepository {
     }
 
     public Mono<Void> updateRolePermissionEntity(Long roleId, PermissionRequest permissionRequest) {
-        return permissionEntityRepository.findByFullyQualifiedFieldNameAndRead_AndCreate_AndUpdate_AndDelete(permissionRequest.getFullyQualifiedFieldName(),permissionRequest.getRead(),permissionRequest.getCreate(),permissionRequest.getUpdate(),permissionRequest.getDelete())
+        return permissionEntityRepository.findByFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(permissionRequest.getFullyQualifiedFieldName(),permissionRequest.getRead(),permissionRequest.getCreate(),permissionRequest.getUpdate(),permissionRequest.getDelete())
                 .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleId, permissionEntity.getId())
                         .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleId, permissionEntity))))
                         .flatMap(rolePermissionIdRepository::save)
@@ -242,7 +241,7 @@ public class AccessRepository {
         return Flux.fromIterable(permissions)
                 .flatMap(booleans -> {
                     String name = field.getDeclaringClass().getName()+"."+field.getName();
-                    return Mono.just(PermissionEntity.builder().fullyQualifiedFieldName(name).read_(booleans[0]).create_(booleans[1]).update_(booleans[2]).delete_(booleans[3]).build());
+                    return Mono.just(PermissionEntity.builder().fullyQualifiedFieldName(name).read(booleans[0]).create(booleans[1]).update(booleans[2]).delete(booleans[3]).build());
                 })
                 .collectList();
     }
