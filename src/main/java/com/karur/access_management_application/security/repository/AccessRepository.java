@@ -219,9 +219,10 @@ public class AccessRepository {
     }
 
     public Mono<Void> createRolePermissionEntity(Long roleId, PermissionRequest permissionRequest) {
-        return permissionEntityRepository.findByAppIdAndFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(permissionRequest.getAppId(),permissionRequest.getFullyQualifiedFieldName(),permissionRequest.getRead(),permissionRequest.getCreate(),permissionRequest.getUpdate(),permissionRequest.getDelete())
+        return permissionEntityRepository.findByAppIdAndFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(permissionRequest.getAppId(), permissionRequest.getFullyQualifiedFieldName(), permissionRequest.getRead(), permissionRequest.getCreate(), permissionRequest.getUpdate(), permissionRequest.getDelete())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Permission")))
                 .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleId, permissionEntity.getId())
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Permission")))
+                        .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleId, permissionEntity))))
                         .flatMap(rolePermissionIdRepository::save)
                         .then(Mono.empty()));
     }
@@ -246,7 +247,7 @@ public class AccessRepository {
     }
 
     public Mono<Void> updateRolePermissionEntity(Long roleId, PermissionRequest permissionRequest) {
-        return permissionEntityRepository.findByAppIdAndFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(permissionRequest.getAppId(),permissionRequest.getFullyQualifiedFieldName(),permissionRequest.getRead(),permissionRequest.getCreate(),permissionRequest.getUpdate(),permissionRequest.getDelete())
+        return permissionEntityRepository.findByAppIdAndFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(permissionRequest.getAppId(), permissionRequest.getFullyQualifiedFieldName(), permissionRequest.getRead(), permissionRequest.getCreate(), permissionRequest.getUpdate(), permissionRequest.getDelete())
                 .flatMap(permissionEntity -> rolePermissionIdRepository.findByRoleIdAndPermissionId(roleId, permissionEntity.getId())
                         .switchIfEmpty(Mono.defer(() -> Mono.just(permissionRequestToEntityMapper.buildRolePermissionEntity(roleId, permissionEntity))))
                         .flatMap(rolePermissionIdRepository::save)
@@ -254,21 +255,21 @@ public class AccessRepository {
     }
 
     ///  //////////////////////////////////////////////////////////
-    public Mono<Void> createPermissions(String appId,List<Boolean[]> permissions, List<Object> objects) {
+    public Mono<Void> createPermissions(String appId, List<Boolean[]> permissions, List<Object> objects) {
         return Flux.fromIterable(objects)
-                .flatMap(object -> createPermissionOnObject(appId,permissions, object)).then();
+                .flatMap(object -> createPermissionOnObject(appId, permissions, object)).then();
     }
 
-    private Flux<Void> createPermissionOnObject(String appId,List<Boolean[]> permissions, Object object) {
+    private Flux<Void> createPermissionOnObject(String appId, List<Boolean[]> permissions, Object object) {
         return Flux.fromIterable(Arrays.stream(object.getClass().getDeclaredFields()).toList())
-                .flatMap(field -> createPermissionOnField(appId,permissions, field))
+                .flatMap(field -> createPermissionOnField(appId, permissions, field))
                 .flatMap(permissionEntities -> permissionEntityRepository.saveAll(permissionEntities).then());
     }
 
-    private static Mono<List<PermissionEntity>> createPermissionOnField(String appId,List<Boolean[]> permissions, Field field) {
+    private static Mono<List<PermissionEntity>> createPermissionOnField(String appId, List<Boolean[]> permissions, Field field) {
         return Flux.fromIterable(permissions)
                 .flatMap(booleans -> {
-                    String name = field.getDeclaringClass().getSimpleName()+"."+field.getName();
+                    String name = field.getDeclaringClass().getSimpleName() + "." + field.getName();
                     return Mono.just(PermissionEntity.builder().appId(appId).fullyQualifiedFieldName(name).read(booleans[0]).create(booleans[1]).update(booleans[2]).delete(booleans[3]).build());
                 })
                 .collectList();

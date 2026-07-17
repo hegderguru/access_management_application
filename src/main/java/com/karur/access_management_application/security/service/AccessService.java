@@ -77,13 +77,13 @@ public class AccessService {
                 .map(authorityEntity -> entityToReadMapper.buildAuthorityDetail(authorityEntity));
     }
 
-   
+
     public Mono<RoleDetail> createRole(RoleRequest roleRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyRoleEntity(roleRequest)))
+                .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
                 .flatMap(roleEntity -> Flux.fromIterable(roleRequest.getPermissionRequests())
                         .flatMap(permissionRequest -> accessRepository.createRolePermissionEntity(roleEntity.getId(), permissionRequest))
                         .then(Mono.just(roleEntity)))
-                .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))
                 .map(roleEntity -> entityToReadMapper.buildRoleDetail(roleEntity));
     }
     /*Create ends*/

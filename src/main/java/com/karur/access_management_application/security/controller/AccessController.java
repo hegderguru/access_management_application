@@ -82,7 +82,7 @@ public class AccessController {
                 });
     }
 
-    @PostMapping("/createRole")
+    @PostMapping("createRole")
     public Mono<ResponseEntity<AccessResponse>> createRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
         return roleRequestMono
                 .flatMap(roleRequest -> {
