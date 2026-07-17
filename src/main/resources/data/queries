@@ -62,11 +62,13 @@ CREATE TABLE auth.authority_role_id (
 -- Permissions Table (Linked via role_id)
 CREATE TABLE auth.permission (
     id BIGINT PRIMARY KEY DEFAULT nextval('auth.seq_permission_id'),
+    app_id VARCHAR(255) NOT NULL
     fully_qualified_field_name VARCHAR(255) NOT NULL,
     read_ BOOLEAN NOT NULL DEFAULT FALSE,
     create_ BOOLEAN NOT NULL DEFAULT FALSE,
     update_ BOOLEAN NOT NULL DEFAULT FALSE,
-    delete_ BOOLEAN NOT NULL DEFAULT FALSE
+    delete_ BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT uq_permission_id UNIQUE (app_id, fully_qualified_field_name,read_,create_,update_delete_)
 );
 
 CREATE TABLE auth.role_permission_id (
