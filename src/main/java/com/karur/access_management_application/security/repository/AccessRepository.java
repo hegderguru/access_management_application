@@ -204,8 +204,9 @@ public class AccessRepository {
     /**/
     public Mono<Void> createAccessAuthorityEntity(Long accessId, String authorityName) {
         return authorityEntityRepository.findByName(authorityName)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Authority")))
                 .flatMap(authorityEntity -> accessAuthorityIdRepository.findByAccessIdAndAuthorityId(accessId, authorityEntity.getId())
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Authority")))
+                        .switchIfEmpty(Mono.defer(() -> Mono.just(authorityRequestToEntityMapper.buildAccessAuthorityEntity(accessId, authorityEntity))))
                         .flatMap(accessAuthorityIdRepository::save)
                         .then(Mono.empty()));
     }
