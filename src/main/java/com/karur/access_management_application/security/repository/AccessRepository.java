@@ -268,7 +268,7 @@ public class AccessRepository {
     private static Mono<List<PermissionEntity>> createPermissionOnField(String appId,List<Boolean[]> permissions, Field field) {
         return Flux.fromIterable(permissions)
                 .flatMap(booleans -> {
-                    String name = field.getDeclaringClass().getName()+"."+field.getName();
+                    String name = field.getDeclaringClass().getSimpleName()+"."+field.getName();
                     return Mono.just(PermissionEntity.builder().appId(appId).fullyQualifiedFieldName(name).read(booleans[0]).create(booleans[1]).update(booleans[2]).delete(booleans[3]).build());
                 })
                 .collectList();
