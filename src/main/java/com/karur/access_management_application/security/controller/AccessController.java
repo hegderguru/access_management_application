@@ -51,13 +51,10 @@ public class AccessController {
 
     /*Create Starts*/
     @PostMapping("/createAccess")
-    public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestHeader("X-REQUESTER-CODE") String requesterName, @RequestBody Mono<AccessRequest> accessRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createAccess(@RequestBody Mono<AccessRequest> accessRequestMono) {
         return accessRequestMono
                 .flatMap(accessorRequest -> {
-                    if(!StringUtils.hasText(requesterName)){
-                        return Mono.error(new IllegalArgumentException("Invalid Header"));
-                    }
-                    accessorRequest.setUsername(requesterName + "-" + accessorRequest.getUsername());
+                    accessorRequest.setUsername(accessorRequest.getUsername());
                     return accessService.createAccess(accessorRequest);
                 })
                 .map(accessDetail -> ResponseEntity.ok(
@@ -70,13 +67,10 @@ public class AccessController {
     }
 
     @PostMapping("/createAuthority")
-    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestHeader("X-REQUESTER-CODE") String requesterName, @RequestBody Mono<AuthorityRequest> authorityRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createAuthority(@RequestBody Mono<AuthorityRequest> authorityRequestMono) {
         return authorityRequestMono
                 .flatMap(authorityRequest -> {
-                    if(!StringUtils.hasText(requesterName)){
-                        return Mono.error(new IllegalArgumentException("Invalid Header"));
-                    }
-                    authorityRequest.setName(requesterName + "-" + authorityRequest.getName());
+                    authorityRequest.setName(authorityRequest.getName());
                     return accessService.createAuthority(authorityRequest);
                 })
                 .map(authorityDetail -> ResponseEntity.ok(
@@ -89,13 +83,10 @@ public class AccessController {
     }
 
     @PostMapping("/createRole")
-    public Mono<ResponseEntity<AccessResponse>> createRole(@RequestHeader("X-REQUESTER-CODE") String requesterName, @RequestBody Mono<RoleRequest> roleRequestMono) {
+    public Mono<ResponseEntity<AccessResponse>> createRole(@RequestBody Mono<RoleRequest> roleRequestMono) {
         return roleRequestMono
                 .flatMap(roleRequest -> {
-                    if(!StringUtils.hasText(requesterName)){
-                        return Mono.error(new IllegalArgumentException("Invalid Header"));
-                    }
-                    roleRequest.setName(requesterName + "-" + roleRequest.getName());
+                    roleRequest.setName(roleRequest.getName());
                     return accessService.createRole(roleRequest);
                 })
                 .map(roleDetail -> ResponseEntity.ok(
