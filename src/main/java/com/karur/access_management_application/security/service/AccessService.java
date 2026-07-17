@@ -13,6 +13,7 @@ import com.karur.access_management_application.security.util.AccessRequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -60,24 +61,25 @@ public class AccessService {
    
     public Mono<AccessDetail> createAccess(AccessRequest accessRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyAccessEntity(accessRequest)))
+                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
                 .flatMap(accessEntity -> Flux.fromIterable(accessRequest.getAuthorityRequests())
                         .flatMap(authorityRequest -> accessRepository.createAccessAuthorityEntity(accessEntity.getId(), authorityRequest.getName()))
                         .then(Mono.just(accessEntity)))
-                .flatMap(accessEntity -> accessRepository.saveAccessEntity(accessEntity))
                 .map(savedAccessEntity -> entityToReadMapper.buildAccessDetail(savedAccessEntity));
     }
 
-   
+
+    @Transactional
     public Mono<AuthorityDetail> createAuthority(AuthorityRequest authorityRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyAuthorityEntity(authorityRequest)))
+                .flatMap(authorityEntity -> accessRepository.saveAuthorityEntity(authorityEntity))
                 .flatMap(authorityEntity -> Flux.fromIterable(authorityRequest.getRoleRequests())
                         .flatMap(roleRequest -> accessRepository.createAuthorityRoleEntity(authorityEntity.getId(), roleRequest.getName()))
                         .then(Mono.just(authorityEntity)))
-                .flatMap(authorityEntity -> accessRepository.saveAuthorityEntity(authorityEntity))
                 .map(authorityEntity -> entityToReadMapper.buildAuthorityDetail(authorityEntity));
     }
 
-
+    @Transactional
     public Mono<RoleDetail> createRole(RoleRequest roleRequest) {
         return Mono.defer(() -> Mono.just(requestToEntityMapper.buildOnlyRoleEntity(roleRequest)))
                 .flatMap(roleEntity -> accessRepository.saveRoleEntity(roleEntity))

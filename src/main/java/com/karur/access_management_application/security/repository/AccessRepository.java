@@ -213,7 +213,7 @@ public class AccessRepository {
     public Mono<Void> createAuthorityRoleEntity(Long authorityId, String roleName) {
         return roleEntityRepository.findByName(roleName)
                 .flatMap(roleEntity -> authorityRoleIdRepository.findByAuthorityIdAndRoleId(authorityId, roleEntity.getId())
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid Role")))
+                        .switchIfEmpty(Mono.defer(() -> Mono.just(roleRequestToEntityMapper.buildAuthorityRoleEntity(authorityId, roleEntity))))
                         .flatMap(authorityRoleIdRepository::save)
                         .then(Mono.empty()));
     }
