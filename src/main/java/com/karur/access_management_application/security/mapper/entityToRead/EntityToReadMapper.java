@@ -75,6 +75,7 @@ public class EntityToReadMapper {
 
     private PermissionDetail buildPermissionDetail(PermissionEntity permissionEntity) {
         return PermissionDetail.builder()
+                .appId(permissionEntity.getAppId())
                 .fullyQualifiedFieldName(permissionEntity.getFullyQualifiedFieldName())
                 .read(permissionEntity.getRead())
                 .create(permissionEntity.getCreate())

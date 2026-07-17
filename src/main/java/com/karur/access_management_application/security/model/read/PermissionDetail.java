@@ -12,10 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PermissionDetail {
+    private String appId;
     private String fullyQualifiedFieldName;
     private Boolean read;
     private Boolean create;
     private Boolean update;
     private Boolean delete;
+
+    public String equalsId() {
+        return appId + fullyQualifiedFieldName + read + create + update + delete;
+    }
 
 }

@@ -12,5 +12,5 @@ import java.util.List;
 public interface PermissionEntityRepository extends ReactiveCrudRepository<PermissionEntity,Long> {
     Flux<PermissionEntity> findByIdIn(List<Long> ids);
 
-    Mono<PermissionEntity> findByFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(String fullyQualifiedFieldName,Boolean read_,Boolean create_,Boolean update_,Boolean delete_);
+    Mono<PermissionEntity> findByAppIdAndFullyQualifiedFieldNameAndReadAndCreateAndUpdateAndDelete(String appId,String fullyQualifiedFieldName,Boolean read_,Boolean create_,Boolean update_,Boolean delete_);
 }

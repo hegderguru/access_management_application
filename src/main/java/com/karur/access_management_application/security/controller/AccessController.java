@@ -152,8 +152,8 @@ public class AccessController {
     /*Update ends*/
 
     @GetMapping("/permissions")
-    public Mono<Void> createPermissions(@RequestBody List<Boolean[]> permissions) {
-        return accessService.createPermissions(permissions).then();
+    public Mono<Void> createPermissions(@RequestHeader("X-APP-ID") String appId, @RequestBody List<Boolean[]> permissions) {
+        return accessService.createPermissions(appId,permissions).then();
     }
 
 }

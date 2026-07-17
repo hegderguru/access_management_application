@@ -61,6 +61,7 @@ public class EntityToAccessReuestMapper {
 
     private PermissionRequest buildPermissionRequest(PermissionEntity permissionEntity) {
         return PermissionRequest.builder()
+                .appId(permissionEntity.getAppId())
                 .fullyQualifiedFieldName(permissionEntity.getFullyQualifiedFieldName())
                 .read(permissionEntity.getRead())
                 .create(permissionEntity.getCreate())

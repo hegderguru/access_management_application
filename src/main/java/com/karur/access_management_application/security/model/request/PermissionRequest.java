@@ -17,10 +17,17 @@ import lombok.experimental.FieldNameConstants;
 public class PermissionRequest {
 
     @DiffId
+    private String appId;
+
+    @DiffId
     private String fullyQualifiedFieldName;
 
     private Boolean read;
     private Boolean create;
     private Boolean update;
     private Boolean delete;
+
+    public String equalsId() {
+        return appId + fullyQualifiedFieldName + read + create + update + delete;
+    }
 }

@@ -23,6 +23,7 @@ public class PermissionRequestToEntityMapper {
 
     public PermissionEntity buildPermissionEntity(PermissionRequest permissionRequest) {
         return PermissionEntity.builder()
+                .appId(permissionRequest.getAppId())
                 .fullyQualifiedFieldName(permissionRequest.getFullyQualifiedFieldName())
                 .read(permissionRequest.getRead())
                 .create(permissionRequest.getCreate())
